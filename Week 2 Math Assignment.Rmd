@@ -1,0 +1,333 @@
+---
+title: "Winter 2019 Math Bridge Week 2 Assignment"
+author: "Henry Otuadinma"
+date: "1 January 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1. Dice Rolls
+
+If you roll a pair of fair dice, what is the probability of..
+
+(a) getting a sum of 1?
+
+ Answer:
+ A fair die has 6 sides and the probability of getting a particular side is 1/6. When a pair of fair dice are rolled, we get
+ 36 possible outcome as follows (1,1),(1,2),(1,3),(1,4),(1,5),(1,6)..(6,1),(6,2),(6,3),(6,4),(6,5),(6,6)
+ 
+ Therefore, the probility of getting a sum of 1 = 0/36 = 0
+
+
+(b) getting a sum of 5?
+
+Answer: 
+Probability of getting a sum of 5 = $$ \frac {4}{36} = \frac {1}{9}$$
+
+
+(c) getting a sum of 12?
+
+Answer:
+
+Probability of getting a sum of 12 = $$\frac {1}{36}$$
+
+## Problem 2. School absences
+
+Data collected at elementary schools in DeKalb County, GA suggest that each year roughly 25% of students miss exactly one day of school, 15% miss 2 days, and 28% miss 3 or more days due to sickness.
+
+```{r}
+## Let:
+## p1 = Probability of missing one day, pn1 = probability of not missing 1 days 
+## p2 = probability of missing 2 days, pn2 = probability of not missing 2 days
+## p3 = probability of missing 3 days, pn3 = probability of not missing 3 days
+
+p1 <- 25/100
+pn1 <- 1 - p1
+p2 <- 15/100
+pn2 <- 1-p2
+p3 <- 28/100
+pn3 <- 1-p3
+
+p1
+p2
+p3
+```
+
+(a) What is the probability that a student chosen at random doesn't miss any days of school due to sickness this year?
+
+```{r}
+## pn = Let probability of not missing any day
+pn = 1 - (p1 + p2 + p3)
+pn
+```
+
+
+(b) What is the probability that a student chosen at random misses no more than one day?
+
+```{r}
+## let pa1 = probability of missing no more than one day => probability of missing at most one day
+pa1 <- (pn + p1)
+pa1
+```
+
+
+(c) What is the probability that a student chosen at random misses at least one day?
+
+```{r}
+## let p1a = probability to miss AT LEAST one day
+p1a <- 1 - pn
+p1a
+```
+
+(d) If a parent has two kids at a DeKalb County elementary school, what is the probability that neither kid will miss any school? Note any assumption you must make to answer this question.
+
+```{r}
+## let p2n = probability neither kid missed any school day. These events are independent of each other therefore, the multiplication ## rule for independent processes applies =>
+p2n <- pn * pn
+p2n
+```
+
+(e) If a parent has two kids at a DeKalb County elementary school, what is the probability that both kids will miss some school, i.e. at least one day? Note any assumption you make.
+
+```{r}
+## let pb2 = probability both kids missed at least one school day. These events are still independent of each other =>
+pb2 <- p1a * p1a
+pb2
+```
+
+(f) If you made an assumption in part (d) or (e), do you think it was reasonable? If you didn't make any assumptions, double check your earlier answers.
+
+Answer:
+Computing the probabilities in (d) and (e) above as independent is reasonable because there is the chance that both kids may not fall sick at the same time and the parent can take the healthy kid to school while the sick one stays at home. Though siblings are likely to fall sick at the same time but it depends on if the sickness is a contagious one, and if the parent opts to take the sick child to a health facility while the healthy one remains at home. This is also a way to separate both kids in this situation.
+
+
+## Problem 3. Health coverage, relative frequencies
+
+The Behavioral Risk Factor Surveillance System (BRFSS) is an annual telephone survey designed to identify risk factors in the adult population and report emerging health trends. The following table displays the distribution of health status of respondents to this survey (excellent, very good, good, fair, poor) and whether or not they have health insurance.
+
+```{r}
+mat=matrix(c(.023, 0.0364, 0.0427, 0.0192, 0.0050,0.2099, 0.3123 ,0.2410 ,0.0817,0.0289), byrow=TRUE, nrow=2)
+colnames(mat)=c("Excellent", "Very Good","Good", "Fair","Poor")
+rownames(mat)=c("No Coverage","Coverage")
+mat
+```
+
+(a) Are being in excellent health and having health coverage mutually exclusive?
+
+Answer:
+
+NO. 
+People can be in excellent health while having health coverage. As depicted by the survey data (20.99%), those in excellent health even have substantial amount of health coverage
+
+
+(b) What is the probability that a randomly chosen individual has excellent health?
+
+```{r}
+## Let pe = probability that the individual has excellent health = probability of all individuals with excellent health with/without ## health coverage
+pe <- 0.0230 + 0.2099
+pe
+```
+
+(c) What is the probability that a randomly chosen individual has excellent health given that he has health coverage?
+
+
+```{r}
+## let pc = probability all with health coverage
+## pce = probability that a chosen individual has excellent health given that he has health coverage
+pc <- 0.2099+0.3123+0.2410+0.0817+0.0289
+pce = 0.2099/pc
+pce
+```
+
+(d) What is the probability that a randomly chosen individual has excellent health given that he doesn't have health coverage?
+
+```{r}
+## let pnc = probability all without health coverage
+## pnce = probability that a chosen individual has excellent health given that he doesn't have health coverage
+pnc <- 0.0230+0.0364+0.0427+0.0192+0.0050
+pnce = 0.0230/pnc
+pnce
+```
+
+(e) Do having excellent health and having health coverage appear to be independent?
+
+```{r}
+## Comparing pce with pnce => probability of being in excellent health with and without coverage
+pde = 0.2402152 - 0.1821061 
+pde
+```
+This implies that the probability to be in excellent health varies between having and not having health coverage. Moreover, the amount of data for people in excellent health with coverage is higher than those in excellent health without coverage. Therefore, having excellent health and having health coverage are not independent
+
+
+## Problem 4. Exit Poll.
+
+Edison Research gathered exit poll results from several sources for the Wisconsin recall election of Scott Walker. They found that 53% of the respondents voted in favor of Scott Walker. Additionally, they estimated that of those who did vote in favor for Scott Walker, 37% had a college degree, while 44% of those who voted against Scott Walker had a college degree. Suppose we randomly sampled a person who participated in the exit poll and found that he had a college degree. What is the probability that he voted in favor of Scott Walker?
+
+```{r}
+## Let v = voters for Scott Walker with/without college degree, 
+## d = voters for Scott Walker with degree, vd = voters against Scott Walker with degree,
+## pvd = probability of a person with degree voting in favor of Scott Walker
+## percentage that voted against Scott Walker with/without = 100 - 53 = 47%
+pvd <- (0.37 * 0.53)/((0.37 * 0.53) + (.44 * 0.47))
+pvd
+```
+
+
+## Problem 5. Books on a bookshelf
+
+The table below shows the distribution of books on a bookcase based on whether they are nonfiction or fiction and hardcover or paperback.
+
+```{r}
+mymat2=matrix(c(13,59,15,8),nrow=2,byrow=TRUE)
+colnames(mymat2)=c("hard","paper")
+rownames(mymat2)=c("fiction","nonfiction")
+
+
+mymat2
+```
+
+(a) Find the probability of drawing a hardcover book first then a paperback fiction book second when drawing without replacement.
+
+```{r}
+## Let t = total books on the shelf, php = probility of drawing hardcover book first then a paperback fiction without replacement
+
+t <- 13+15+59+8
+
+php <- 28/t * 59/(t-1)
+
+php
+```
+
+(b) Determine the probability of drawing a fiction book first and then a hardcover book second,when drawing without replacement.
+
+```{r}
+## Let pfh = probility of drawing a fiction book first and then a hardcover book second without replacement
+
+pfh <- (13 + 59)/t * (13+15)/(t-1)
+
+pfh
+```
+
+(c) Calculate the probability of the scenario in part (b), except this time complete the calculations under the scenario where the first book is placed back on the bookcase before randomly drawing the second book.
+
+```{r}
+## Let pfpr = drawing as in caseb(b) with replacement
+
+pfhr <- (13 + 59)/t * (13+15)/t
+
+pfhr
+```
+
+(d) The final answers to parts (b) and (c) are very similar. Explain why this is the case.
+Problem 
+
+Answer:
+
+The two scenarios involved either drawing with replacement or without replacement and only one book (out of a total of 95 books) was removed from the shelf without replacement. This in effect did have a significant impact the outcomes. If like 50 books were removed without replacement, the outcomes would have drastically be different
+
+
+
+## 6. Is it worth it?
+
+Andy is always looking for ways to make money fast. Lately, he has been trying to make money by gambling. Here is the game he is considering playing: The game costs 2 dollars to play. He draws a card from a deck. If he gets a number card (2-10), he wins nothing. For any face card (jack, queen or king), he wins 3 dollars. For any ace, he wins 5 dollars and he wins an extra $20 if he draws the ace of clubs.
+
+(a) Create a probability model and find Andy's expected profit per game.
+
+```{r}
+
+## Let c = 2 = cost per game, 
+## t = 52 = total number of cards, 
+## n = 36 = total number cards (2-10), 
+## k = 12 = total face cards ('J', 'Q', 'K'), 
+## a = 4 = total aces, 
+## p_0 = probability of drawing a number card (probability of loosing $2), 
+## p_3 = probability of drawing a face card, 
+## p_5 = probability of drawing an ace but not ace of clubs, 
+## p_20 = probability of drawing ace of clubs
+## x = amount to win per draw (0, 3, 5, 20)
+## z = profit per draw
+
+p_0 <-  36/52
+p_3 <-  12/52
+p_5 <-  3/52
+p_20 <- 1/52
+
+x <- c(-2, 3, 5, 20)
+y <- c(p_0, p_3, p_5, p_20)
+z <- c(p_0 * -2, p_3 * 3, p_5 * 5, p_20 * 20)
+
+df <- data.frame('x' = x, 'y' = y, 'z' = z)
+
+df
+```
+```{r}
+
+## let p = expected profit per game = summation of all the profit per chance
+
+p <- z[1] + z[2] + z[3] + z[4]
+
+p
+```
+(b) Would you recommend this game to Andy as a good way to make money? Explain.
+
+Answer:
+
+I wouldn't recommend this game as a good way of making money to Andy because from the computations, his chances of loosing $2 per draw (0.69230769 = 69.23%) is higher than every other chances. He will end up loosing 0.02 cents on the average.
+
+
+## Problem 7. Scooping ice cream.
+
+Ice cream usually comes in 1.5 quart boxes (48 fluid ounces), and ice cream scoops hold about 2 ounces. However, there is some variability in the amount of ice cream in a box as well as the amount of ice cream scooped out. We represent the amount of ice cream in the box as X and the amount scooped out as Y . Suppose these random variables have the following means, standard deviations, and variances:
+```{r}
+mymat3=matrix(c(48,1,1, 2,.25,.0625), nrow=2, byrow=TRUE)
+colnames(mymat3)=c("mean", "SD", "Var")
+rownames(mymat3)=c("X, In Box","Y, Scooped")
+mymat3
+```
+
+(a) An entire box of ice cream, plus 3 scoops from a second box is served at a party. How much ice cream do you expect to have been served at this party? What is the standard deviation of the amount of ice cream served?
+
+Answer:
+```{r}
+## Let ti = total ounces of icecream served at the party
+
+ti <- 48 + 3*(2)
+ti
+```
+```{r}
+## Let sd = Var(X + Y1 + Y2 + Y3) = total standard deviations including three independent scoops of 0.0625 each
+
+sd <- 1.0000 + 0.0625 + 0.0625 + 0.0625
+
+sd
+```
+
+
+(b) How much ice cream would you expect to be left in the box after scooping out one scoop of ice cream? That is, find the expected value of X - Y . What is the standard deviation of the amount left in the box?
+
+Answer:
+
+Each box contains 48 ounces of ice cream fluid, one scoop will leave 46 ounces in the box.
+```{r}
+## Let sd_1 = standard deviation after one scoop
+
+sd_1 <- 1.0000 + 0.0625
+
+sd_1
+```
+
+
+
+(c) Using the context of this exercise, explain why we add variances when we subtract one random variable from another.
+
+Answer: 
+
+We Add variances even when the random (independent) variables are subtracted from one another because it helps to express the increase
+in our UNCERTAINTY when the variables (quantity of ice cream in this case) vary.
+
+
+
+

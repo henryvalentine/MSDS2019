@@ -1,0 +1,68 @@
+---
+title: "2019 R Bridge Week 1 Assignment"
+author: "Henry Otuadinma"
+date: "23 December 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+  
+  1) Write a loop that calculates 12-factorial
+
+```{r}
+result <- 1
+num <- 1:12
+calc_factorial <- function()
+{
+    for(i in num){
+        result <- result*num[i]
+    }
+    print(result)
+}
+
+calc_factorial()
+```
+
+2) Show how to create a numeric vector that contains the sequence from 20 to 50 by 5.
+
+```{r}
+create_vect <- function(){
+    vec <- seq(from=20, to=50, by=5)
+    print(vec)
+}
+
+create_vect()
+
+```
+
+3) Create the function "factorial" that takes a trio of input numbers a, b, and c and solve the quadratic equation.    The function should print as output the two solutions
+
+```{r}
+
+# calculate discriminant
+get_dicr <- function(a,b,c){
+      b**2-4*a*c
+}
+
+#evaluate the quadratic function
+factorial <- function(a,b,c){
+  if(get_dicr(a,b,c) > 0){ # first case get_dicr() >0
+    root_1 = (-b+sqrt(get_dicr(a,b,c)))/(2*a)
+    root_2 = (-b-sqrt(get_dicr(a,b,c)))/(2*a)
+    paste0("The roots of the equation are: ", root_1, " and ", root_2)
+    
+  }else if(get_dicr(a,b,c) == 0){ # first case get_dicr() == 0
+        root <- -b/(2*a)
+        paste0("The given numbers produced a single root: ", root)
+  }
+  else {
+    print("The given numbers do not produce real roots.")}
+}
+
+#test for three scenarios: single root, two roots, no real roots
+factorial(1,2,1) 
+factorial(3,-4,1)
+factorial(4,-1,3)
+```

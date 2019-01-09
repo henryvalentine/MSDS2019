@@ -1,0 +1,336 @@
+---
+title: "Winter 2019 R Bridge Week 3 Assignment"
+author: "Henry Otuadinma"
+date: "5 January 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library('scales')
+theme_set(theme_bw())
+```
+
+## Question for analysis: 
+
+How consistent is the lenght of pregnancy in humans and are there relationships between habits or demographics of pregnant mothers and the length of pregnancy (gestation period) or child birth?
+
+
+## I will attempt to take on the above questions using:
+
+NCbirths: Data from births in North Carolina in 2001
+
+This dataset contains data on a sample of 1450 birth records that statistician John Holcomb selected from the North Carolina State Center for Health and Environmental Statistics.
+
+It contains 1450 observations on the following 15 variables.
+
+(1) ID:	Patient ID code
+(2) Plural:	1=single birth, 2=twins, 3=triplets
+(3) Sex:	Sex of the baby 1=male 2=female
+(4) MomAge:	Mother's age (in years)
+(5) Weeks:	Completed weeks of gestation
+(6) Marital:	Marital status: 1=married or 2=not married
+(7) RaceMom:	Mother's race: 1=white, 2=black, 3=American Indian, 4=Chinese
+    5=Japanese, 6=Hawaiian, 7=Filipino, or 8=Other Asian or Pacific Islander
+(8) HispMom: Hispanic origin of mother: C=Cuban, M=Mexican, N=not Hispanic
+    O=Other Hispanic, P=Puerto Rico, S=Central/South America
+(9) Gained:	Weight gained during pregnancy (in pounds)
+(10) Smoke:	Smoker mom? 1=yes or 0=no
+(11) BirthWeightOz:	Birth weight in ounces
+(12) BirthWeightGm:	Birth weight in grams
+(13) Low:	Indicator for low birth weight, 1=2500 grams or less
+(4) Premie:	Indicator for premature birth, 1=36 weeks or sooner
+(15) MomRace:	Mother's race: black, hispanic, other, or white
+
+
+## 1. Data Exploration: 
+This should include summary statistics, means, medians, quartiles, or any other relevant information about the data set. Please include some conclusions in the R Markdown text.
+
+```{r}
+ncbirths <- read.csv('NCbirths.csv', header = TRUE, sep=",")
+summary(ncbirths)
+```
+
+It is apparent that majority of the mothers were young married white women with average age of 26.76 years, average gestation period of 38.62 weeks which is quite okay, with most of their babies delivered around the 36th week or lower on the average. It appears most of them don't smoke as the median is 0 and the mean is around 14%
+
+
+
+```{r}
+str(ncbirths)
+```
+
+## 2. Data wrangling: 
+Please perform some basic transformations. They will need to make sense but could include column renaming, creating a subset of the data, replacing values, or creating new columns with derived data (for example - if it makes sense you could sum two columns together)
+
+```{r}
+racesEval <- function(races)
+  {
+    mraces <- vector()
+    
+    for(race in races)
+    {
+       switch(race, `1` = {mraces <- c(mraces, "White")}, `2` = {mraces <- c(mraces, "Black")}, 
+              `3` = {mraces <- c(mraces, "American Indian")}, `4` = {mraces <- c(mraces, "Chinese")}, 
+             `5` = {mraces <- c(mraces, "Japanese")}, `6` = {mraces <- c(mraces, "Hawaiian")}, 
+             `7` = {mraces <- c(mraces, "Filipino")}, `8` = {mraces <- c(mraces, "Other")})
+      
+    }
+    
+    return(mraces)
+}
+
+```
+
+
+```{r}
+
+oldermothers <- na.omit(subset(ncbirths, MomAge >= 30, select = c("MomAge","Weeks", "MomRace")))
+names(oldermothers)<- c("Age", "Gestation", "Race")
+
+youngermothers <- na.omit(subset(ncbirths, MomAge <= 29, select = c("MomAge","Weeks", "MomRace")))
+names(youngermothers)<- c("Age", "Gestation", "Race")
+
+mumrace <- na.omit(ncbirths[ , c('MomRace', 'Weeks')])
+names(mumrace)<- na.omit(c("Race", "Gestation"))
+
+smokingHabit <- na.omit(ncbirths[ , c('Smoke', 'Weeks')])
+names(smokingHabit)<- c("SmokingHabit", "Gestation")
+
+plural <- na.omit(ncbirths[ , c('Plural', 'Weeks')])
+names(plural)<- c("BabiesInOneBirth", "Gestation")
+
+birthweight <- na.omit(ncbirths[ , c('BirthWeightGm', 'Weeks')])
+names(birthweight)<- c("BabyWeigth", "Gestation")
+
+birthweightonsmoke <- na.omit(ncbirths[ , c('BirthWeightGm', 'Weeks')])
+names(birthweightonsmoke)<- c("SmokingHabit", "BabyWeight")
+
+
+## To visualise percentage and frequency distributions of all the moms in all ages according to their Races
+
+allmothers <- na.omit(subset(ncbirths, MomAge > 0, select = c("MomAge","Weeks", "RaceMom", "BirthWeightGm")))
+names(allmothers)<- c("Age", "Gestation (weeks)", "Race", "Birth Weight (Gm)")
+allmothers$Race <- racesEval(allmothers$Race)
+
+mothers <- na.omit(subset(ncbirths, MomAge > 0, select = c("MomAge","Weeks", "MomRace")))
+names(mothers)<- c("Age", "Gestation", "Race")
+```
+
+
+
+```{r}
+## using summarise
+mothers %>% summarise(
+          
+          meanWhiteAge= round(mean(mothers$Age[mothers$Race == "white"]),2), 
+          meanBlackAge= round(mean(mothers$Age[mothers$Race == "black"]),2), 
+          meanHispanicAge= round(mean(mothers$Age[mothers$Race == "hispanic"]),2), 
+          meanOtherAge= round(mean(mothers$Age[mothers$Race == "other"]),2),
+          
+          whiteMoms = length(mothers$Race[mothers$Race == "white"]), 
+          blackMoms=length(mothers$Race[mothers$Race == "black"]),
+          hispanicMoms=length(mothers$Race[mothers$Race == "hispanic"]),
+          otherMoms=length(mothers$Race[mothers$Race == "other"]),
+          
+          meanWhiteGestation=round(mean(mothers$Gestation[mothers$Race == "white"]),2),
+          meanBlackGestation=round(mean(mothers$Gestation[mothers$Race == "black"]),2),
+          meanHispanicGestation=round(mean(mothers$Gestation[mothers$Race == "hispanic"]),2),
+          meanOtherGestation=round(mean(mothers$Gestation[mothers$Race == "other"]),2),
+          
+          medianWhiteAge=round(median(mothers$Age[mothers$Race == "white"]),2), 
+          medianBlackAge=round(mean(mothers$Age[mothers$Race == "black"]),2), 
+          medianHispanicAge=round(mean(mothers$Age[mothers$Race == "hispanic"]),2),
+          medianOtherAge=round(mean(mothers$Age[mothers$Race == "other"]),2))
+
+
+
+```
+
+
+## Comparing gestation periods in mothers above 29 years of age and those 29 years and below
+
+```{r}
+
+print(summary(oldermothers))
+
+```
+
+```{r}
+head (oldermothers, 10)
+```
+
+
+```{r}
+print(summary(youngermothers))
+```
+
+```{r}
+head (youngermothers, 10)
+```
+
+## 3. Graphics: 
+Please make sure to display at least one scatter plot, box plot and histogram. Don't be limited to this. Please explore the many other options in R packages such as ggplot2.
+
+
+
+```{r}
+
+## percentage distribution of all the mothers in all ages according to their Races
+
+plot_ly(mothers, labels = ~Race, values = ~Age, type = 'pie',
+        textposition = 'inside',
+        textinfo = 'label+percent',
+        insidetextfont = list(color = '#FFFFFF'),
+        hoverinfo = 'text',
+        text = ~paste(Race, ' mothers of all ages'),
+                      
+        showlegend = FALSE) %>%
+  layout(title = 'Distribution of all mothers by Race',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+
+```
+
+
+## Age distribution of mothers:
+
+```{r}
+## Younger Moms
+plot_ly(youngermothers, x = ~Age, color = ~Age) %>% add_histogram()%>%
+  layout(title = "Younger Moms' Frequency distribution",
+         xaxis = list(title = "Age (years)", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = 'Frequency', titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+```
+
+```{r}
+
+## Older moms Frequency distribution
+plot_ly(oldermothers, x = ~Age, color = ~Age) %>% add_histogram()%>%
+  layout(title = "Older moms' Frequency distribution",
+         xaxis = list(title = "Age (years)", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = 'Frequency', titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+```
+
+
+```{r}
+## Younger Moms Vs Gestation
+
+plot_ly(youngermothers, type="bar", x = ~Gestation, y = ~Age, color = ~Age)%>%
+  layout(title = "Younger Moms' Vs Gestation",
+         xaxis = list(title = "Gestation (weeks)", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = 'Age (years)', titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+
+```
+
+## Moms at ages 29 years had gestation periods that spanned 33 to 45 weeks
+
+```{r}
+## Older Moms Vs Gestation
+
+plot_ly(data=oldermothers, type="bar", x = ~Gestation, y = ~Age, color = ~Age)%>%
+  layout(title = "Older Moms' Vs Gestation",
+         xaxis = list(title = "Gestation (weeks)", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = 'Age (years)', titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+
+```
+
+
+
+```{r}
+ggplot(mumrace, aes(x=Race, y=Gestation)) + 
+  geom_point(aes(col=Race, size=Gestation)) + 
+  geom_smooth(method="loess", se=T) + 
+  labs(title="Gestation Period VS Race", y="Gestation", x="Race", caption="North Carolina births (2001)")
+
+```
+
+## Race doesn't have any effect on gestation period
+
+```{r}
+boxplot(plural$Gestation ~ plural$BabiesInOneBirth, data=plural, main="Gestation Period Vs. Number of Babies per Birth", font.main=3, cex.main=1.2, xlab="Number of Babies per birth", ylab="Gestation (weeks)", font.lab=3, col=(c("#2962ff","#00695c", "#ad1457")) , 
+    ylab="disease" , xlab="- variety -")
+```
+
+## It appears that the more the number of babies per birth, the lower the gestation period
+
+```{r}
+## Mom's Age Vs Gestation
+
+plot_ly(data = allmothers, x = ~`Gestation (weeks)`, y = ~Age, color = ~Age,
+         type = "scatter", 
+         mode="markers")%>%
+  layout(title = "Mom's Age (years) Vs. Gestation (weeks)",
+         xaxis = list(title = "Gestation (weeks)", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = "Mom's Age (years)", titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+
+```
+
+## Suprisingly, the oldest moms didn't have the longest gestation period
+
+```{r}
+## baby's weight race Vs Mom's Race
+
+plot_ly(data = allmothers, type="bar", x = ~Race, y = ~`Birth Weight (Gm)`, color = ~Race)%>%
+  layout(title = "Baby's weight (gm) Vs. Mom's Race",
+         xaxis = list(title = "Mom's Race", tickfont = list( size = 14, color = 'rgb(107, 107, 107)')),
+         yaxis = list(title = "Baby's Weight (gm)", titlefont = list(size = 16, color = 'rgb(107, 107, 107)'),
+         tickfont = list(size = 14,color = 'rgb(107, 107, 107)')))
+
+```
+
+
+```{r}
+
+## smokingHabit Vs Gestation
+  
+ggplot(smokingHabit, aes(Gestation, SmokingHabit))+ geom_point(colour = smokingHabit$Gestation, size = 4) + geom_line(colour ="#2962ff", size=0.8) +
+  labs(y="Smoking Habit", 
+       x="Gestation (weeks)", 
+       title="SMoking Habit Vs Gestation(weeks)", 
+       caption="North Carolina Births (2001)")
+```
+
+
+## There appears to be no relationship between smoking habit and gestation period. Lenght of pregnancy is not affected by smoking habit.
+
+
+
+
+```{r}
+
+## 3D plot to consider gestation periods in relation to Race and Age
+
+plot_ly(mothers, x = ~Race, y = ~Age, z = ~Gestation, color = ~Race, colors = c('#BF382A', '#0C4B8E')) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'Race'),
+                     yaxis = list(title = 'Age'),
+                     zaxis = list(title = 'Gestation')))
+
+```
+
+
+## Conclusion:
+
+From the analysis and visualisations, it is evident that length of pregnancy is not affected by Race and Smoking Habit. It is affected slightly by Age with Moms at ages 29 years having gestation periods that spanned 33 to 45 weeks. Also the number of babies (single, twins, etc) per birth reduces gestation periods and also affects baby's weight. A lot of factors like mother's health (which is not measured in this dataset) can contribute a lot in determining lenght of pregnancy, baby's weight, timely/delayed/premature delivery, or even miscarriage. The comparison between Baby's weight and mother's race shows a fraction of the white moms delivering babies that weighed around 5000gm. This can be as a result of adequate diet and medical care during pregnancy.
+
+
+
+## 5. BONUS: 
+
+place the original .csv in a github file and have R read from the link. This will be a very useful skill as you progress in your data science education and career.
+
+```{r}
+Ncbirths_git <- read.csv2("https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/NCbirths.csv", header = TRUE, sep=",")
+summary(Ncbirths_git) #Summary of the csv data from github.com
+```
+
+

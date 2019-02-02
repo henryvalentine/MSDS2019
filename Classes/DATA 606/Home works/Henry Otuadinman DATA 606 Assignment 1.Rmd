@@ -1,0 +1,369 @@
+---
+title: "DATA 606 Assignment 1"
+author: "Henry Otuadinma"
+rpubs: "http://rpubs.com/jackv13/463505"
+date: "30 January 2019"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(openintro)
+library(dplyr)
+```
+
+# Exercise 1.8 : Smoking habits of UK residents. A survey was conducted to study the smoking habits of UK residents.
+
+```{r}
+data(smoking)
+```
+
+### Below is a data matrix displaying a portion of the data collected in this survey.
+### Note that "£" stands for British Pounds Sterling, "cig" stands for cigarettes, and "N/A" refers to
+### a missing component of the data.
+
+```{r}
+head(smoking)
+```
+
+```{r}
+dim(smoking)
+```
+
+(a) What does each row of the data matrix represent?
+
+Answer: Each row of the data matrix represents an observation with 12 variables
+
+(b) How many participants were included in the survey?
+
+Answer:
+```{r}
+paste0(nrow(smoking), " participants are included in the survey")
+```
+
+(c) Indicate whether each variable in the study is numerical or categorical. If numerical, identify
+as continuous or discrete. If categorical, indicate if the variable is ordinal.
+
+### Answer:
+gender: Categorical(Nominal)
+age: Numerical (Discrete)
+maritalStatus: Categorical (Nominal)
+highestQualification: Categorical (Ordinal)
+nationality: Categorical (Nominal)
+ethnicity: Categorical (Nominal)
+grossIncome: Numerical (Continuous)
+region: Categorical (Nominal)
+smoke: Categorical (Nominal)
+amtWeekends: Numerical (Discrete)
+amtWeekdays: Numerical (Discrete)
+type: Categorical (Nominal)
+
+
+## Exercise 1.10 Cheaters, scope of inference. 
+Exercise 1.5 introduces a study where researchers studying
+the relationship between honesty, age, and self-control conducted an experiment on 160 children
+between the ages of 5 and 15. The researchers asked each child to toss a fair coin in private and to
+record the outcome (white or black) on a paper sheet, and said they would only reward children
+who report white. Half the students were explicitly told not to cheat and the others were not given
+any explicit instructions. Differences were observed in the cheating rates in the instruction and no
+instruction groups, as well as some differences across children's characteristics within each group.
+
+(a) Identify the population of interest and the sample in this study.
+
+Answer: 
+The population of interest are children of ages between 5 and 15, of which 160 of them were sampled.
+
+
+(b) Comment on whether or not the results of the study can be generalized to the population, and
+if the findings of the study can be used to establish causal relationships.
+
+Answer: 
+Though the sample is not sufficiently large, the presence of the variable - self-control can have a direct impact 
+on honesty in some case but might not hold true for all cases because the resulting individual 
+behaviour (honesty or not) can depend on personal perspectives, home-training, beliefs, or some unaccounted variables.
+There is no indication that proper randomisation of the sample population was carried out, therefore, the results
+of the study cannot generalise to the population.
+
+
+## 1.28 Reading the paper. 
+Below are excerpts from two articles published in the NY Times:
+(a) An article titled Risks: Smokers Found More Prone to Dementia states the following:
+"Researchers analyzed data from 23,123 health plan members who participated in a voluntary
+exam and health behavior survey from 1978 to 1985, when they were 50-60 years old. 23 years
+later, about 25% of the group had dementia, including 1,136 with Alzheimer's disease and 416
+with vascular dementia. After adjusting for other factors, the researchers concluded that pack-aday
+smokers were 37% more likely than nonsmokers to develop dementia, and the risks went up
+with increased smoking; 44% for one to two packs a day; and twice the risk for more than two
+packs."
+Based on this study, can we conclude that smoking causes dementia later in life? Explain your
+reasoning.
+
+Answer:
+We cannot expressly say that smoking causes Dementia in later stages of life because this was a study and not an experiment that could have helped to establish Explanatory-Response variables relationships and it did not point out if any other factors that might contribute to the occurence of the disease were noted and taken account of like using control measures and proper randomisation to ensure the 
+outcomes were not biased. 
+
+(b) Another article titled The School Bully Is Sleepy states the following:
+"The University of Michigan study, collected survey data from parents on each child's sleep habits
+and asked both parents and teachers to assess behavioral concerns. About a third of the students
+studied were identified by parents or teachers as having problems with disruptive behavior or
+bullying. The researchers found that children who had behavioral issues and those who were
+identified as bullies were twice as likely to have shown symptoms of sleep disorders."
+A friend of yours who read the article says, "The study shows that sleep disorders lead to
+bullying in school children." Is this statement justified? If not, how best can you describe the
+conclusion that can be drawn from this study?
+
+Answer:
+This was also a study and not an experiment to establish Explanatory-Response variables relationships between sleep disorders ad bullying. In essence, bullying is a trait that can occur in any school kid depending on a lot of factors (variables: family issues, absence of parental love, etc) that might not easily be measured. 
+
+
+### 1.36 Exercise and mental health. 
+A researcher is interested in the effects of exercise on
+mental health and he proposes the following study: Use stratified random sampling to ensure representative
+proportions of 18-30, 31-40 and 41- 55 year olds from the population. Next, randomly
+assign half the subjects from each age group to exercise twice a week, and instruct the rest not
+to exercise. Conduct a mental health exam at the beginning and at the end of the study, and
+compare the results.
+
+(a) What type of study is this?
+
+Answer:
+This is a randomised experiment that applied blocking sampling technique
+
+(b) What are the treatment and control groups in this study?
+
+Answer:
+The treatment group are those cases with instructions to exercise twice.
+The control group are the cases that were instructed not to exercise.
+
+(c) Does this study make use of blocking? If so, what is the blocking variable?
+
+Answer:
+Yes, Blocking was used.
+The blocking variable is the age blocks. Also, cases from those blocks were evely assigned to treatment and control groups
+so as to minimise bias as much as possible.
+
+(d) Does this study make use of blinding?
+
+Answer:
+It was not clearly stated if the instructions to either exercise or not were handed down in the presence of each of the groups.
+But the cases (patients) know exactly whether to exercise or not.
+
+
+(e) Comment on whether or not the results of the study can be used to establish a causal relationship
+between exercise and mental health, and indicate whether or not the conclusions can
+be generalized to the population at large.
+
+Answer:
+
+This result can only be used to establish causal relationship between exercise and mental 
+health if other factors (variables) that might be difficult to measure (such as diet, abuse, drug and susbstance ingestion, etc) are taken into account and controlled (other things being equal) because it was first an experiment, and, treatment of cases and control of cases were employed. In this case, compliance to exercise according to the instructions is also key. The result cannot directly generalise to the population at large but we can establish a correlation between the two variables.
+
+
+(f) Suppose you are given the task of determining if this proposed study should get funding.
+Would you have any reservations about the study proposal?
+
+Answer:
+There is no clear indication that measures were put in place to ensure that both the treatment group and control group adhered to
+the instructions.
+
+
+
+### 1.48 Stats scores. 
+Below are the final exam scores of twenty introductory statistics students.
+57, 66, 69, 71, 72, 73, 74, 77, 78, 78, 79, 79, 81, 81, 82, 83, 83, 88, 89, 94
+Create a box plot of the distribution of these scores. The five number summary provided below
+may be useful.
+
+Min Q1   Q2(Median)  Q3     Max
+57  72.5  78.5        82.5   94
+
+Answer:
+
+```{r}
+examScores <- c(57, 66, 69, 71, 72, 73, 74, 77, 78, 78, 79, 79, 81, 81, 82, 83, 83, 88, 89, 94)
+
+```
+
+```{r}
+summary(examScores)
+```
+
+
+```{r}
+boxplot(x=examScores, xlab = "Scores", ylab="Grades", main='Exam scores of twenty introductory statistics students')
+```
+
+
+
+## 1.50 Mix-and-match. 
+Describe the distribution in the histograms below and match them to
+the box plots.
+
+(a) symmetrical and Unimodal, it matches Boxplot 2
+(b) Trimodal and matches Boxplot 3
+(c) Unimodal and skewed to the right with a long tail. It matches Boxplot 1
+
+
+## 1.56 Distributions and appropriate statistics, Part II. 
+For each of the following, state whether you expect the distribution to be symmetric, right skewed, or left skewed. 
+Also specify whether the mean or median would best represent a typical observation in the data, and whether
+the variability of observations would be best represented using the standard deviation or IQR.
+
+Explain your reasoning.
+
+#### (a) Housing prices in a country where 25% of the houses cost below $350,000, 50% of the houses
+#### cost below $450,000, 75% of the houses cost below $1,000,000 and there are a meaningful
+#### number of houses that cost more than $6,000,000.
+
+Answer:
+Obviously, the homes at $6,000,000 and above present an outlier to the distribution. This can alter the mean. As a result, median and IQR will be best for this since they are less susceptible to the influence of outliers. The distribution will be right skewed.
+
+
+#### (b) Housing prices in a country where 25% of the houses cost below $300,000, 50% of the houses
+#### cost below $600,000, 75% of the houses cost below $900,000 and very few houses that cost
+#### more than $1,200,000.
+
+Answer:
+Mean and Standard deviation will suffice in presenting the information of this distribution as it is a symmetrical distribution and the few outliers will have little/no influence on the presentation. 
+
+#### (c) Number of alcoholic drinks consumed by college students in a given week. Assume that most of
+#### these students don't drink since they are under 21 years old, and only a few drink excessively.
+
+Answer:
+The distribution will be right skewed as it will be heavily influenced by outliers caused by the heavy drinkers. The information of the distribution will be better represented by the median and IQR.
+
+
+#### (d) Annual salaries of the employees at a Fortune 500 company where only a few high level
+#### executives earn much higher salaries than the all other employees.
+
+This presents a case where the annual salary of one executive member can pay the salaries of a handful of lower ranked employees. In this case, the few outliers are highly pronounced such that the distribution will be right skewed and the information will be better represented by the median and IQR.
+
+
+### 1.70 Heart transplants. 
+The Stanford University Heart Transplant Study was conducted to
+determine whether an experimental heart transplant program increased lifespan. Each patient
+entering the program was designated an official heart transplant candidate, meaning that he was
+gravely ill and would most likely benefit from a new heart. Some patients got a transplant and
+some did not. The variable transplant indicates which group the patients were in; patients in the
+treatment group got a transplant and those in the control group did not. Another variable called
+survived was used to indicate whether or not the patient was alive at the end of the study
+
+### Solution
+
+The data for this exercise is heartTr
+
+
+```{r}
+summary(heartTr)
+```
+
+```{r}
+head(heartTr, 30)
+```
+
+
+
+```{r}
+mosaicplot(table(heartTr$transplant,heartTr$survived), main = "Heart Transplant experiment", col='#0093AF')
+```
+
+
+
+(a) Based on the mosaic plot, is survival independent of whether or not the patient got a transplant?
+Explain your reasoning.
+
+Answer:
+
+Based on the mosaic plot, survival is not independent of whether a patiernt received transplant or not as the number of survivors in the tretment section is larger than that of those in the control section.
+
+
+(b) What do the box plots below suggest about the efficacy (effectiveness) of the heart transplant
+treatment.
+
+The box plots suggest that the heart transplant was effective: the median survival time is higher for the tratment group than for the control group. Also, if the IQR (IQR = Q3 - Q1) of both plots should be estimated, that of the treatment group will be higher.
+
+
+(c) What proportion of patients in the treatment group and what proportion of patients in the
+control group died?
+
+Answer:
+
+```{r}
+dim(heartTr)
+```
+
+There are 103 cases in all
+
+```{r}
+
+treatmentGroup <- subset(heartTr, transplant == 'treatment')
+controlGroup <- subset(heartTr, transplant == 'control')
+
+cat(paste0('Total patients in treatment group: ', count(treatmentGroup)), sep="\n")
+cat(paste0('Total patients in control group: ', count(controlGroup)), sep="\n")
+cat('', sep="\n")
+
+
+deathsInTreatmentGroup <- subset(treatmentGroup, survived == 'dead')
+deathsInControlGroup <- subset(controlGroup, survived == 'dead')
+
+cat(paste0('Total dead patients in treatment group: ', count(deathsInTreatmentGroup)), sep="\n")
+cat(paste0('Total dead patients in control group: ', count(deathsInControlGroup)))
+```
+
+Proportion of dead patients in the treatment group = 45/69 = 0.652173913 = 65%
+Proportion of dead patients in the control group = 30/34 = 0.882352941 = 88%
+
+
+(d) One approach for investigating whether or not the treatment is effective is to use a randomization
+technique.
+
+i. What are the claims being tested?
+
+Answer:
+
+The claims are:
+
+#### H0 Independence model. The heart transplant and survival of the patients do not depend on each other, and no 
+##### relationship exists between them. The patients' survival depend on chance.
+
+#### HA Alternative model. The heart transpalnt and survival of the patients are not independent. 
+#### The patient's survival are not by chance
+
+
+
+ii. The paragraph below describes the set up for such approach, if we were to do it without
+using statistical software. Fill in the blanks with a number or phrase, whichever is appropriate.
+
+We write **28** alive on cards representing patients who were alive at
+the end of the study, and **75** dead on cards representing patients
+who were not. Then, we shuffle these cards and split them into two groups:
+one group of size **69** representing treatment, and another group of
+size **34** representing control. We calculate the difference between
+the proportion of dead cards in the treatment and control groups (treatment -
+control) and record this value. We repeat this 100 times to build a distribution
+centered at **0**. Lastly, we calculate the fraction of simulations where
+the simulated differences in proportions are **equal to the difference in the 
+study outcome => 24/69 - 4/34 = 0.347826087 - 0.117647059 = 0.2302 **. If this fraction is low, 
+we conclude that it is unlikely to have observed such an outcome by chance and
+that the null hypothesis should be rejected in favor of the alternative.
+
+iii. What do the simulation results shown below suggest about the effectiveness of the transplant
+program?
+
+Answer:
+
+#### From the simulated differences in proportions (0.23) we can conclude that this outcome can rarely be 
+#### observed by chance because it is low and points that the heart transplant experiment was effective. 
+#### Therefore, The HA (Alternative model) should stand instead of the HO (Independence model) hypothesis.
+
+
+
+
+
+
+
+
+

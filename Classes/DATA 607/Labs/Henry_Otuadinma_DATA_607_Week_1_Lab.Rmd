@@ -1,0 +1,77 @@
+---
+title: "DATA 607 Week 1 Lab"
+author: "Henry Otuadinma"
+date: "31 January 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+```
+
+## You should first study the data and its associated description (i.e. "data dictionary"). 
+## You should take the data, and create an R dataframe with a subset of the columns in the dataset. 
+## You should provide relevant column names. Your deliverable is the R Markdown code to perform 
+## these transformation tasks.
+
+### Solutions:
+
+The given link in the Hands on Lab pdf file could not work so I was able to google around and found the dataset on the link below:
+https://archive.ics.uci.edu/ml/machine-learning-databases/bridges/bridges.data.version1
+
+```{r}
+pittsburgBridges <- read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/bridges/bridges.data.version1', header=TRUE,na.strings = "?")
+```
+
+```{r}
+summary(pittsburgBridges)
+
+```
+
+
+
+
+```{r}
+head(pittsburgBridges)
+
+```
+
+```{r}
+dim(pittsburgBridges)
+
+```
+
+### The complete details about this dataset including the column names and contributors can be gotten from the url below:
+ftp://ftp.ics.uci.edu/pub/machine-learning-databases/bridges/bridges.names
+
+```{r}
+textStream <- readLines('ftp://ftp.ics.uci.edu/pub/machine-learning-databases/bridges/bridges.names')
+
+```
+
+```{r}
+#replace tabs with spaces, trim whit spaces at beginning and end, and remove quotations
+print(gsub("\t"," ",trimws(textStream)), quote=FALSE)
+```
+
+### From the above information, I can conveniently rename the columns as follows
+
+```{r}
+names(pittsburgBridges) <- c('IDENTIF','RIVER', 'LOCATION','ERECTED','PURPOSE','LENGTH','LANES','CLEAR-G','T-OR-D','MATERIAL','SPAN','REL-L','TYPE')
+
+```
+
+```{r}
+head(pittsburgBridges)
+```
+
+### A subset of the coumns can be used to create a new dataframe as follows:
+
+```{r}
+newBridges <- pittsburgBridges[, c(1,2,3,4,7,9)]
+```
+
+```{r}
+head(newBridges)
+```

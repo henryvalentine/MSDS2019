@@ -2,6 +2,8 @@
 title: "DATA 606 Lab0"
 date: "01 February 2019"
 author: "Jason Bryer, Henry Otuadinma"
+rpubs: "http://rpubs.com/jackv13/463333"
+github: "https://github.com/henryvalentine/MSDS2019/raw/master/Classes/DATA%20606/Labs/Henry_Otuadinma_DATA_606_Lab0.Rmd"
 output:
   html_document:
     css: ./lab.css

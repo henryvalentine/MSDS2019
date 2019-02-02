@@ -2,7 +2,7 @@
 title: "DATA 606 Assignment 1"
 author: "Henry Otuadinma"
 rpubs: "http://rpubs.com/jackv13/463505"
-github: ""
+github: "https://github.com/henryvalentine/MSDS2019/raw/master/Classes/DATA%20606/Home%20works/Henry_Otuadinman_DATA_606_Assignment_1.Rmd"
 date: "30 January 2019"
 output:
   html_document: default

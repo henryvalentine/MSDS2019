@@ -2,6 +2,8 @@
 title: "DATA 607 Week 1 Assignment"
 author: "Henry Otuadinma"
 date: "1 February 2019"
+rpubs: "http://rpubs.com/jackv13/463542"
+github: "https://github.com/henryvalentine/MSDS2019/raw/master/Classes/DATA%20607/Home%20works/DATA_607_Week_1_Assignment.Rmd"
 output: html_document
 ---
 

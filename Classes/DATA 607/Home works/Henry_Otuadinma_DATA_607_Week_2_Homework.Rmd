@@ -21,7 +21,7 @@ library(tidyverse)
 ```{r echo=FALSE}
 
 # the movies DB must first be created on the server
-con <- dbConnect(RMySQL::MySQL(), dbname="movies", host="msds.cjwvxtosifbi.us-east-2.rds.amazonaws.com", port=3306, user="datamind", password="Ux78g9oPwl")
+con <- dbConnect(RMySQL::MySQL(), dbname="movies", host="msds.cjwvxtosifbi.us-east-2.rds.amazonaws.com", port=3306, user="user", password="password")
 ```
 
 

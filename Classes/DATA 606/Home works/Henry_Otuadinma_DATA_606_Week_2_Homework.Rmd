@@ -1,0 +1,387 @@
+---
+title: "DATA 606 Week 2 Homework"
+author: "Henry Otuadinma"
+date: "4 February 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(VennDiagram)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+```
+
+### 2.6 Dice rolls. 
+If you roll a pair of fair dice, what is the probability of
+
+
+(a) getting a sum of 1?
+
+Answer:
+The probability of getting a sum of 1 = 1/36
+
+(b) getting a sum of 5?
+
+Answer:
+
+The probability of getting a sum of 5 = 4/36 = 1/9
+
+(c) getting a sum of 12?
+
+The probability of getting a sum of 12 = 1/36
+
+
+###2.8 Poverty and language. 
+The American Community Survey is an ongoing survey that
+provides data every year to give communities the current information they need to plan investments
+and services. The 2010 American Community Survey estimates that 14.6% of Americans live below
+the poverty line, 20.7% speak a language other than English (foreign language) at home, and 4.2%
+fall into both categories.
+
+### (a) Are living below the poverty line and speaking a foreign language at home disjoint?
+
+Answer:
+No, they are not disjoint
+
+(b) Draw a Venn diagram summarizing the variables and their associated probabilities.
+
+```{r}
+# source: https://rstudio-pubs-static.s3.amazonaws.com/13301_6641d73cfac741a59c0a851feb99e98b.html
+
+grid.newpage()
+draw.pairwise.venn(14.6, 20.7, 4.2, category = c("Below poverty line", "Speak Foreign language at home"), fill = c("light blue", "pink"), alpha = rep(0.5, 2), cat.pos = c(0, 
+    0), cat.dist = rep(0.025, 2))
+
+
+```
+
+(c) What percent of Americans live below the poverty line and only speak English at home?
+
+Answer:
+10.4%
+
+(d) What percent of Americans live below the poverty line or speak a foreign language at home?
+
+Answer:
+percent of Americans live below the poverty line or speak a foreign language at home = 
+16.5 + 4.2 + 10.4 = 31.1%
+
+(e) What percent of Americans live above the poverty line and only speak English at home?
+
+Answer:
+100 - 31.1 = 68.9%
+
+(f) Is the event that someone lives below the poverty line independent of the event that the person
+speaks a foreign language at home?
+
+Answer:
+
+P(Belowe Pverty line) = 14.6
+P(Foreign Language at home) = 20.7
+
+P(Below Poverty line) * P(Foreign Language at home) = 14.6/100 * 20.7/100 = 0.146 * 0.207 
+= 0.03022 * 100 = 3.022%
+Since 3.022% is not equal to 4.2%, it implies that the two events are not independent
+
+
+### 2.20 Assortative mating. 
+Assortative mating is a nonrandom mating pattern where individuals
+with similar genotypes and/or phenotypes mate with one another more frequently than what would
+be expected under a random mating pattern. Researchers studying this topic collected data on
+eye colors of 204 Scandinavian men and their female partners. The table below summarizes the
+results. For simplicity, we only include heterosexual relationships in this exercise.
+
+```{r}
+male <- c('Blue', 'Brown', 'Green')
+Brown <- c(23, 23, 9)
+Blue <- c(78, 19, 11)
+Green <- c(13, 12, 16)
+df <- data.frame(Blue, Brown, Green, row.names = male)
+df$Totals <- apply(df, 1, sum)
+df['Total',] <- colSums(df)
+
+kable(df, align = "c") %>%
+  column_spec(1:4, bold = T, color = "#000")%>%
+  row_spec(1:4, bold = T, color = "#000")%>%
+  kable_styling("striped", full_width = T) %>%
+  add_header_above(c(" ", "Partner (female)" = 4))
+
+```
+
+(a) What is the probability that a randomly chosen male respondent or his partner has blue eyes?
+
+```{r}
+
+p_male_blue <- df['Blue', 'Totals']/df['Total', 'Totals']
+
+p_female_blue <- df['Total', 'Blue']/df['Total', 'Totals']
+
+p_blue_blue <- df['Blue', 'Blue']/df['Total', 'Totals']
+
+P_male_female_blue <- (p_male_blue + p_female_blue) - p_blue_blue # This is to avoid p_blue_blue from being counted twice
+
+cat('The probability that male respondent or his partner has blue eyes is: ', P_male_female_blue)
+```
+
+(b) What is the probability that a randomly chosen male respondent with blue eyes has a partner
+with blue eyes?
+
+```{r}
+
+p_blue_blue <- df['Blue', 'Blue']/df['Blue', 'Totals']
+
+cat('The probability that both male and his partner have blue eyes is: ', p_blue_blue)
+```
+
+(c) What is the probability that a randomly chosen male respondent with brown eyes has a partner
+with blue eyes? 
+
+```{r}
+p_male_brown_female_blue <- df['Brown', 'Blue']/df['Brown', 'Totals']
+
+cat('The probability that male with Brown eyes has a partner with Blue eyes: ', p_male_brown_female_blue)
+```
+
+What about the probability of a randomly chosen male respondent with green
+eyes having a partner with blue eyes?
+
+```{r}
+p_male_green_female_blue <- df['Green', 'Blue']/df['Green', 'Totals']
+
+cat('The probability that male with Green eyes has a partner with Blue eyes: ', p_male_green_female_blue)
+
+```
+
+(d) Does it appear that the eye colors of male respondents and their partners are independent?
+Explain your reasoning.
+
+```{r}
+
+all.equal(p_blue_blue, p_female_blue)
+
+```
+
+```{r}
+
+identical(p_blue_blue, p_female_blue)
+
+```
+
+```{r}
+
+cat('Since ', p_blue_blue, 'and ', p_female_blue, ' are not equal, the eye colors appear to be dependent')
+
+```
+
+
+### 2.30 Books on a bookshelf. 
+The table below shows the distribution of books on a bookcase
+based on whether they are nonfiction or fiction and hardcover or paperback.
+Format
+
+```{r}
+books <- c('Fiction', 'Nonfiction')
+Hardcover <- c(13, 15)
+Paperback <- c(59, 8)
+df1 <- data.frame(Hardcover, Paperback, row.names = books)
+df1$Totals <- apply(df1, 1, sum)
+df1['Total', ] <- colSums(df1)
+
+kable(df1, align = "c") %>%
+  column_spec(1:4, bold = T, color = "#000")%>%
+  row_spec(1:3, bold = T, color = "#000")%>%
+  kable_styling("striped", full_width = T) %>%
+  add_header_above(c(" ", "Format" = 3))
+
+```
+
+
+(a) Find the probability of drawing a hardcover book first then a paperback fiction book second
+when drawing without replacement.
+
+```{r}
+p_hardcover_fiction <- df1['Total', 'Hardcover']/df1['Total', 'Totals']
+
+p_paperback_fiction <- (df1['Fiction', 'Paperback'])/(df1['Total', 'Totals'] - 1)
+
+p <- p_hardcover_fiction * p_paperback_fiction
+
+cat('The probability of these events is:', round(p, 2))
+```
+
+(b) Determine the probability of drawing a fiction book first and then a hardcover book second,
+when drawing without replacement.
+
+Answer:
+
+This can occur two ways =>
+First, a paperback fiction and a hardcover book were picked 
+
+```{r}
+
+p_paperback_fiction <- df1['Fiction', 'Paperback']/df1['Total', 'Totals']
+p_hardcover1 <- df1['Total', 'Hardcover']/(df1['Total', 'Totals'] - 1)
+
+p1 <- p_hardcover1 * p_paperback_fiction
+
+cat('The probability of these events is:', round(p1, 2))
+```
+
+Second, a hardcover fiction and a hardcover book were picked. This will reduce the number of hardcover books by 1 
+
+```{r}
+
+p_hardcover_fiction <- df1['Fiction', 'Hardcover']/(df1['Total', 'Totals'])
+p_hardcover2 <- (df1['Total', 'Hardcover'] - 1)/(df1['Total', 'Totals'] - 1)
+
+p2 <- p_hardcover2 * p_hardcover_fiction
+
+cat('The probability of these events is:', round(p2, 2))
+
+```
+
+```{r}
+P <- p1 + p2
+cat('The probability of both events is:', round(P, 4))
+```
+
+(c) Calculate the probability of the scenario in part (b), except this time complete the calculations
+under the scenario where the first book is placed back on the bookcase before randomly drawing
+the second book.
+
+```{r}
+
+p_hardcover_fiction1 <- df1['Fiction', 'Totals']/(df1['Total', 'Totals'])
+p_hardcover3 <- (df1['Total', 'Hardcover'])/(df1['Total', 'Totals'])
+
+p3 <- p_hardcover3 * p_hardcover_fiction1
+
+cat('The probability of these events is:', round(p3, 4))
+
+```
+
+(d) The final answers to parts (b) and (c) are very similar. Explain why this is the case.
+
+Answer:
+Since only one book is either removed or replaced, the effect is not much on the entire number of books => the sampling size is much smaller than the entire population
+
+### 2.38 Baggage fees. 
+An airline charges the following baggage fees: $25 for the first bag and
+$35 for the second. Suppose 54% of passengers have no checked luggage, 34% have one piece of
+checked luggage and 12% have two pieces. We suppose a negligible portion of people check more
+than two bags.
+
+(a) Build a probability model, compute the average revenue per passenger, and compute the
+corresponding standard deviation.
+
+```{r}
+baggageFees <- c(0, 25, 35)
+probCheck <- c(0.54, 0.34, 0.12)
+baggages <- c(0, 1, 2)
+fees <- data.frame(baggageFees, probCheck, baggages)
+fees$charged <- fees$baggageFees * fees$probCheck
+avRevenuePerPassenger <- sum(fees$charged)
+
+paste0 ('The average revenue per passenger is $', avRevenuePerPassenger)
+```
+
+
+```{r}
+baggageFees <- c(0, 25, 35)
+probCheck <- c(0.54, 0.34, 0.12)
+baggages <- c(0, 1, 2)
+fees$varPerPersenger <- (fees$baggageFees - avRevenuePerPassenger)^2 * fees$probCheck
+
+stdPerPassenger <- sqrt(sum(fees$varPerPersenger))
+
+paste0('The standard deviation per passenger is ', round(stdPerPassenger, 2))
+```
+
+(b) About how much revenue should the airline expect for a flight of 120 passengers? With what
+standard deviation? Note any assumptions you make and if you think they are justified.
+
+```{r}
+expectedRevenue <- 120 * avRevenuePerPassenger
+paste0('Expected revenue for a flight of 120 passengers is $', round(expectedRevenue, 2))
+
+std120 <- sqrt(120*stdPerPassenger^2)
+paste0('The standard deviation will be: ', round(std120, 2))
+```
+
+
+### 2.44 Income and gender. 
+The relative frequency table below displays the distribution of
+annual total personal income (in 2009 inflation-adjusted dollars) for a representative sample of
+96,420,486 Americans. These data come from the American Community Survey for 2005-2009.
+This sample is comprised of 59% males and 41% females.
+
+```{r}
+incomeGroup <- c("$1 - $9,999 or less", "$10,000 - $14,999", "$15,000 - $24,999",
+          "$25,000 - $34,999", "$35,000 - $49,999", "$50,000 - $64,999", 
+          "$65,000 - $74,999", "$75,000 - $99,999", "$100,000 or more")
+incomeGroupPercent <- c(.022, .047, .158, .183, .212, .139, .058, .084, 0.097)
+
+incomes <- data.frame(incomeGroup, incomeGroupPercent)
+
+ # The line below prevents ggplot from reordering the graph.
+incomes$incomeGroup <- factor(incomes$incomeGroup, levels = incomes$incomeGroup)
+
+kable(incomes, align = "c") %>%
+  column_spec(1:2, bold = T, color = "#000")%>%
+  row_spec(1:9, bold = T, color = "#000")%>%
+  kable_styling("striped", full_width = T) 
+
+```
+
+(a) Describe the distribution of total personal income.
+
+```{r}
+ggplot(data = incomes, aes(incomeGroup, incomeGroupPercent)) + geom_bar(stat = "identity")  + theme_economist() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+The income distribution has most earners fall within the $35,000 to $49,999 range while a notable few fall beyond this and gives the distribution a little right skew. The distribution seems to be bimodal
+
+(b) What is the probability that a randomly chosen US
+resident makes less than $50,000 per year?
+
+```{r}
+
+earnBelow50 <- sum(incomes[1:5, 2])
+paste0('The probability that the person earns below $50, 000 is: ', earnBelow50)
+
+```
+
+(c) What is the probability that a randomly chosen US
+resident makes less than $50,000 per year and is female?
+Note any assumptions you make.
+
+```{r}
+paste0('The probability that the person earns below $50, 000 and is a female is: ', earnBelow50 * 0.41)
+
+```
+
+Assumptions: Income and gender are independent variables and there might be a sampling bias that made the distribution 
+to present 41% of the respondents to be female instead of the sampling being divided in the middle (50% females, 50% males)
+
+
+(d) The same data source indicates that 71.8% of females
+make less than $50,000 per year. Use this value to
+determine whether or not the assumption you made in
+part (c) is valid.
+
+```{r}
+
+paste0('The probability that the person earns below $50, 000 and is a female is: ', 0.41 * 0.718)
+
+```
+
+Part (d) states the actual distribution of females who make less than $50, 000 peer year, while part (c) considers the event of
+a randomly selected respondent being a female and earns less than $50, 000 per year. So from part (d), out of the 41% that are females, 71.8% of them
+earn less than $50, 000 per year.
+
+The change in the calculated chances is approximately 4% which is very small and indicates that the assumption in part c above is not valid. Women actually earn less.

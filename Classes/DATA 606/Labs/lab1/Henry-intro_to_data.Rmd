@@ -1,11 +1,16 @@
 ---
-title: "Introduction to data"
+title: "DATA 606 Lab1: Introduction to data"
 output:
   html_document:
     theme: cerulean
     highlight: pygments
     css: ./lab.css
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
 
 Some define Statistics as the field that focuses on turning information into
 knowledge.  The first step in that process is to summarize and describe the raw
@@ -62,8 +67,37 @@ respondent had smoked at least 100 cigarettes in her lifetime. The other
 variables record the respondent's `height` in inches, `weight` in pounds as well
 as their desired weight, `wtdesire`, `age` in years, and `gender`.
 
-1.  How many cases are there in this data set?  How many variables?  For each 
-    variable, identify its data type (e.g. categorical, discrete).
+### 1.  How many cases are there in this data set?  
+
+Answer: 
+
+```{r}
+paste0("There are ", nrow(cdc), " cases in the data set")
+```
+
+### How many variables? 
+```{r}
+
+paste0("There are ", ncol(cdc), " variables in the data set")
+
+```
+
+
+### For each variable, identify its data type (e.g. categorical, discrete).
+
+Answer:
+
+genhlth: Categorical (ordinal)
+exerany: Categorical (ordinal) 
+hlthplan:  Categorical (ordinal)
+smoke100:  Numerical (ordinal)
+height:  Numerical (continuous)
+weight:  Numerical (Continuous)
+wtdesire:  Numerical (continuous)
+age:  Numerical (continuous)
+gender:  Categorical (nominal)
+
+
 
 We can have a look at the first few entries (rows) of our data with the command
 
@@ -157,10 +191,58 @@ can see by typing `smoke` into the console) and then used it in as the input for
 of one line of code and saving it into an object in your workspace.   This is 
 another important idea that we'll return to later.
 
-2.  Create a numerical summary for `height` and `age`, and compute the 
-    interquartile range for each. Compute the relative frequency distribution for
-    `gender` and `exerany`. How many males are in the sample? What proportion of
-    the sample reports being in excellent health?
+### 2.  Create a numerical summary for `height` and `age`, 
+
+Answer:
+
+The numerical summary of height:
+```{r eval=TRUE}
+summary(cdc$height)
+```
+
+The numerical summary of gae:
+```{r summary-age, eval=TRUE}
+summary(cdc$age)
+```
+
+
+### and compute the interquartile range for each. 
+
+```{r}
+paste0("Interquartile Range for height: ", 70-64)
+```
+
+```{r}
+paste0("Interquartile Range for age: ", 57-31)
+```
+
+### Compute the relative frequency distribution for `gender` and `exerany`. 
+
+Answer:
+```{r}
+
+cat("Relative frequency distribution for gender: ")
+table(cdc$gender)/20000
+
+```
+
+```{r}
+cat("Relative frequency distribution for exerany: ")
+table(cdc$exerany)/20000
+```
+    
+    
+### How many males are in the sample? 
+
+```{r}
+paste0("the number of males in the sample is: ", count(subset(cdc, gender == 'm')))
+```
+
+### What proportion of the sample reports being in excellent health?
+
+```{r}
+paste0("the proportion of the sample that reports being in excellent health is: ", count(subset(cdc, genhlth == 'excellent')))
+```
 
 The `table` command can be used to tabulate any number of variables that you 
 provide.  For example, to examine which participants have smoked across each 
@@ -181,7 +263,10 @@ mosaicplot(table(cdc$gender,cdc$smoke100))
 We could have accomplished this in two steps by saving the table in one line and
 applying `mosaicplot` in the next (see the table/barplot example above).
 
-3.  What does the mosaic plot reveal about smoking habits and gender?
+### 3.  What does the mosaic plot reveal about smoking habits and gender?
+Answer:
+Males tend to indulge in smoking more than females. They can indulge very early in their lives or 
+they can smoke a lot within a short time
 
 ## Interlude: How R thinks about data
 
@@ -333,10 +418,21 @@ group is hard to say, but right now the mechanics of this are the important
 thing). In principle, you may use as many "and" and "or" clauses as you like 
 when forming a subset.
 
-3.  Create a new object called `under23_and_smoke` that contains all observations 
+### 3.  Create a new object called `under23_and_smoke` that contains all observations 
     of respondents under the age of 23 that have smoked 100 cigarettes in their 
     lifetime. Write the command you used to create the new object as the answer
     to this exercise.
+    
+Answer:
+
+#### under23_and_smoke <- subset(cdc, smoke100 == 1 & age < 23)
+    
+```{r}
+under23_and_smoke <- subset(cdc, smoke100 == 1 & age < 23)
+
+under23_and_smoke
+    
+```
 
 ## Quantitative data
 
@@ -354,7 +450,7 @@ boxplot(cdc$height)
 You can compare the locations of the components of the box by examining the 
 summary statistics.
 
-```{r summary-height, eval=TRUE}
+```{r eval=TRUE}
 summary(cdc$height)
 ```
 
@@ -376,13 +472,17 @@ set: Body Mass Index (BMI)
 ([http://en.wikipedia.org/wiki/Body_mass_index](http://en.wikipedia.org/wiki/Body_mass_index)). 
 BMI is a weight to height ratio and can be calculated as:
 
-\[ BMI = \frac{weight~(lb)}{height~(in)^2} * 703 \]
+$$BMI = \frac{weight~(lb)}{height~(in)^2} * 703 $$
 
 703 is the approximate conversion factor to change units from metric (meters and 
 kilograms) to imperial (inches and pounds).
 
 The following two lines first make a new object called `bmi` and then creates 
 box plots of these values, defining groups by the variable `cdc$genhlth`.
+
+```{r}
+head((cdc$weight / cdc$height^2) * 703, 30)
+```
 
 ```{r boxplot-bmi, eval=TRUE}
 bmi <- (cdc$weight / cdc$height^2) * 703
@@ -396,10 +496,31 @@ multiply by 703. The result is 20,000 BMI values, one for each respondent. This
 is one reason why we like R: it lets us perform computations like this using 
 very simple expressions.
 
-4.  What does this box plot show? Pick another categorical variable from the 
-    data set and see how it relates to BMI. List the variable you chose, why you
-    might think it would have a relationship to BMI,  and indicate what the 
-    figure seems to suggest. 
+### 4.  What does this box plot show? 
+
+Answer:
+The plot indicates that BMI is related to health condition such that it tends to be lowest
+when the individual is in excellent health, but increases if the health status deteroriates.
+This might mean that those in excellent health tend to have normal weight while obesity can be 
+the case for those whose health status are either fair or poor.
+
+
+### Pick another categorical variable from the data set and see how it relates to BMI. List the 
+### variable you chose, why you might think it would have a relationship to BMI,  and indicate what the 
+### figure seems to suggest. 
+
+Answer:
+
+Ploting BMI against exerany
+I think exerany will have a relationship with BMI because exercises helps to keep the body in shape
+The figure suggests that those that have exercised within the past one month are more likely to be 
+in better shape as the median and Interquertile range of their plot are lower than those of the opposite
+
+```{r}
+boxplot(bmi ~ cdc$exerany)
+
+```
+
 
 Finally, let's make some histograms. We can look at the histogram for the age of
 our respondents with the command
@@ -421,7 +542,13 @@ hist(bmi, breaks = 50)
 
 Note that you can flip between plots that you've created by clicking the forward
 and backward arrows in the lower right region of RStudio, just above the plots. 
-How do these two histograms compare?
+
+### How do these two histograms compare?
+
+Answer:
+The first histogram merged a lot of information/representation in one bin for the 9 bins presented, but the second one
+with the 50 argument presented the information clearer such that more data points are visible on the plot
+
 
 At this point, we've done a good first pass at analyzing the information in the 
 BRFSS questionnaire.  We've found an interesting association between smoking and
@@ -434,28 +561,133 @@ will serve us well throughout this course.
 
 ## On Your Own
 
--   Make a scatterplot of weight versus desired weight. Describe the 
-    relationship between these two variables.
+### -   Make a scatterplot of weight versus desired weight. Describe the 
+###     relationship between these two variables.
+    
+    Answer:
+    
+```{r}
+plot(x=cdc$wtdesire, y=cdc$weight, type = 'p',xlab='Desired Weigth', ylab='Weight', main='Weight versus Desired Weight')    
+    
+```
 
--   Let's consider a new variable: the difference between desired weight 
-    (`wtdesire`) and current weight (`weight`). Create this new variable by 
-    subtracting the two columns in the data frame and assigning them to a new 
-    object called `wdiff`.
+This plot shows that there are not much differences between the weight and desired weight of a lot of the cases.
+Most of them are either comfortable with their present weight or working on 
+attaining it.
 
--   What type of data is `wdiff`? If an observation `wdiff` is 0, what does 
-    this mean about the person's weight and desired weight. What if `wdiff` is 
-    positive or negative?
+### -   Let's consider a new variable: the difference between desired weight 
+###     (`wtdesire`) and current weight (`weight`). Create this new variable by 
+###     subtracting the two columns in the data frame and assigning them to a new 
+###     object called `wdiff`.
+    
+```{r}
 
--   Describe the distribution of `wdiff` in terms of its center, shape, and 
-    spread, including any plots you use. What does this tell us about how people 
-    feel about their current weight?
+wdiff <- cdc$wtdesire - cdc$weight
 
--   Using numerical summaries and a side-by-side box plot, determine if men tend
-    to view their weight differently than women.
+```
 
--   Now it's time to get creative. Find the mean and standard deviation of 
-    `weight` and determine what proportion of the weights are within one 
-    standard deviation of the mean.
+```{r}
+
+head(wdiff,50)
+
+```
+
+
+### -   What type of data is `wdiff`? If an observation `wdiff` is 0, what does 
+###     this mean about the person's weight and desired weight. What if `wdiff` is 
+###     positive or negative?
+    
+    wdiff is a Numerical (continuous)
+    
+    if wdiff is 0, It means the person is already at the desired weight or is comfortable with the current 
+    weight
+    
+    if wdiff is positive, it means the person wants to add weight and hasn't attained the 
+    desired weight (the desired weight is higher than the current weight)
+    
+    if wdiff is negative, it means the person wants to lose weight. Their current weight is higher than the desired weight 
+    and has not been attained
+
+### -   Describe the distribution of `wdiff` in terms of its center, shape, and 
+###     spread, including any plots you use. What does this tell us about how people 
+###     feel about their current weight?
+    
+
+```{r}
+
+summary(wdiff)
+
+```
+
+```{r}
+
+boxplot(wdiff, main='Box plot of wdiff')
+
+```
+
+```{r}
+
+hist(wdiff, breaks = 50, xlab = 'wdiff', ylab='Frequency')
+
+```
+
+```{r}
+plot(wdiff, type='p',  xlab = '', ylab='wdiff', main='Scatter plot of wdiff')
+
+```
+
+From the shape of the histgram (unimodal), many people are comfortable with their weight while few want to lose weight.
+From the slight left skew, it appears more people want to lose weight than gain weight.
+From the summary, the most peolple want to loose approximately 10 - 15 pounds of weight, while the IQR is lies between 0.00 and -21.00
+
+
+### -   Using numerical summaries and a side-by-side box plot, determine if men tend
+###     to view their weight differently than women.
+    
+```{r}
+
+cat('Weight summary for males', sep = '\n')
+summary(cdc[cdc$gender == 'm',]['weight'])
+
+```
+
+```{r}
+cat('weight summar for females: ', '\n')
+summary(cdc[cdc$gender == 'f',]['weight'])
+
+```
+
+```{r}
+boxplot(cdc$weight ~ cdc$gender, ylab='Weight', xlab='Gender', main='Weight vs. Gender')
+
+```
+
+These summaries and box plots indicated that males tend to be weightier than the females. 
+This can be due to muscular weight. The IQR for males is larger than that for females and 
+so is the mean, median, maximum and minimum weights. It is apparent that males want to gain 
+more weight than females
+
+
+### -   Now it's time to get creative. Find the mean and standard deviation of 
+###     `weight` and determine what proportion of the weights are within one 
+###     standard deviation of the mean.
+    
+```{r}
+meanWeight <- mean(cdc$weight)
+weightStd <- sd(cdc$weight)
+paste0('The mean and Standard deviation of weight are: ', meanWeight, ' and ', weightStd, ' respectively')
+
+```
+
+```{r}
+weightsInStd <- cdc[cdc$weight < (meanWeight + weightStd) & cdc$weight > (meanWeight - weightStd),]
+head(weightsInStd)
+
+```
+
+```{r}
+paste0('Proportion of weight in standard deviation is:  ', dim(weightsInStd)[1]/dim(cdc)[1])
+```
 
 <div id="license">
 This is a product of OpenIntro that is released under a 

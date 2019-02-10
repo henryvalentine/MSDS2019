@@ -1,0 +1,189 @@
+---
+title: "DATA 607 Week 2 Homework"
+author: "Henry Otuadinma"
+date: "4 February 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(DBI)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+```
+
+## Movie Ratings {.tabset .tabset-pills .tabset-fade}
+
+### Quries & codes
+
+```{r echo=FALSE}
+
+# the movies DB must first be created on the server
+con <- dbConnect(RMySQL::MySQL(), dbname="movies", host="msds.cjwvxtosifbi.us-east-2.rds.amazonaws.com", port=3306, user="datamind", password="Ux78g9oPwl")
+```
+
+
+```{r}
+
+# Get sql query to (create and) populate DB
+query <- read_lines('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/DATA607_wk2.sql')
+
+msres <- dbSendQuery(con, query)
+```
+
+```{r}
+dbListTables(con)
+```
+
+```{r}
+
+moviesQuery <-  fetch(dbSendQuery(con, "SELECT * FROM movie m
+LEFT JOIN (SELECT ratedby, movieid, date, rating, `desc` FROM ratings r) r
+ON m.id = r.movieid
+order by m.id
+  "))
+# necessary because the LEFT JOIN pulls the parents and children and make the parent appear duplicated based on the number of children
+movies <-distinct(moviesQuery, id, poster, title, releasedate, genre, details, summary)
+
+# for index table
+mv <- data.frame(c(movies$title), c(movies$releasedate), c(movies$genre), c(movies$details))
+
+# for Details pages
+mvx <- subset(movies, select = c('poster', 'title', 'releasedate', 'genre', 'details', 'summary'))
+names(mvx) <- c('poster', 'title', 'releasedate', 'genre', 'details', 'summary')
+```
+
+#### Print Index Table
+
+```{r results='asis'}
+printIndex <- function(df)
+{
+  kable(df,
+      col.names = linebreak(c("Movie", "Release Date", "Genre", "Details"), align = "c")) %>%
+  kable_styling("striped", full_width = T) %>%
+  column_spec(1:3, bold = T, color = "#000") %>%
+  row_spec(1:6, bold = T, color = "#000")
+}
+
+```
+
+
+#### For printing movies details
+
+```{r results='asis'}
+printDetails <- function(d)
+{
+  d$poster = sprintf('![](%s)', d$poster)
+  
+  # Render table using kableExtra for formatting
+  kable(d, format="html", background="#f5f5f5", col.names = NULL) %>%
+    column_spec(2, bold = T) %>%
+    column_spec(3, bold = T) %>%
+    column_spec(4, bold = T) %>%
+    column_spec(5, bold = T) %>%
+    kable_styling(full_width=FALSE) %>% 
+    collapse_rows(columns=1, valign="top")
+}
+
+```
+
+#### For printing Ratings information in loops
+```{r results='asis'}
+printRatings <- function(d)
+{
+  r <- moviesQuery %>% select(ratedby, movieid, date, rating, desc) %>% filter(movieid == d$id)
+  
+  names(r) <- c('ratedby', 'movieid', 'date', 'rating', 'desc')
+  if(count(r) > 0)
+  {
+    for(i in 1: nrow(r))
+    {
+      o <- r[i,]
+      o$date <- strsplit(o$date, ' ')[[1]][1]
+      dt <- data.frame(c("Rated by", "Date Rated", "Rating", "Details"), c(o$ratedby, o$date, o$rating, o$desc))
+      print(kable(dt, col.names = NULL) %>%
+          kable_styling(full_width = T) %>%
+          column_spec(1, bold = T, width = "20em",  border_right = F, background = "#fafafa", color = "black") %>%
+          column_spec(2, bold = F, width = "80em", background = "#fafafa", color = "black"))
+  
+        cat("\n")
+    }
+  }
+}
+```
+
+
+### Index
+
+```{r results='asis'}
+printIndex(mv)
+```
+
+### Creed II
+
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails(mvx[1, ])
+```
+
+
+#### Ratings
+
+```{r results='asis'}
+printRatings(movies[1, ])
+```
+
+### Bumblebee
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails(mvx[2, ])
+```
+
+#### Ratings
+```{r results='asis'}
+printRatings(movies[2, ])
+```
+
+### Sicario
+
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails(mvx[3,])
+```
+
+#### Ratings
+```{r results='asis'}
+printRatings(movies[3,])
+```
+
+### Infinity War
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails(mvx[4,])
+```
+
+#### Ratings
+```{r results='asis'}
+printRatings(movies[4,])
+```
+
+
+### Into the Spider-Verse
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails(mvx[5,])
+```
+
+#### Ratings
+```{r results='asis'}
+printRatings( movies[5, ])
+```
+
+### Black Panther
+```{r fig.width=120, fig.height=120, fig.align='left', out.height=200,out.width=200,results='asis'}
+printDetails( mvx[6, ])
+```
+
+#### Ratings
+```{r results='asis'}
+printRatings(movies[6,])
+```
+
+

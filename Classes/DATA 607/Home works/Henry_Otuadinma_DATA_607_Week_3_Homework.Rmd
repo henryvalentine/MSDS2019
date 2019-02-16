@@ -1,0 +1,150 @@
+---
+title: "DATA 607 Week 3 Homework"
+author: "Henry Otuadinma"
+date: "14 February 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stringr)
+```
+
+#### 3. Copy the introductory example. The vector name stores the extracted names.
+
+R> name
+[1] "Moe Szyslak" "Burns, C. Montgomery" "Rev. Timothy Lovejoy"
+[4] "Ned Flanders" "Simpson, Homer" "Dr. Julius Hibbert"
+
+##### (a) Use the tools of this chapter to rearrange the vector so that all elements conform to 
+##### the standard first_name last_name.
+
+```{r}
+
+rawData <- "555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+
+```
+
+
+```{r}
+
+names <- unlist(str_extract_all(rawData, "[[:alpha:]., ]{2,}"))
+names
+```
+
+
+```{r}
+# remove titles from the names
+firstLastName <- str_replace_all(names, "\\b\\w{2,}?\\.", '') # the '\\b' is not necessary but can be useful 
+# when the title is preceeded by another word in a sentence
+firstLastName
+```
+
+##### (b) Construct a logical vector indicating whether a character has a title (i.e., Rev. and Dr.).
+
+```{r}
+
+data.frame(names = names, hasTitle = str_detect(names, "\\b\\w{2,}?\\."))
+
+```
+
+##### (c) Construct a logical vector indicating whether a character has a second name.
+
+```{r}
+
+data.frame(names = firstLastName, hasSecondName = str_detect(names, "\\b\\w{1,}?\\."))
+
+```
+
+#### 4. Describe the types of strings that conform to the following regular expressions and
+#### construct an example that is matched by the regular expression.
+
+(a) [0-9]+\\$
+
+```{r}
+
+values <- c('The shoe worths $100', 'ab988uy$', '1234', '5000$')
+matcher <- '[0-9]+\\$'
+
+data.frame(value = values, matched = str_detect(values, matcher))
+
+```
+
+(b) \\b[a-z]{1,4}\\b
+
+```{r}
+
+values <- c('The shoe worths $100', 'My Name Is Subzero', 'My name Is subzero', '5000$')
+matcher <- '\\b[a-z]{1,4}\\b'
+
+data.frame(value = values, matched = str_detect(values, matcher))
+
+```
+
+(c) .*?\\.txt$
+
+```{r}
+
+values <- c('chess_players_ratings.txt', 'chess_players_ratings.pdf', 'Chess_PLAYERS_raTings.txt', 'Chess_PlAYeRS.tx')
+matcher <- '.*?\\.txt$'
+
+data.frame(value = values, matched = str_detect(values, matcher))
+
+```
+
+(d) \\d{2}/\\d{2}/\\d{4}
+
+```{r}
+
+values <- c('3/50', '20/50/5504', '99/100-33/50', '11/22/4840')
+matcher <- '\\d{2}/\\d{2}/\\d{4}'
+
+data.frame(value = values, matched = str_detect(values, matcher))
+```
+
+
+(e) <(.+?)>.+?</\\1>
+
+```{r}
+
+values <- c('<a>click here to sign up</a>', 'sps.cuny.edu', '<button> a classic button</button>', 'https://www.amazon.com')
+matcher <- '<(.+?)>.+?</\\1>'
+
+data.frame(value = values, matched = str_detect(values, matcher))
+```
+
+
+#### 9. The following code hides a secret message. 
+Crack it with R and regular expressions.
+##### Hint: Some of the characters are more revealing than others! 
+The code snippet is also available in the materials at www.r-datacollection.com.
+
+```{r}
+
+#With close observations, the hidden message can be seen to be a meaningful word in upper cases mixed among the lot
+
+nerdMs <- 'clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0Tanwo
+Uwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigO
+d6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5
+fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr'
+
+superNerd <- str_replace_all(str_replace_all(nerdMs,"([a-z])|([0-9])|\n",""), "\\.", " ")
+
+superNerd
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

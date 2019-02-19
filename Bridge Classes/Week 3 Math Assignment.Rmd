@@ -1,0 +1,456 @@
+---
+title: "R Bridge Week 3 Data Science Math Assignment"
+author: "Henry Otuadinma"
+date: "9 January 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. 	The weights of steers in a herd are distributed normally. The variance is 40,000 and the mean steer weight is 1300 lbs.  Find the probability that the weight of a randomly selected steer is greater than 979 lbs. (Round your answer to 4 decimal places)
+
+Answer:
+
+$$
+Variance: \sigma^2 = 40, 000 \\
+mean: \mu = 1, 300 lbs \\
+\text{standard deviation: } sd = \sqrt{4000}
+$$
+
+```{r}
+x <- 979
+m <- 1300
+sd <- 200
+```
+
+```{r}
+paste0("The probability of weight > 979 lbs: ", round(pnorm(x, m, sd, lower.tail = FALSE),4))
+```
+
+OR
+
+```{r}
+1 - round(pnorm(x, m, sd), 4)
+```
+
+2. SVGA monitors manufactured by TSI Electronics have life spans that have a normal distribution with a variance of 1,960,000 and a mean life span of 11,000 hours.  If a SVGA monitor is selected at random, find the probability that the life span of the monitor will be more than 8340 hours. (Round your answer to 4 decimal places)
+
+Answer: 
+
+```{r}
+x <- 8340
+m <- 11000 ## mean
+sd <- sqrt(1960000) ## standard deviation, variance is 1960000
+
+paste0("The probability of lifespan > 8340 hrs: ", round(pnorm(x, m, sd, lower.tail = FALSE),4))
+```
+
+3. 	Suppose the mean income of firms in the industry for a year is 80 million dollars with a standard deviation of 3 million dollars.  If incomes for the industry are distributed normally, what is the probability that a randomly selected firm will earn between 83 and 85 million dollars? (Round your answer to 4 decimal places)
+
+Answer:
+
+```{r}
+x1 <- 83000000
+x2 <- 85000000
+m <- 80000000
+sd <- 3000000
+
+## P = p(83million) - p(85million)
+
+paste0("The probability to earn between $83m and $85m: ", round(pnorm(x1, m, sd, lower.tail = FALSE),4) - round(pnorm(x2, m, sd, lower.tail = FALSE),4))
+```
+
+4. Suppose GRE Verbal scores are normally distributed with a mean of 456 and a standard deviation of 123.  A university plans to offer tutoring jobs to students whose scores are in the top 14%.  What is the minimum score required for the job offer?  Round your answer to the nearest whole number, if necessary.
+
+Answer:
+
+This requires finding the score to be at the 86th percentile. qnorm will be useful in this aspect as it can can be thought of as the inverse of pnorm. It can return the score at the the 86th percentile as the probability is known.
+
+```{r}
+p <- 1 - 0.14
+m <- 456
+sd <- 123
+paste0("Minimum score required is: ", round(qnorm(p, m, sd), 0))
+```
+
+5. 	The lengths of nails produced in a factory are normally distributed with a mean of 6.13 centimeters and a standard deviation of 0.06 centimeters.  Find the two lengths that separate the top 7% and the bottom 7%.  These lengths could serve as limits used to identify which nails should be rejected.  Round your answer to the nearest hundredth, if necessary.
+
+Answer:
+
+```{r}
+m <- 6.13
+sd <- 0.06
+lowerPercentile <- 0.07
+uppPercentile <- 0.93
+
+```
+
+```{r}
+paste0("The upper limit lenght is: ", round(qnorm(uppPercentile, m, sd), 2), " centimeters")
+```
+
+```{r}
+paste0("The lower limit lenght is: ", round(qnorm(lowerPercentile, m, sd), 2), " centimeters")
+```
+
+6. 	An English professor assigns letter grades on a test according to the following scheme.
+	A:  Top 13% of scores
+	B:  Scores below the top 13% and above the bottom 55%
+	C:  Scores below the top 45% and above the bottom 20%
+	D:  Scores below the top 80% and above the bottom 9%
+	F:  Bottom 9% of scores
+	Scores on the test are normally distributed with a mean of 78.8 and a standard deviation of 9.8.  Find the numerical limits for a C grade.  Round your answers to the nearest whole number, if necessary.
+
+Answer:
+
+For Scores below the top 45% (100 - 45 = 55%) and above the bottom 20% =>
+
+```{r}
+
+paste0("The upper limit for a C grade is: ", round(qnorm(.55, 78.8, 9.8), 0))
+```
+
+```{r}
+paste0("The lower limit for a C grade is: ", round(qnorm(.20, 78.8, 9.8), 0))
+```
+
+7. 	Suppose ACT Composite scores are normally distributed with a mean of 21.2 and a standard deviation of 5.4.  A university plans to admit students whose scores are in the top 45%.  What is the minimum score required for admission?  Round your answer to the nearest tenth, if necessary.
+
+Answer: 
+
+```{r}
+paste0("The minimum score required for admission is: ", round(qnorm(.55, 21.2, 5.4), 1))
+```
+
+8. 	Consider the probability that less than 11 out of 151 students will not graduate on time.  Assume the probability that a given student will not graduate on time is 9%.  Approximate the probability using the normal distribution. (Round your answer to 4 decimal places.)
+
+Answer:
+
+This is a Binomial Distribution and can be conventionally interpreted as the number of 'successes' in size trials.
+
+Usage
+
+pbinom(x, size, prob)
+
+```{r}
+
+x <- 10 ## Less than 11 students not to graduate on time
+N <- 151 ## size in trials
+p <- 0.09 ## probability to not graduate on time
+
+paste0("The probability approximates to: ", round(pbinom(x, N, p),4))
+```
+
+9. 	The mean lifetime of a tire is 48 months with a standard deviation of 7. If 147 tires are sampled, what is the probability that the mean of the sample would be greater than 48.83 months? (Round your answer to 4 decimal places)
+
+Answer:
+
+This involves the sample of 147 tires, The standard error of the mean is involved and it is the standard deviation of the sampling distribution of the mean. It is denoted by $$\sigma_M = \frac {\sigma}{\sqrt{N}}$$
+Where N = sample size = 147
+
+```{r}
+x <- 48.83
+m <- 48
+sd <- 7
+N <- 147
+sdm <- sd/sqrt(N)
+
+## Using pnorm()
+
+paste0("The probability that samples mean > 48.83 months is: ", round(pnorm(x, m, sdm, lower.tail=FALSE),4))
+
+```
+
+10. The quality control manager at a computer manufacturing company believes that the mean life of a computer is 91 months, with a standard deviation of 10.  If he is correct, what is the probability that the mean of a sample of 68 computers would be greater than 93.54 months? (Round your answer to 4 decimal places)
+
+Answer:
+
+```{r}
+x <- 93.54
+m <- 91
+sd <- 10
+N <- 68
+sdm <- sd/sqrt(N)
+
+## Using pnorm()
+
+paste0("The probability that samples mean > 93.54 months is: ", round(pnorm(x, m, sdm, lower.tail=FALSE),4))
+```
+
+
+11. A director of reservations believes that 7% of the ticketed passengers are no-shows.  If the director is right, what is the probability that the proportion of no-shows in a sample of 540 ticketed passengers would differ from the population proportion by less than 3%? (Round your answer to 4 decimal places)
+
+Answer:
+
+1. $$F(\rho) = \frac{1}{2}ln\bigg(\frac{1+\rho}{1-\rho}\bigg)$$
+
+2. $$se = \frac{1}{\sqrt{N - 3}}$$
+
+Where:
+
+(1) = Fisher's z-transformation of ??
+(2) = Standard Error
+N = sample size;
+?? = Pearson's correlation coefficient which is defined as the covariance of the two variables divided by the product of their standard     deviations. The form of the definition involves a "product moment", that is, the mean (the first moment about the origin) of the      product of the mean-adjusted random variables; hence the modifier product-moment in the name.
+    ###### Source: https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+
+
+To find the probability of no shows between the 4th percentile (7 - 3) to the 10th percentile (7 + 3) given N => P(4%<x<10%)|N
+
+```{r}
+
+N <- 540
+
+fr <- function(p) {1/2 * log((1 + p)/(1 - p))}
+
+se <- function(n) {1 / sqrt(n-3)}
+
+x10 <- fr(0.10)
+x4 <- fr(0.04)
+m <- fr(0.07)
+sd <- se(N)
+
+# using pnorm()
+P <- round(pnorm(x10, m, sd) - pnorm(x4, m, sd),4)
+
+paste0("The probability is: ", P * 100, "%")
+```
+
+12. 	A bottle maker believes that 23% of his bottles are defective.  If the bottle maker is accurate, what is the probability that the proportion of defective bottles in a sample of 602 bottles would differ from the population proportion by greater than 4%? (Round your answer to 4 decimal places)
+
+Answer:
+
+This is like the previous question
+To calculate P(27%-4% < x < 23% + 4%)|N
+
+```{r}
+
+N <- 602
+
+## using previous functions fr() and se()
+x27 <- fr(0.27)
+x19 <- fr(0.19)
+m <- fr(0.23)
+sd <- se(N)
+
+# using pnorm
+
+P27 <- pnorm(x27, m, sd, lower.tail=FALSE)
+P19 <- pnorm(x19, m, sd)        
+
+P <- round((P19 + P27),4)
+
+paste0("The probability is: ", P * 100, "%")
+```
+
+13. A research company desires to know the mean consumption of beef per week among males over age 48.  Suppose a sample of size 208 is drawn with  with   x (mean) = 3.9. Assume ?? = 0.8. Construct the 80% confidence interval for the mean number of lb. of beef per week among males over 48. (Round your answers to 1 decimal place) 
+
+Answer:
+
+This involves Confidence Interval for a Population Mean with Unknown Standard Deviation and is denoted as
+$$CI = \pm t_{n-1}\frac{\sigma}{\sqrt{N}} \\
+\sigma =  0.8, \mu = 3.9, N = 208$$
+80% = the Confidence interval => 20% will be divided on two sides of the distribution.
+
+```{r}
+m <- 3.9
+sd <- 0.8
+N <- 208
+p <- ( 1 - 0.80) / 2
+
+# using qt()
+t <- abs(qt(p, N-1))
+
+paste0("The lower and upper bounds are: ", round(m - t * sd / sqrt(N),1), " and ", round(m + t * sd / sqrt(N),1))
+```
+
+14. 	An economist wants to estimate the mean per capita income (in thousands of dollars) in a major city in California.  Suppose a sample of size 7472 is drawn with x(mean) = 16.6.  Assume ?? = 11 .  Construct the 98% confidence interval for the mean per capita income. (Round your answers to 1 decimal place) 
+
+Answer:
+This is similar to the previous question
+
+```{r}
+m <- 16.6
+sd <- 11
+N <- 7472
+p <- ( 1 - 0.98) / 2
+
+# using qt()
+t <- abs(qt(p, N-1))
+
+paste0("The lower and upper bounds are: ", round(m - t * sd / sqrt(N),1), " and ", round(m + t * sd / sqrt(N),1))
+```
+
+15. Find the value of t such that 0.05 of the area under the curve is to the left of t.  Assume the degrees of freedom equals 26.
+
+Step 1. Choose the picture which best describes the problem.
+
+Answer:
+
+Step 1:
+```{r}
+
+N <- 26
+p <- 0.05
+abs(round(qt(p, N-1),4))
+```
+step 2: This is a one-sided distribution and the picture which best describes the problem is at the top-right corner.
+
+16. The following measurements ( in picocuries per liter ) were recorded by a set of helium gas detectors installed in a laboratory facility: 383.6, 347.1, 371.9, 347.6, 325.8, 337
+
+Using these measurements, construct a 90% confidence interval for the mean level of helium gas present in the facility. Assume the population is normally distributed.  
+
+Step 1. Calculate the sample mean for the given sample data. (Round answer to 2 decimal places) 
+```{r}
+## let sm = sample mean
+data <- c(383.6, 347.1, 371.9, 347.6, 325.8, 337)
+sm <- round(mean(data), 2)
+paste0("The sample mean is: ", sm)
+```
+
+Step 2. Calculate the sample standard deviation for the given sample data. (Round answer to 2 decimal places) 
+```{r}
+## let sd = standard deviation of the sample data
+sd <- round(sd(data), 2)
+paste0("The standard deviation of the sample data is: ", sd)
+```
+
+Step 3. Find the critical value that should be used in constructing the confidence interval. (Round answer to 3 decimal places) 
+
+Answer:
+Since the 90% confidence interval is required to be constructed in step 4, it will be sensible to use 100 - 90 = 10 % = 0.01 =>
+```{r}
+N <- 6
+p <- (1 - 0.90)/2
+t <- abs(round(qt(p, N-1), 3))
+paste0("The critical value is: ", t)
+```
+
+Step 4. Construct the 90% confidence interval. (Round answer to 2 decimal places)
+```{r}
+c1 <- sm + t * sd / sqrt(N)
+c2 <- sm - t * sd / sqrt(N)
+
+paste0("The 90% confidence interval:")
+paste0("lower bound = ", round(c2, 2))
+paste0("upper bound = ", round(c1, 2))
+```
+
+17. A random sample of 16 fields of spring wheat has a mean yield of 46.4 bushels per acre and standard deviation of 2.45 bushels per acre.  Determine the 80% confidence interval for the true mean yield.  Assume the population is normally distributed.  
+
+Step 1. Find the critical value that should be used in constructing the confidence interval. (Round answer to 3 decimal places) 
+
+```{r}
+m <- 46.4
+sd <- 2.45
+N <- 16
+p <- ( 1 - 0.80) / 2
+t <- abs(qt(p, N-1))
+paste0("The critical value is: ", round(t,3))
+```
+
+Step 2. Construct the 80% confidence interval. (Round answer to 1 decimal place)
+
+```{r}
+c1 <- m + t * sd / sqrt(N)
+c2 <- m - t * sd / sqrt(N)
+
+paste0("The 80% confidence interval:")
+paste0("lower bound = ", round(c2, 1))
+paste0("upper bound = ", round(c1, 1))
+```
+
+18. A toy manufacturer wants to know how many new toys children buy each year.  She thinks the mean is 8 toys per year.  Assume a previous study found the standard deviation to be 1.9.  How large of a sample would be required in order to estimate the mean number of toys bought per child at the 99% confidence level with an error of at most 0.13 toys? (Round your answer up to the next integer)
+
+Answer:
+$$SE = \frac{z . \sigma}{\sqrt{N}}\\z = 2.576 = \text{value deuced from the Z-table for confidence level 99%}\\ \text{SE = the standard error}$$
+$$\text{making N the subject of the formula, this then gives}\\N=\bigg(\frac{z . \sigma}{SE}\bigg)^2$$
+
+
+```{r}
+m <- 8
+sd <- 1.9
+z <- 2.576
+se <- 0.13
+N <- (z*sd/se)^2
+paste0("A sample size should be around: ", round(N, 0), " toys")
+```
+
+19. A research scientist wants to know how many times per hour a certain strand of bacteria reproduces.  He believes that the mean is 12.6.  Assume the variance is known to be 3.61.  How large of a sample would be required in order to estimate the mean number of reproductions per hour at the 95% confidence level with an error of at most 0.19 reproductions? (Round your answer up to the next integer)
+
+```{r}
+m <- 12.6
+v <- 3.61
+sd <- sqrt(v)
+z95 <- 1.96
+se <- 0.19
+
+N <- (z95*sd/se)^2
+
+paste0("The number of reproductions per hour should be: ", round(N, 0))
+```
+
+20. The state education commission wants to estimate the fraction of tenth grade students that have reading skills at or below the eighth grade level.
+
+Step 1. Suppose a sample of 2089 tenth graders is drawn. Of the students sampled, 1734 read above the eighth grade level.  Using the data, estimate the proportion of tenth graders reading at or below the eighth grade level. (Write your answer as a fraction or a decimal number rounded to 3 decimal places) 
+```{r}
+N <- 2089
+N_above_8 <- 1734
+## p = let probability of 10th graders reading at/below the 8th grade
+p <- 1 - N_above_8/N
+
+paste0("The proportion is: ", round(p, 3))
+```
+
+
+Step 2. Suppose a sample of 2089 tenth graders is drawn.  Of the students sampled, 1734 read above the eighth grade level.  Using the data, construct the 98% confidence interval for the population proportion of tenth graders reading at or below the eighth grade level. (Round your answers to 3 decimal places)
+
+Answer:
+
+Since p has been gotten from step 1, then the Standard Error => 
+$$SE = \sqrt{\frac{p(1-p)}{n}}$$
+
+```{r}
+z <- 2.326 ## from the z table for confidence intervals
+b8 <- N - 1734
+se <- sqrt(p*(1-p)/b8)
+
+c1 <- p+z*se
+c2 <- p-z*se
+
+paste0("lower bound: ", round(c2, 3))
+paste0("upper bound: ", round(c1, 3))
+
+```
+
+
+21. An environmentalist wants to find out the fraction of oil tankers that have spills each month.
+
+Step 1. Suppose a sample of 474 tankers is drawn.  Of these ships, 156 had spills.  Using the data, estimate the proportion of oil tankers that had spills. (Write your answer as a fraction or a decimal number rounded to 3 decimal places) 
+
+```{r}
+N <- 474
+n_sp <- 474 - 156
+
+p <- 156/474
+
+paste0("The proportion of tankers with spills is: ", round(p, 3))
+```
+
+Step 2. Suppose a sample of 474 tankers is drawn.  Of these ships, 156 had spills.  Using the data, construct the 95% confidence interval for the population proportion of oil tankers that have spills each month. (Round your answers to 3 decimal places)
+
+
+
+```{r}
+
+z_95 <- 1.96
+Se <- sqrt((p*(1-p))/n_sp)
+
+c1 <- p+z_95*se
+c2 <- p-z_95*se
+
+paste0("lower bound: ", round(c2, 3))
+paste0("upper bound: ", round(c1, 3))
+```

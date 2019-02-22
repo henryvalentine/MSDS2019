@@ -29,7 +29,7 @@ Given a text file with chess tournament results where the information has some s
 The structure of the first 5 entries in the text file is shown below
 
 ```{r, out.width = "850px"}
-knitr::include_graphics("tournament.png")
+knitr::include_graphics("https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project1/tournament.png")
 ```
 
 From the image above, each player has:

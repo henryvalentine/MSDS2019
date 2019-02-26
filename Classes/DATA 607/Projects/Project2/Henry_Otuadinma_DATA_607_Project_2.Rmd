@@ -7,4 +7,126 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(xml2)
+library(rvest)
+library(stringr)
+Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+
 ```
+
+
+```{r}
+
+religionRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Religion-Spirituality/zgbs/books/22/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+sciMathRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Science-Math/zgbs/books/75/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+litFictionRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Literature-Fiction/zgbs/books/17/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+historyRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-History/zgbs/books/9/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+lawRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Law/zgbs/books/10777/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+```
+
+
+```{r}
+
+processNodes <- function(rawNode, category)
+{
+    imgs <- vector()
+    categories <- vector()
+    titles <- vector()
+    authors <- vector()
+    ratings <- vector()
+    numRaters <- vector()
+    types <- vector()
+    prices <- vector()
+    
+    itemsRaw <-html_nodes(rawNode, 'span.zg-item')
+  
+    for(i in 1: length(itemsRaw))
+    {
+        x <- itemsRaw[i]
+        xImg <- str_replace_all(str_extract(x, '(?<=src=)"(.+?)"'), '\"', '')
+        xTitle <- str_trim(str_replace_all(html_text(html_node(x, '.a-link-normal > div')), "[\r\n]" , ""), side='both') 
+        
+        if(str_detect(xTitle, ':') == TRUE)
+        {
+          xTitle <- str_split(xTitle, ':')[[1]][1] # Shorten the title
+        }
+        
+        xAuthor <- str_trim(html_text(html_node(x, '.a-link-child')), side='both')
+        
+        if(is.na(xAuthor) || is.null(xAuthor))
+        {
+          xAuthor <- str_trim(html_text(html_node(x, 'span.a-color-base')), side='both')
+        }
+        
+        xRating <- str_trim(str_extract(html_node(x, '.a-icon-alt'), '\\d+(\\.\\d+)'), side='both')
+        
+        xNumRaters <- str_replace(str_trim(html_text(html_node(x, 'div.a-icon-row > a.a-size-small')), side='both'), ',', '')
+        
+        if(is.na(xNumRaters) || is.null(xNumRaters))
+        {
+          xNumRaters <- str_replace(str_trim(html_text(html_node(x, 
+                        'div.a-spacing-none > a-link-normal')), side='both'), ',', '')
+        }
+       
+        xType <- str_trim(html_text(html_node(x, 'div.a-size-small > span.a-color-secondary')), side='both')
+        
+        p <- str_extract(html_node(x, 'span.p13n-sc-price'), '\\d+(\\.\\d+)')
+        
+        xPrice <-  round(as.numeric(p), 2)
+        
+        if(is.na(xPrice) || is.null(xPrice))
+        {
+          xPrice <- str_extract(str_trim(html_text(html_node(x, 
+                        'span.a-color-price')), side='both'), '[[:alpha:] ]{2,}')
+        }
+        
+        imgs <- c(imgs, xImg)
+        categories <- c(categories, category)
+        titles <- c(titles, xTitle)
+        authors <- c(authors, xAuthor)
+        ratings <- c(ratings, xRating)
+        numRaters <- c(numRaters, xNumRaters)
+        types <- c(types, xType)
+        prices <- c(prices, xPrice)
+    }
+    
+    return(data.frame(title = titles, author = authors, category = categories, rating = ratings, img = imgs,
+                      numRater = numRaters, type = types, price = prices))
+}
+
+```
+
+
+Returns 5 different dataframes of 50 observations and 8 variables
+
+```{r, warning=FALSE, message=FALSE}
+
+religion <- processNodes(religionRaw, 'Religion')
+science <- processNodes(sciMathRaw, 'Science & Math')
+fiction <- processNodes(litFictionRaw, 'Literature & Fiction')
+history <- processNodes(historyRaw, 'History')
+law <- processNodes(lawRaw, 'Law')
+
+```
+
+Combine all datframes into one and check the dimensions of the resultant dataframe
+```{r}
+books <- rbind(religion, science, fiction, history, law)
+dim(books)
+```
+
+
+```{r}
+
+
+```
+
+
+
+

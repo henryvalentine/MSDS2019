@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(xml2)
 library(rvest)
 library(stringr)
-Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+library(DT)
 
 ```
 
@@ -33,10 +33,10 @@ lawRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Law/zg
 
 ```{r}
 
-processNodes <- function(rawNode, category)
+processNodes <- function(rawNode, genre)
 {
     imgs <- vector()
-    categories <- vector()
+    genres <- vector()
     titles <- vector()
     authors <- vector()
     ratings <- vector()
@@ -87,7 +87,7 @@ processNodes <- function(rawNode, category)
         }
         
         imgs <- c(imgs, xImg)
-        categories <- c(categories, category)
+        genres <- c(genres, genre)
         titles <- c(titles, xTitle)
         authors <- c(authors, xAuthor)
         ratings <- c(ratings, xRating)
@@ -96,7 +96,7 @@ processNodes <- function(rawNode, category)
         prices <- c(prices, xPrice)
     }
     
-    return(data.frame(title = titles, author = authors, category = categories, rating = ratings, img = imgs,
+    return(data.frame(title = titles, author = authors, genre = genres, rating = ratings, img = imgs,
                       numRater = numRaters, type = types, price = prices))
 }
 
@@ -117,16 +117,30 @@ law <- processNodes(lawRaw, 'Law')
 
 Combine all datframes into one and check the dimensions of the resultant dataframe
 ```{r}
-books <- rbind(religion, science, fiction, history, law)
+books <- rbind(history, religion, science, fiction, law)
 dim(books)
 ```
 
 
 ```{r}
 
+s <- subset(books, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
+
+datatable(head(s, 30), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': 'steelblue', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
 
 ```
 
+```{r}
+
+write.csv(books, "topBooks.csv", row.names=FALSE)
+
+```
 
 
 

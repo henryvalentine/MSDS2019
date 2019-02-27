@@ -1,0 +1,18 @@
+---
+title: "DATA 607 Week 5 Homework"
+author: "Henry Otuadinma"
+date: "27 February 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+airline <- c('ALASKA','ALASKA','ALASKA','ALASKA','ALASKA','AM WEST','AM WEST','AM WEST','AM WEST','AM WEST')
+destination <- c('Los Ageles','Phoenix','San Diego','San Francisco','Seattle','Los Ageles','Phoenix','San Diego','San Francisco','Seattle')
+onTime <- c(221,212,503,1841,694,4840,383,320,201)
+delayed <- c(62,12,20,102,305,117,415,65,129,61)
+
+```

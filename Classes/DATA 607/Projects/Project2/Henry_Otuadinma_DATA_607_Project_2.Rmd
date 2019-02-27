@@ -15,6 +15,17 @@ library(DT)
 
 ```
 
+#### Problem statement
+I want to purchase the cheapest 5 top best seller and highly rated books on Amazon for my library.
+
+#### Overview
+I will produced a .csv file containing 250 observations and 8 variables describing up to date record of 50 top selling books across 5 top genres each scrapped from Amazon. 
+The data will contain descriptive observations in the wide format as each book will be contained in a single row and eight variables depicting its title, author, genre, rating, price, type (kindle edition, paperback, etc), etc. 
+
+The data will then be worked on using appropriate functions like `group_by`, `filter`, `arrange`, `select`, etc from the `dplyr` package to see how the books compare with each others in terms of their genres, types, prices, and the most rated such that at the end, I will be able to to know the 5 cheapest top selling books (one each from the 5 genres) that I can purchase on Amazon.
+
+#### Data Scrapping
+This involves 
 
 ```{r}
 
@@ -143,4 +154,20 @@ write.csv(books, "topBooks.csv", row.names=FALSE)
 ```
 
 
+```{r}
 
+airlines <- c('ALASKA', 'ALASKA', 'ALASKA', 'ALASKA', 'ALASKA',
+              'AM WEST', 'AM WEST', 'AM WEST', 'AM WEST', 'AM WEST')
+destinationCity <- c('Los Angeles','Los Angeles', 'Los Angeles', 'Los Angeles', 'Phoenix', 'Phoenix', 'Phoenix', 'Phoenix', 
+                     'San Diego', 'San Diego', 'San Diego', 'San Diego', 'San Francisco', 'San Francisco', 'San Francisco', 'San Francisco',
+                     'Seattle', 'Seattle', 'Seattle', 'Seattle')
+
+alaskaOnTime <- c(497, 221, 212, 503, 1841)
+alaskaDelayed <- c(62, 12, 20, 102, 305)
+
+amWestOnTime <- c(694, 4840, 383, 320, 1841)
+amWestDelayed <- c(117, 415, 65, 129, 61)
+
+```
+
+```

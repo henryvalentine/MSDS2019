@@ -24,7 +24,7 @@ library(ggplot2)
 # Tidying and Transforming data
 
 ```{r, out.height=1000, out.width=1000 }
-knitr::include_graphics('departures.png')
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week5/departures.png')
 ```
 
 The chart above describes arrival delays for two airlines across five destinations. Your task is to:

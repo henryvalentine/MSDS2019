@@ -41,6 +41,8 @@ lawRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Law/zg
 
 ```
 
+Some of the book titles contain `:` which implies a long decriptive part of the tile comes after the colon. These aere therefore
+shortened at the `:`
 
 ```{r}
 
@@ -65,7 +67,7 @@ processNodes <- function(rawNode, genre)
         
         if(str_detect(xTitle, ':') == TRUE)
         {
-          xTitle <- str_split(xTitle, ':')[[1]][1] # Shorten the title
+          xTitle <- str_split(xTitle, ':')[[1]][1] # Shorten the title by splitting at the colon (:)
         }
         
         xAuthor <- str_trim(html_text(html_node(x, '.a-link-child')), side='both')
@@ -115,6 +117,7 @@ processNodes <- function(rawNode, genre)
 
 
 Returns 5 different dataframes of 50 observations and 8 variables
+ 
 
 ```{r, warning=FALSE, message=FALSE}
 
@@ -132,12 +135,12 @@ books <- rbind(history, religion, science, fiction, law)
 dim(books)
 ```
 
-
+Preview the data
 ```{r}
 
 s <- subset(books, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
 
-datatable(head(s, 30), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+datatable(head(s, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': 'steelblue', 'color': '#fff', 'text-align': 'center !important'});",
@@ -148,9 +151,7 @@ datatable(head(s, 30), colnames= c("Title", "Author", "Genre", "Rating", "Number
 ```
 
 ```{r}
-
 write.csv(books, "topBooks.csv", row.names=FALSE)
-
 ```
 
 

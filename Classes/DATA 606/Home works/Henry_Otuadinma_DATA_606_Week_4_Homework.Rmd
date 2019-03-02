@@ -1,0 +1,42 @@
+---
+title: "DATA606 Homework 4"
+author: "Henry Otuadinma"
+date: "2 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 4.4 Heights of adults. Researchers studying anthropometry collected body girth measurements and skeletal diameter measurements, as well as age, weight, height and gender, for 507 physically active individuals. The histogram below shows the sample distribution of heights in centimeters.
+```{r}
+knitr::include_graphics()
+
+```
+
+(a) What is the point estimate for the average height of active individuals? What about the
+median?
+
+Answer:
+
+
+##### SE = 1/sd, CI = Point Estimate +/- Z*SE => 
+$$ SE = 1/sd; \ CI = Point Estimate +/- Z*SE$$
+
+(b) What is the point estimate for the standard deviation of the heights of active individuals?
+What about the IQR?
+(c) Is a person who is 1m 80cm (180 cm) tall considered unusually tall? And is a person who is
+1m 55cm (155cm) considered unusually short? Explain your reasoning.
+(d) The researchers take another random sample of physically active individuals. Would you
+expect the mean and the standard deviation of this new sample to be the ones given above?
+Explain your reasoning.
+(e) The sample means obtained are point estimates for the mean height of all active individuals,
+if the sample of individuals is equivalent to a simple random sample. What measure do we
+use to quantify the variability of such an estimate (Hint: recall that SD¯x = ! pn )? Compute
+this quantity using the data from the original sample under the condition that the data are a
+simple random sample.
+
+
+
+4.4, 4.14, 4.24, 4.26, 4.34, 4.40, 4.48

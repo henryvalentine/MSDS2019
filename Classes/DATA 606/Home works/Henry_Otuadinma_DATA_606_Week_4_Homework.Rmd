@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### 4.4 Heights of adults. Researchers studying anthropometry collected body girth measurements and skeletal diameter measurements, as well as age, weight, height and gender, for 507 physically active individuals. The histogram below shows the sample distribution of heights in centimeters.
 ```{r}
-knitr::include_graphics()
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/img1.png')
 
 ```
 
@@ -20,22 +20,44 @@ median?
 
 Answer:
 
-
-##### SE = 1/sd, CI = Point Estimate +/- Z*SE => 
-$$ SE = 1/sd; \ CI = Point Estimate +/- Z*SE$$
+##### The point Estimate is 171.1, the Point Estimate Median is 170.3
 
 (b) What is the point estimate for the standard deviation of the heights of active individuals?
 What about the IQR?
+
+Answer:
+
+##### The point Estimate standard Deviation is 9.4, the IQR is 177.8 - 163.8 = 14
+
 (c) Is a person who is 1m 80cm (180 cm) tall considered unusually tall? And is a person who is
 1m 55cm (155cm) considered unusually short? Explain your reasoning.
+
+Answer:
+
+##### A person who is 180cm tall can be considered unusually tall because the person's height is above the point estimate height, whereas a person with 155cm height can be considered unusually short because the height is below the point estimate height
+
 (d) The researchers take another random sample of physically active individuals. Would you
 expect the mean and the standard deviation of this new sample to be the ones given above?
 Explain your reasoning.
+
+Answer:
+
+##### The mean and standard deviation of the second sample might vary from the ones given above except if the samplings are not independent and random
+
 (e) The sample means obtained are point estimates for the mean height of all active individuals,
 if the sample of individuals is equivalent to a simple random sample. What measure do we
 use to quantify the variability of such an estimate (Hint: recall that SD¯x = ! pn )? Compute
 this quantity using the data from the original sample under the condition that the data are a
 simple random sample.
+
+Answer:
+
+##### We use standard error (SE) to quantify the variability of the estimate
+$$SE_{\bar{x}} = \frac{s}{\sqrt{n}}$$
+```{r}
+se <- (9.4/sqrt(507))
+paste0('The standard error is: ', round(se, 2), sep='')
+```
 
 
 

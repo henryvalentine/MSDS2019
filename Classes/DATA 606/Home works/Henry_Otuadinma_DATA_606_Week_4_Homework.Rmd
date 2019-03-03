@@ -7,9 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(qualityTools)
 ```
 
-#### 4.4 Heights of adults. Researchers studying anthropometry collected body girth measurements and skeletal diameter measurements, as well as age, weight, height and gender, for 507 physically active individuals. The histogram below shows the sample distribution of heights in centimeters.
+#### 4.4 Heights of adults. 
+Researchers studying anthropometry collected body girth measurements and skeletal diameter measurements, as well as age, weight, height and gender, for 507 physically active individuals. The histogram below shows the sample distribution of heights in centimeters.
 ```{r}
 knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/img1.png')
 
@@ -60,7 +62,8 @@ paste0('The standard error is: ', round(se, 2), sep='')
 ```
 
 
-4.14 Thanksgiving spending, Part I. The 2009 holiday retail season, which kicked off on
+#### 4.14 Thanksgiving spending, Part I. 
+The 2009 holiday retail season, which kicked off on
 November 27, 2009 (the day after Thanksgiving), had been marked by somewhat lower self-reported
 consumer spending than was seen during the comparable period in 2008. To get an estimate
 of consumer spending, 436 randomly sampled American adults were surveyed. Daily consumer
@@ -139,4 +142,75 @@ ME
 
 The above statement is TRUE
 
- 4.24, 4.26, 4.34, 4.40, 4.48
+
+#### 4.24 Gifted children, Part I. 
+Researchers investigating characteristics of gifted children collected
+data from schools in a large city on a random sample of thirty-six children who were identified
+as gifted children soon after they reached the age of four. The following histogram shows the distribution
+of the ages (in months) at which these children first counted to 10 successfully. Also
+provided are some sample statistics.
+
+```{r}
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/img3.png')
+
+```
+
+(a) Are conditions for inference satisfied?
+
+Answer:
+##### The conditions for inference are satisfied because sample is randomly selected, n ??? 30, and the distribution is not strongly skewed
+
+(b) Suppose you read online that children first count to 10 successfully when they are 32 months
+old, on average. Perform a hypothesis test to evaluate if these data provide convincing evidence
+that the average age at which gifted children first count to 10 successfully is less than the general
+average of 32 months. Use a significance level of 0.10.
+
+Answer:
+
+```{r}
+
+n = 36
+x <- 32
+mean = 30.69
+sd = 4.31
+se <- sd / sqrt(n)
+z = (mean - x) / se
+sigLevel <- 0.10
+
+```
+
+```{r}
+pnorm(z, mean = 0, sd = 1) * 2
+```
+
+Null hypothesis (H0): The average development for a child is ??=32 months.
+
+Alternate hypothesis (HA): The average development for a child is ?? ??? 32 months.
+
+Since the the p-value (0.0682026) is not equal to the significance level, we reject the Null hypothesis (H0).
+
+(c) Interpret the p-value in context of the hypothesis test and the data.
+
+##### Since the p-value is lower than the significance level, this will suggest that those gifted children count to 10 faster than a normal child.
+
+(d) Calculate a 90% confidence interval for the average age at which gifted children first count to
+10 successfully.
+
+```{r}
+
+lowerbound <- round(mean - 1.64 * se,2)
+upperbound <- round(mean + 1.64 * se,2)
+c(lowerbound,upperbound)
+```
+
+
+(e) Do your results from the hypothesis test and the confidence interval agree? Explain.
+
+Answer:
+
+The results agree since the hypothesis test shows that population mean is not equal to 32 (as we reje ted the null hypothesis) and there is a 90% chance that population mean falls within the confidence interval (30.81834,33.18166)
+
+ 
+ 
+ 
+ 4.26, 4.34, 4.40, 4.48

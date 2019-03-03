@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/472655/fea7bc9a943d4452ba68c4161e28db56
+bundleId: https://api.rpubs.com/api/v1/document/472655/fea7bc9a943d4452ba68c4161e28db56
+url: http://rpubs.com/jackv13/472655/edit
+when: 1551627789.52119

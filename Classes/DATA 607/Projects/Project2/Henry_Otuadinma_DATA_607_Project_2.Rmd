@@ -12,20 +12,26 @@ library(xml2)
 library(rvest)
 library(stringr)
 library(DT)
-
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
-#### Problem statement
-I want to purchase the cheapest 5 top best seller and highly rated books on Amazon for my library.
+
+#### Data set 1: Top 5 Best Seller books on Amazon.
+
+The top 5 best seller and highly rated books across 5 different genres (History, Law, Literature & Fiction, Science and Math, and Religion) scrapped from Amazon. I want to purchase the cheapest 5 (one from each genre) among them.
 
 #### Overview
-I will produced a .csv file containing 250 observations and 8 variables describing up to date record of 50 top selling books across 5 top genres each scrapped from Amazon. 
-The data will contain descriptive observations in the wide format as each book will be contained in a single row and eight variables depicting its title, author, genre, rating, price, type (kindle edition, paperback, etc), etc. 
+I will produced a .csv file containing 250 observations and 8 variables describing up to date record of 50 top selling books across 5 top genres each scrapped from Amazon.
 
-The data will then be worked on using appropriate functions like `group_by`, `filter`, `arrange`, `select`, etc from the `dplyr` package to see how the books compare with each others in terms of their genres, types, prices, and the most rated such that at the end, I will be able to to know the 5 cheapest top selling books (one each from the 5 genres) that I can purchase on Amazon.
+The data will contain descriptive observations in a fairly clean form because specific information were look for on the web pages. Each book will have eight variables depicting its title, author, genre, rating, price, type (kindle edition, paperback, etc), etc. 
+
+The data will then be worked on using appropriate functions like `group_by`, `filter`, `arrange`, `select`, etc from the `dplyr` package to see how the books compare with each others in terms of their genres, types, prices, and the most rated such that at the end, I will be able to to know the cheapest 5 top rated and best selling books (one each from the 5 genres) that I can purchase on Amazon.
 
 #### Data Scrapping
-This involves 
+
+This involves scrapping the the pages of each genre for the required information.
 
 ```{r}
 
@@ -41,7 +47,7 @@ lawRaw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Law/zg
 
 ```
 
-Some of the book titles contain `:` which implies a long decriptive part of the tile comes after the colon. These aere therefore
+Some of the book titles contain `:` which implies a long decriptive part of the tile comes after the colon. These are therefore
 shortened at the `:`
 
 ```{r}
@@ -130,17 +136,21 @@ law <- processNodes(lawRaw, 'Law')
 ```
 
 Combine all datframes into one and check the dimensions of the resultant dataframe
+
 ```{r}
-books <- rbind(history, religion, science, fiction, law)
-dim(books)
+allBooks <- rbind(history, religion, science, fiction, law)
+dim(allBooks)
 ```
 
+We have 250 books and 8 variables
+
 Preview the data
+
 ```{r}
 
-s <- subset(books, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
+mixedBooks <- subset(allBooks, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
 
-datatable(head(s, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+datatable(head(mixedBooks, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': 'steelblue', 'color': '#fff', 'text-align': 'center !important'});",
@@ -150,25 +160,279 @@ datatable(head(s, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number
 
 ```
 
+Let's filter out the the `Audible Audiobook` and `Kindle Edition` types since the interest is only on printed types, and convert the `rating`, `numRater (Number of Reviewers)`, and `price` variables from `factor` type to `numeric` type
+
 ```{r}
-write.csv(books, "topBooks.csv", row.names=FALSE)
+
+books <- mixedBooks %>% filter(!type %in% "Kindle Edition" & !type %in% "Audible Audiobook") 
+
+books <- books%>% mutate(numRater = as.numeric(as.character(numRater))) %>% mutate(price = as.numeric(as.character(price)))%>%mutate(rating = as.numeric(as.character(rating)))
+
+datatable(head(books, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': 'steelblue', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+Let's see the book with the highest rating and the one with highest number of reviewers
+
+```{r}
+
+ books[which.max(books$numRater),]
+```
+
+```{r}
+
+books[which.max(books$rating),]
+
+```
+
+##### This then shows that the book with the highest rating or with a 5-star rating is not the most bought or reviewed. It then makes sense to lay emphasis more on the ones with the highest number of reviewers and still with appreciable ratings say between 4.0 and 5.0
+
+Let's see how the genres compare to each other. We will `group_by` the genre and add up the number of reviewers so as to know the most reviewed genre
+
+```{r}
+
+books2 <- books%>% group_by(genre) %>% summarize(reviewers = sum(na.omit(numRater)))%>%select(genre, reviewers)
+books2
+```
+
+```{r}
+
+ggplot(books2, aes(x=genre, y=reviewers, fill=genre))+
+  scale_fill_manual(values = c("steelblue", "#26868d", '#D32F2F', '#7B1FA2', '#3F51B5') ) + 
+  labs(title="Genre Vs Reviewers", x ="Genre", y="Reviewers") + 
+  geom_bar(stat="identity", width=.7, show.legend = FALSE)
+
+```
+
+It appears Religion is the most reviewed and consequently most purchased genre among the 5 selected genres
+
+Let's select the 5 most reviewed books in each of the genres
+
+```{r}
+topReviewd <- books %>%group_by(genre) %>%top_n(n = 5, wt = numRater)
+head(topReviewd, 30)
+```
+
+##### With the omission of `NA` values, some genres do not have up to 50 books any more.
+
+##### Finally, let's select the cheapest book from among each of the genres
+
+```{r}
+cheapestTopReviewd <- topReviewd%>%top_n(n = 1, wt = -price)
+cheapestTopReviewd
+```
+
+```{r}
+
+datatable(cheapestTopReviewd, colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': 'steelblue', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+##### So, finally, I have the 5 cheapest and best selling books from among 5 genres to purchase on Amazon!
+
+
+#### Data set 2: Social Security Disability Claims - a Dataset provided by Rajwant Mishra 
+
+This is a data set of Social Security Administration Disability benefits Claims from 2008 to 2017 Fiscal Years. Each year has months with each month showing the amount of claims collected through other means (like application in person, etc) and the ones registered via the internet.
+
+Fiscal Year (FY): is the 12-month period from October 1st through September 30th.
+
+We want to see how each monthly claims in each year compare to those of other years and to see if the claims submitted through the internet increased with time or not over the period of 2008 to 2017.
+
+Reading the data from the provided .csv file
+
+```{r}
+untidySSD <- read.csv("ssadisability.csv", header = TRUE, stringsAsFactors = FALSE) # Read the .csv file
+untidySSD
+```
+
+```{r}
+
+dim(untidySSD)
+
+```
+
+The data set has 25 observations and 8 variables.
+
+##### Looking at the data, the monthly totals can be gathered under a single column say `Total`
+
+```{r}
+
+ssda <- untidySSD %>% gather(matches("_Total"), key = 'Totals', value = 'Value')
+ssda
+
+```
+
+The columns with `_Internet` can be gathered under say `Internet`
+
+```{r}
+ssda1 <- ssda %>% gather(Oct_Internet:Sept_Internet, key = 'Internet', value = 'Volume')
+ssda1
+```
+
+Remove `FY, _Total, _Internet` from the values in the appropriate columns and adding `20` to the `Fiscal_Year` column,
+also remove the commas in the `Value` and `Volume` columns and convert their values to numeric
+
+```{r}
+
+ssda2 <- ssda1
+ssda2$Volume <- as.numeric(str_replace_all(ssda2$Volume, ',', ''))
+ssda2$Value <- as.numeric(str_replace_all(ssda2$Value, ',', ''))
+ssda2$Fiscal_Year <- str_replace_all(ssda2$Fiscal_Year, 'FY', '20')
+ssda2$Totals <- str_replace_all(ssda2$Totals, '_Total', '')
+ssda2$Internet <- str_replace_all(ssda2$Internet, '_Internet', '')
+head(ssda2, 20)
+```
+
+Let's see how the total claims for each year compare aginst other years by aggregating all the total monthly claims for each year:
+First, let's subset the `Fiscal_Year, Totals, Value, and Volume` columns, renaming `Totals` to `Months` and creating a new column `TotalValue` to be the sum of each month's total figures which is `Value`.  `Volume` is already contained in `Value`. It was made to be a separete a column to point out how much claims were made via internet
+
+```{r}
+s3 <- ssda2%>%mutate(TotalValue = Value, Month = Totals)%>%select('Fiscal_Year', 'Month', 'TotalValue')
+s3 <- na.omit(s3)
+s3
+```
+
+The above data can be used to vsualise monthly claims for each year.
+
+Lets further group the data for months of each year together so as to get a total figure for the claims per year
+
+```{r}
+s4 <- s3%>%group_by(Fiscal_Year)%>% summarise(Total = sum(TotalValue))
+s4
+```
+
+A summary of the yearly aggregations
+
+The maximum claims occured in 2012
+
+```{r}
+s4[which.max(s4$Total),]
+```
+
+While the minimum claims occured in 2017
+
+```{r}
+s4[which.min(s4$Total),]
 ```
 
 
 ```{r}
 
-airlines <- c('ALASKA', 'ALASKA', 'ALASKA', 'ALASKA', 'ALASKA',
-              'AM WEST', 'AM WEST', 'AM WEST', 'AM WEST', 'AM WEST')
-destinationCity <- c('Los Angeles','Los Angeles', 'Los Angeles', 'Los Angeles', 'Phoenix', 'Phoenix', 'Phoenix', 'Phoenix', 
-                     'San Diego', 'San Diego', 'San Diego', 'San Diego', 'San Francisco', 'San Francisco', 'San Francisco', 'San Francisco',
-                     'Seattle', 'Seattle', 'Seattle', 'Seattle')
-
-alaskaOnTime <- c(497, 221, 212, 503, 1841)
-alaskaDelayed <- c(62, 12, 20, 102, 305)
-
-amWestOnTime <- c(694, 4840, 383, 320, 1841)
-amWestDelayed <- c(117, 415, 65, 129, 61)
+ggplot(s4, aes(x=Fiscal_Year, y=Total, fill=Fiscal_Year))+
+  scale_fill_manual(values = c("steelblue", "#26868d", '#440154', '#7B1FA2', '#3F51B5', '#D32F2F', '#00695c', '#303f9f', '#6acb5c', '#2e748e', '#6acb5c','#45bc72' ) ) + 
+  labs(title="SSD Claims per year", x ="Fiscal Year", y="Claims") + 
+  geom_bar(stat="identity", width=.7, show.legend = FALSE)
 
 ```
 
+In overall, this shows that the claims were highest in 2011, and lowest in 2017. Let's see if further visual comparisms can show why the claims were lowest in 2017
+
+Let's see how the monthly claims (via ineternet and other means) over ther years compare to each other
+
+```{r}
+ggplot(s3, aes(x = Fiscal_Year, y = TotalValue, fill = Month)) + 
+  geom_bar(position="fill", stat = "identity") + 
+  labs(title="Monthly SSD Claims per year", x ="Fiscal Year", y="Claims") +
+  scale_fill_manual(values = c("steelblue", "purple", "#440154", "#45367f", "#26868d", '#440154', '#35618d', '#2e748e', '#2dab81', '#2e748e', '#45367f', '#3d4c89', '#6acb5c', '#2e748e', '#6acb5c','#45bc72') )
+
+```
+
+From this plot, it is obvious that the provided data set has claims for only for months in 2017 hence the low claims rate noted for that year.
+
+##### Now, let's see how the claims over the internet compares yearl and monthly
+
+##### Monthly
+```{r}
+
+s5 <- ssda2%>%mutate(Total = Volume, Month = Internet)%>%select('Fiscal_Year', 'Month', 'Total')
+s5 <- na.omit(s5)
+s5
+
+```
+
+
+```{r}
+
+s5[which.max(s5$Total),]
+
+```
+
+The highst number of claims filed via the internet occured on August 2014
+
+```{r}
+ggplot(s5, aes(x = Fiscal_Year, y = Total, fill = Month)) + 
+  geom_bar(position="dodge", stat = "identity") + 
+  labs(title="Monthly SSD Claims filed via the Internet per year", x ="Fiscal Year", y="Claims") +
+  scale_fill_manual(values = c("steelblue", "#26868d", "#440154", "#45367f", "#45bc72", '#6acb5c', '#35618d', '#6acb5c', '#2dab81', '#2e748e', '#45367f', '#3d4c89') ) # + coord_flip()
+```
+
+The trend was progressive incrementally from 2008
+
+##### Yearly
+
+```{r}
+s6 <- s5%>%group_by(Fiscal_Year)%>% summarise(Total = sum(Total))
+s6
+```
+
+```{r}
+
+ggplot(s6, aes(x=Fiscal_Year, y=Total, fill=Fiscal_Year))+
+  scale_fill_manual(values = c("steelblue", "#26868d", '#440154', '#7B1FA2', '#3F51B5', '#D32F2F', '#00695c', '#303f9f', '#6acb5c', '#2e748e', '#6acb5c','#45bc72' ) ) + 
+  labs(title="SSD Claims via the internet per year", x ="Fiscal Year", y="Claims") + 
+  geom_bar(stat="identity", width=.7, show.legend = FALSE)
+
+```
+
+```{r}
+
+ggplot(s5, aes(x = Fiscal_Year, y = Total)) + 
+     geom_line(color = "#00AFBB", size = 3) + 
+  labs(title="Monthly SSD Claims via the Internet per year", x ="Fiscal Year", y="Claims")
+
+```
+
+It is evident that the claims filed via the internet generally increased progressively from 2008, achieving maximum peak in 2014 but suprisingly started decreasing progressively from that point.
+
+
+#### Data set 3: Color and heat absorption - Christopher Ayre
+
+Description: This is a dataset provided from an experiment with his daughter to complete her project for a science fair. For the experiment, they placed thermometers in 5 different color t-shirts and recorded the temperatures at 10 minute intervals for 1 hour as the garments were exposed to heat. The heater was then turned off, and the temperatures measured again at 10 minute intervals as the garments cooled. The attached provided .csv file represents their findings.
+
+
+##### The experiment question then is to analyze the rate at which different colors absorb and release heat.
+
+Let's read the data
+
+```{r}
+untidyHeat <- read.csv("science_proj_data.csv", header = TRUE, stringsAsFactors = FALSE) # Read the .csv file
+untidyHeat
+```
+
+```{r}
+
+dim(untidyHeat)
+
+```
+The dataset has 10 observations and 9 variables.
+
+Let's gather the minutes colums under say `minute` and their values under `temperature`, and then remove `minute.` from the values
+
+```{r}
+temp <- untidyHeat %>% gather(minute.0:minute.60, key = 'minute', value = 'temperature')%>%mutate(minute = str_replace_all(minute, 'minute.', ''))
+temp
 ```

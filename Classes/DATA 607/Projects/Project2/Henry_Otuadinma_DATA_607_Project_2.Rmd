@@ -241,7 +241,8 @@ datatable(cheapestTopReviewd, colnames= c("Title", "Author", "Genre", "Rating", 
 
 ```
 
-##### So, finally, I have the 5 cheapest and best selling books from among 5 genres to purchase on Amazon!
+#### Conclusion
+##### Finally, I have the 5 cheapest books from among top rated and best selling books from among 5 genres to purchase on Amazon!
 
 
 #### Data set 2: Social Security Disability Claims - a Dataset provided by Rajwant Mishra 
@@ -380,7 +381,7 @@ ggplot(s5, aes(x = Fiscal_Year, y = Total, fill = Month)) +
   scale_fill_manual(values = c("steelblue", "#26868d", "#440154", "#45367f", "#45bc72", '#6acb5c', '#35618d', '#6acb5c', '#2dab81', '#2e748e', '#45367f', '#3d4c89') ) # + coord_flip()
 ```
 
-The trend was progressive incrementally from 2008
+##### The trend was progressive incrementally from 2008
 
 ##### Yearly
 
@@ -406,7 +407,8 @@ ggplot(s5, aes(x = Fiscal_Year, y = Total)) +
 
 ```
 
-It is evident that the claims filed via the internet generally increased progressively from 2008, achieving maximum peak in 2014 but suprisingly started decreasing progressively from that point.
+#### Conclusion 
+##### It is evident that the claims filed via the internet generally increased progressively from 2008, achieving maximum peak in 2014 but suprisingly started decreasing progressively from that point.
 
 
 #### Data set 3: Color and heat absorption - Christopher Ayre
@@ -436,3 +438,48 @@ Let's gather the minutes colums under say `minute` and their values under `tempe
 temp <- untidyHeat %>% gather(minute.0:minute.60, key = 'minute', value = 'temperature')%>%mutate(minute = str_replace_all(minute, 'minute.', ''))
 temp
 ```
+
+Let's how the colors fare during heating and cooling phases
+
+##### For heating phase
+
+```{r}
+
+heating <- subset(temp, phase == 'heating')
+
+```
+
+```{r}
+
+#ggplot(temp, aes(x = minute, y = temperature)) + geom_line()
+
+ ggplot(heating, aes(x = minute, y = temperature, fill = color)) + 
+  geom_bar(position="dodge", stat = "identity") + 
+  labs(title="Temperature performances of the colors during heating phase", x ="Minute", y="Temperature") +
+  scale_fill_manual(values = c("black", "#6acb5c", "#440154", "#45367f", "#D32F2F") )
+
+```
+
+
+##### For cooling phase
+
+```{r}
+
+cooling <- subset(temp, phase == 'cooling')
+
+```
+
+```{r}
+
+#ggplot(temp, aes(x = minute, y = temperature)) + geom_line()
+
+ ggplot(cooling, aes(x = minute, y = temperature, fill = color)) + 
+  geom_bar(position="dodge", stat = "identity") + 
+  labs(title="Temperature performances of the colors during cooling phase", x ="Minute", y="Temperature") +
+  scale_fill_manual(values = c("black", "#6acb5c", "#440154", "#45367f", "#D32F2F") )
+
+```
+
+#### Conclusion
+
+##### From all indications, Black colors tend tend to absorb heat the most (very fast) and slowest in releasing (emitting) heat. White colors on the other hand tend to be slowest in absorbing heat and very fast in cooling down (releasing/emiting heat). Other colors fall in-between these two.

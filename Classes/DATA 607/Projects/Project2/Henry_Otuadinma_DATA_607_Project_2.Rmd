@@ -20,14 +20,15 @@ library(ggplot2)
 
 #### Data set 1: Top 5 Best Seller books on Amazon.
 
-The top 5 best seller and highly rated books across 5 different genres (History, Law, Literature & Fiction, Science and Math, and Religion) scrapped from Amazon. I want to purchase the cheapest 5 (one from each genre) among them.
+This is a dataset that will contain top best selling and highly rated books across 5 different genres (History, Law, Literature & Fiction, Science and Math, and Religion) scrapped from Amazon. I want to purchase the cheapest 5 (one from each genre) among them.
 
 #### Overview
+
 I will produced a .csv file containing 250 observations and 8 variables describing up to date record of 50 top selling books across 5 top genres each scrapped from Amazon.
 
-The data will contain descriptive observations in a fairly clean form because specific information were look for on the web pages. Each book will have eight variables depicting its title, author, genre, rating, price, type (kindle edition, paperback, etc), etc. 
+The data will contain descriptive observations in a fairly clean form because specific information were looked for on the web pages. Each book will have eight variables depicting its title, author, genre, rating, price, type (kindle edition, paperback, etc), etc. 
 
-The data will then be worked on using appropriate functions like `group_by`, `filter`, `arrange`, `select`, etc from the `dplyr` package to see how the books compare with each others in terms of their genres, types, prices, and the most rated such that at the end, I will be able to to know the cheapest 5 top rated and best selling books (one each from the 5 genres) that I can purchase on Amazon.
+The data will then be worked on using appropriate functions like `group_by`, `filter`, `arrange`, `select`, and other relevant functions from the `dplyr` and `tidyr` packages to see how the books compare with each others in terms of their genres, types, prices, and the most rated such that at the end, I will be able to to know the cheapest 5 (one from each of the 5 genres) from among them.
 
 #### Data Scrapping
 
@@ -122,7 +123,7 @@ processNodes <- function(rawNode, genre)
 ```
 
 
-Returns 5 different dataframes of 50 observations and 8 variables
+##### This Returns 5 different dataframes of 50 observations and 8 variables
  
 
 ```{r, warning=FALSE, message=FALSE}
@@ -135,14 +136,22 @@ law <- processNodes(lawRaw, 'Law')
 
 ```
 
-Combine all datframes into one and check the dimensions of the resultant dataframe
+##### Combine all datframes into one and check the dimensions of the resultant dataframe
 
 ```{r}
 allBooks <- rbind(history, religion, science, fiction, law)
 dim(allBooks)
 ```
 
-We have 250 books and 8 variables
+##### Exporting the data to a .csv file
+
+```{r}
+
+write.csv(allBooks, "topBooks", row.names=FALSE)
+
+```
+
+##### We have 250 books and 8 variables
 
 Preview the data
 
@@ -160,7 +169,7 @@ datatable(head(mixedBooks, 10), colnames= c("Title", "Author", "Genre", "Rating"
 
 ```
 
-Let's filter out the the `Audible Audiobook` and `Kindle Edition` types since the interest is only on printed types, and convert the `rating`, `numRater (Number of Reviewers)`, and `price` variables from `factor` type to `numeric` type
+##### Let's filter out the the `Audible Audiobook` and `Kindle Edition` types since the interest is only on printed types, and convert the `rating`, `numRater (Number of Reviewers)`, and `price` variables from `factor` type to `numeric` type
 
 ```{r}
 
@@ -179,7 +188,7 @@ datatable(head(books, 10), colnames= c("Title", "Author", "Genre", "Rating", "Nu
 ```
 
 
-Let's see the book with the highest rating and the one with highest number of reviewers
+##### Let's see the book with the highest rating and the one with highest number of reviewers
 
 ```{r}
 
@@ -194,7 +203,7 @@ books[which.max(books$rating),]
 
 ##### This then shows that the book with the highest rating or with a 5-star rating is not the most bought or reviewed. It then makes sense to lay emphasis more on the ones with the highest number of reviewers and still with appreciable ratings say between 4.0 and 5.0
 
-Let's see how the genres compare to each other. We will `group_by` the genre and add up the number of reviewers so as to know the most reviewed genre
+##### Let's see how the genres compare to each other. We will `group_by` the genre and add up the number of reviewers so as to know the most reviewed genre
 
 ```{r}
 
@@ -211,7 +220,7 @@ ggplot(books2, aes(x=genre, y=reviewers, fill=genre))+
 
 ```
 
-It appears Religion is the most reviewed and consequently most purchased genre among the 5 selected genres
+##### It appears Religion is the most reviewed and consequently most purchased genre among the 5 selected genres
 
 Let's select the 5 most reviewed books in each of the genres
 
@@ -456,7 +465,7 @@ heating <- subset(temp, phase == 'heating')
  ggplot(heating, aes(x = minute, y = temperature, fill = color)) + 
   geom_bar(position="dodge", stat = "identity") + 
   labs(title="Temperature performances of the colors during heating phase", x ="Minute", y="Temperature") +
-  scale_fill_manual(values = c("#1f77b4", "#2ca02c", "#440154", "#45367f", "#D32F2F") )
+  scale_fill_manual(values = c("#000000", "#2ca02c", "#440154", "#D32F2F", "#45367f") )
 
 ```
 
@@ -476,10 +485,10 @@ cooling <- subset(temp, phase == 'cooling')
  ggplot(cooling, aes(x = minute, y = temperature, fill = color)) + 
   geom_bar(position="dodge", stat = "identity") + 
   labs(title="Temperature performances of the colors during cooling phase", x ="Minute", y="Temperature") +
-  scale_fill_manual(values = c("black", "#6acb5c", "#440154", "#45367f", "#D32F2F") )
+  scale_fill_manual(values = c("#000000", "#2ca02c", "#440154", "#D32F2F", "#45367f") )
 
 ```
 
 #### Conclusion
 
-##### From all indications, Black colors tend tend to absorb heat the most (very fast) and slowest in releasing (emitting) heat. White colors on the other hand tend to be slowest in absorbing heat and very fast in cooling down (releasing/emiting heat). Other colors fall in-between these two.
+##### From all indications, Black colors tend tend to absorb heat the most (very fast) and slowest in releasing (emitting) heat. White colors on the other hand tend to be slowest in absorbing heat and very fast in cooling down (releasing/emiting heat). Red colors appears to retain heat as much and is next to black color in that regards. Other colors fall in-between these ones

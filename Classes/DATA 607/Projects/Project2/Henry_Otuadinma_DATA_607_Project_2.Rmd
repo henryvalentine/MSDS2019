@@ -320,7 +320,7 @@ dim(untidySSD)
 
 ```
 
-The data set has 25 observations and 8 variables.
+The data set has 10 observations and 25 variables.
 
 ##### Looking at the data, the monthly totals can be gathered under a single column say `Total`
 

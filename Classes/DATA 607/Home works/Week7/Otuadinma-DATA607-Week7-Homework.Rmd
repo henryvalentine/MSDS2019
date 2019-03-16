@@ -29,31 +29,35 @@ separate R data frames. Are the three data frames identical?
 ##### Solution
 ##### The files were created in Notepad++ first starting with json array and then the others.
 
+#### 1. books.xml
+
 ```{r}
 XmlB <- xmlParse(read_xml('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week7/books.xml'))
 bXml <- xmlRoot(XmlB)
 booksData <- xmlSApply(bXml,function(x) xmlSApply(x, xmlValue))
 booksXml <- data.frame(t(booksData),row.names=NULL)
-booksXml
+
 ```
 
-#### books.json
-
 ```{r}
-booksJson <- read_json("https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week7/books.json", simplifyVector = TRUE)
-datatable(mixedBooks, colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+datatable(booksXml, colnames= c("Author(s)", "Date Publish", "Genre", "Number of Reviewers", "Pages", "Rating", "Title", "Type"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
-    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
 ```
 
-```{r}
-booksHtml<- as.data.frame(html_nodes(read_html('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week7/books.html'), "table")%>% html_table(fill=TRUE))
 
-datatable(booksHtml, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Type", "Rating", "Number of Reviewers"), class = 'cell-border stripe', options = list(
+#### books.json
+
+```{r}
+booksJson <- read_json("https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week7/books.json", simplifyVector = TRUE)
+```
+
+```{r}
+datatable(booksJson, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Rating", "Pages", "Number of Reviewers"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
@@ -68,7 +72,11 @@ datatable(booksHtml, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Pu
 ```{r}
 booksHtml<- as.data.frame(html_nodes(read_html('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week7/books.html'), "table")%>% html_table(fill=TRUE))
 
-datatable(booksHtml, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Type", "Rating", "Number of Reviewers"), class = 'cell-border stripe', options = list(
+```
+
+
+```{r}
+datatable(booksHtml, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Rating", "Pages", "Number of Reviewers"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
@@ -77,13 +85,13 @@ datatable(booksHtml, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Pu
 ))
 ```
 
-##### This needs to be cleaned up
+##### This needs to be cleaned up as it contains empty spaces
 
 ```{r}
 
 htmlBooks <- booksHtml%>% dplyr::filter(!(title==""))
 
-datatable(htmlBooks, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Type", "Rating", "Number of Reviewers"), class = 'cell-border stripe', options = list(
+datatable(htmlBooks, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Publish", "Rating", "Pages", "Number of Reviewers"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
@@ -92,4 +100,4 @@ datatable(htmlBooks, colnames= c("Title", "Type", "Author(s)", "Genre", "Date Pu
 ))
 ```
 
-The dataframes are similar except that reading from the xml file reordered the column headers alphabetically. The Html file has some trailing spaces which had to be cleaned up.
+##### The dataframes are similar except that reading from the xml file reordered the column headers alphabetically. The Html file has some trailing spaces which had to be cleaned up.

@@ -11,6 +11,7 @@ library(dplyr)
 library(rvest)
 library(stringr)
 library(jsonlite)
+library(XML)
 library(DT)
 ```
 

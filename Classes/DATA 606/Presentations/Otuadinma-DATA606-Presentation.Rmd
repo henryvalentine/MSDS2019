@@ -1,0 +1,26 @@
+---
+title: "DATA606 Presentation"
+author: "Henry Otuadinma"
+date: "16 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Practice question 4.39: Weights of pennies. 
+##### The distribution of weights of United States pennies is approximately normal with a mean of 2.5 grams and a standard deviation of 0.03 grams.
+
+(a) What is the probability that a randomly chosen penny weighs less than 2.4 grams?
+
+```{r}
+
+
+```
+
+(b) Describe the sampling distribution of the mean weight of 10 randomly chosen pennies.
+(c) What is the probability that the mean weight of 10 pennies is less than 2.4 grams?
+(d) Sketch the two distributions (population and sampling) on the same scale.
+(e) Could you estimate the probabilities from (a) and (c) if the weights of pennies had a skewed
+distribution?

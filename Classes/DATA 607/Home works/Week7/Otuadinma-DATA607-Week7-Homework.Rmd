@@ -1,0 +1,49 @@
+---
+title: "DATA607 Week7 Homework"
+author: "Henry Otuadinma"
+date: "16 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(rvest)
+library(stringr)
+library(jsonlite)
+```
+
+#### Working with XML and JSON in R
+
+Pick three of your favorite books on one of your favorite subjects. At least one of the books should have more
+than one author. For each book, include the title, authors, and two or three other attributes that you find
+interesting.
+Take the information that you've selected about these three books, and separately create three files which
+store the book's information in HTML (using an html table), XML, and JSON formats (e.g. "books.html",
+"books.xml", and "books.json"). To help you better understand the different file structures, I'd prefer that you
+create each of these files "by hand" unless you're already very comfortable with the file formats.
+Write R code, using your packages of choice, to load the information from each of the three sources into
+separate R data frames. Are the three data frames identical?
+
+##### Solution
+##### The files were created in Notepad++ first starting with json array and then the others.
+
+```{r}
+XmlB <- xmlParse('books.xml')
+bXml <- xmlRoot(XmlB)
+booksData <- xmlSApply(bXml,function(x) xmlSApply(x, xmlValue))
+booksXml <- data.frame(t(booksData),row.names=NULL)
+booksXml
+```
+
+```{r}
+booksJson <- read_json("books.json", simplifyVector = TRUE)
+booksJson
+```
+
+```{r}
+booksHtml<- as.data.frame(read_html('books.html')%>% html_table(fill=TRUE))
+booksHtml
+```
+
+The dataframes are similar except that reading from the xml file reordered the column headers alphabetically. The Html file has some trailing spaces which had to be cleaned up.

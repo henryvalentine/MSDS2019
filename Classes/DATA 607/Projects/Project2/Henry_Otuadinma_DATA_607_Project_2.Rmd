@@ -179,7 +179,7 @@ Preview the data
 
 mixedBooks <- subset(allBooks, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
 
-datatable(head(mixedBooks, 10), colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+datatable(mixedBooks, colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
     "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",

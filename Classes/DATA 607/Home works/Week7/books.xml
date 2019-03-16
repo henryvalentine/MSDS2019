@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+   <book>
+      <authors>Stephen King, Peter Straub</authors>
+      <datePublished>April 17, 2018</datePublished>
+      <genre>Lterature &amp; Fiction</genre>
+      <numberOfReviewers>884</numberOfReviewers>
+      <pages>784</pages>
+      <rating>4.5</rating>
+      <title>The Talisman: A Novel</title>
+      <type>Paperback</type>
+   </book>
+   <book>
+      <authors>Joko Wilink, Leif Babin</authors>
+      <datePublished>Nov 21, 2017</datePublished>
+      <genre>History</genre>
+      <numberOfReviewers>2618</numberOfReviewers>
+      <pages>384</pages>
+      <rating>4.8</rating>
+      <title>Extreme Ownership</title>
+      <type>Hardcover</type>
+   </book>
+   <book>
+      <authors>Bryan Stevenson</authors>
+      <datePublished>August 18, 2015</datePublished>
+      <genre>History</genre>
+      <numberOfReviewers>3424</numberOfReviewers>
+      <pages>368</pages>
+      <rating>4.8</rating>
+      <title>Just Mercy</title>
+      <type>Hardcover</type>
+   </book>
+</books>

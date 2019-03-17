@@ -15,12 +15,51 @@ knitr::opts_chunk$set(echo = TRUE)
 (a) What is the probability that a randomly chosen penny weighs less than 2.4 grams?
 
 ```{r}
+mean <- 2.5
+sd <- 0.03
 
+paste0('The probability of a peny weighing less than 2.4g is: ', round(pnorm(2.4, mean, sd)*100, 3), '%', sep='')
 
 ```
 
 (b) Describe the sampling distribution of the mean weight of 10 randomly chosen pennies.
+
+##### The standard of error for the new sample is:
+
+```{r}
+n = 10
+sampleSD <- sd/sqrt(n)
+sampleSD
+```
+
+##### This then means that we can assume the 10 randomly selected penies are normally distributed with a standard error of 0.009486833
+
+
 (c) What is the probability that the mean weight of 10 pennies is less than 2.4 grams?
+
+```{r}
+
+pnorm(2.4,mean = 2.5,sd = sampleSD)
+```
+The probability is so small and tends towards zero
+
 (d) Sketch the two distributions (population and sampling) on the same scale.
+
+```{r}
+
+normSample <- seq(mean - (3 * sd), mean + (3 * sd), length=15)
+randomSample<- seq(mean - (3 * sampleSD), mean + (3 * sampleSD), length=15)
+popDistribution <- dnorm(normSample,mean,sd)
+sampleDistribution <- dnorm(randomSample,mean,sampleSD)
+
+plot(normSample, popDistribution, type="l",col="green", ylim=c(0,75), xlab = "Weights", ylab = "Frequency")
+lines(randomSample, sampleDistribution, col="steelblue")
+
+```
+
+
 (e) Could you estimate the probabilities from (a) and (c) if the weights of pennies had a skewed
 distribution?
+
+Answer:
+The probabiliry of (a) could not be estimated because the distribution is right skewed as it asks for a probability of weight less than 2.4grams and is not normal, while that of (c) might be possible to estimate but the size of the sample is way lower than the minimum required size so it can't be estimated.

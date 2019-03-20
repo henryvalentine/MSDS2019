@@ -1,0 +1,10 @@
+---
+title: "Data Science Thought Leaders"
+author: "Henry Otuadinma"
+date: "20 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

@@ -1,0 +1,23 @@
+---
+title: "DATA607 Final Project"
+author: "Henry Otuadinma"
+date: "17 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stringr)
+library(xml2)
+library(rvest)
+
+```
+
+```{r}
+
+  gInfo <- html_nodes(read_html(curl('https://www.glassdoor.com/partner/jobListing.htm?pos=302&ao=456183&s=149&guid=000001699452e901a261a8ea19d9d48e&src=GD_JOB_AD&t=SRFJ&extid=4&exst=O&ist=L&ast=OL&vt=w&slr=true&cs=1_4a3e7d50&cb=1552971656096&jobListingId=3133487231', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.jobDescriptionContent > ul:nth-of-type(2)')
+  
+gInfo
+
+```
+

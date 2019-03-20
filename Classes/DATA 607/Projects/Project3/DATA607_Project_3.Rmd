@@ -1,0 +1,318 @@
+---
+title: "DATA607 Project 3"
+author: "Henry Otuadinma"
+date: "18 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stringr)
+library(xml2)
+library(rvest)
+library(textrank)
+library(lattice)
+library(igraph)
+library(ggraph)
+library(ggplot2)
+library(RColorBrewer)
+library(wordcloud)
+```
+
+### Webscrapping
+
+Preliminary searches were conducted using the search term "Data Scientist" ere performed on http://dice.com and http://glassdor.com job listing sections and the returned results were observed. Appropriate investigations were carried out to determine the structure of the html nodes containing the needed job links to the individual job pages.
+
+#### Form Data science keyword word so as to limit the amount of unwanted words to be extracted from the pages
+
+```{r}
+tags <- c("Math", "Computer Science", "Information Systems", "Machine Learning","D3.Js","D3", "statistics", "econometrics", "applied aathematics", "Operations Research", "analytical modeling" , "statistical models", "mmachine learning","algorithms","data modeling", "SAS","[^[:alnum:]]r[^[:alnum:]]"," r ","Python", "Azure ML", "KNIME", "SQL","Agile", "software development","SAS", "Tableau", "Power BI", "power bi","Statistics","customer focused","analytical","problem-solving skills", "Highly motivated", "self-starter","innovative", "quick to learn", "Excellent communication", "communication", "interpersonal skills","DNN","CNN","RNN", "logistic rgression", "neural networks", "cloudformation", "statistics", "MATLAB", "mathematics" , "economics", "engineering", "java", "ruby", "javascript", "scala", "tableau", "hadoop", "HADOOP", "mapreduce",    "spark", "pig", "hive", "shark","oozie", "zookeeper", "flume",   "mahout",  "nosql","NOSQL","hbase","cassandra", "mongodb", "amazon s3", "intellectual curiosity", "business acumen", "communication", "data visualization", "data munging", "calculus", "linear algebra", "software engineering", "scientific method", "math", "product design","product development", "database administration", "project management", "data mining", "predictive modeling", "predictive analytics", "business intelligence", "optimization", "text mining","cloud management", "big data", " viz ", "bayesian statistics","bayesian analysis","n.l.p ", "nlp", "NLP", "natural language processing", "simulation", "simulations", "classification", "clustering",  "regression", "glm", "glms", "generalized linear models", "entrepreneurial", "entrepreneur", "least squares", " roc ", "data wrangling", "storyteller", "storytelling", "hacking","deep learning", "neural network", "neural networks", "sci-kit learn", "pandas", "numpy", "cicrosoft power bi", "knime", "octave", "rapidminer", "minitab", "stata", "h20", "curious", "xlstat", "keras", "random forest", "decision tree", "time series", "random tree", "probability", "dato", "ggplot", " C# ", " c# "," C++ ", " c++ ", "ggplot2","ggplt", "ggvis", "predictive analysis", "Java Script", "HBase")
+
+tag_ex <- paste0(tags, collapse = '|')
+tag_ex <- tolower(tag_ex)
+```
+
+
+```{r}
+remove <- c("bein", "buil", "brin", "blis", "brig", "blic")
+```
+
+#### 1. Pulling job links with search tags containing "Data Scientist" on:
+
+
+#### ------------------------- Glassdor ---------------------------------
+
+```{r}
+
+gldLinks <-vector()
+gldDst <-vector()
+```
+
+##### Search for Data Scientist on glassdoor.com and pull the job links from 30 listing pages
+
+```{r}
+
+gldUrl <- 'https://www.glassdoor.com/Job/data-scientist-jobs-SRCH_KO0,14_IP'
+
+for(i in 1: 30)
+{
+  gldUri <- paste(gldUrl, i, '.htm', sep = "")
+  
+  gLinks <- html_attr(html_nodes(read_html(curl(gldUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.jobTitle a.jobLink'), "href")
+  
+  gldLinks <- c(gldLinks, gLinks)
+}
+
+```
+
+
+```{r}
+glData <- vector()
+```
+
+#### Navigate to individua job page and Scrape the job descriptions on them
+
+```{r}
+
+for (i in 1:length(gldLinks))
+{
+  tt <- tryCatch(read_html(curl(paste('https://www.glassdoor.com', gldLinks[i], sep = ""), handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
+          html_nodes('div.jobDescriptionContent') %>% 
+          html_text(), 
+         error = function(e){list(result = NA, error = e)})
+  
+  glData <- c(glData, tt)
+}
+
+```
+
+
+#### ------------------------- DICE.COM ----------------------------------------
+
+##### Search for Data Scientist on dice.com and pull the job links from 50 listing pages
+
+```{r}
+
+dScientist <- vector()
+dScience <- vector()
+
+```
+
+
+```{r}
+
+dstUrl <- 'https://www.dice.com/jobs/q-Data+Scientist-jobs?p='
+
+for(i in 1: 50)
+{
+  diceUri <- paste(dstUrl, i, sep = "")
+  
+  dLinks <- html_attr(html_nodes(read_html(curl(diceUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'ul.list-inline:not(ul.details) a'), "href")
+  
+  dScientist <- c(dScientist, dLinks)
+}
+
+```
+
+```{r}
+dStData <- vector()
+dscData <- vector()
+```
+
+#### Navigate to individua job page and Scrape the job descriptions on them
+
+```{r}
+
+for (i in 1:length(dScientist))
+{
+  tt <- tryCatch(read_html(curl(paste('https://www.dice.com', dScientist[i], sep = ""), handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
+          html_nodes('div#jobdescSec') %>% 
+          html_text(), 
+         error = function(e){list(result = NA, error = e)})
+  
+  dStData <- c(dStData, tt)
+}
+
+```
+
+#### Write Extracted and partially cleaned dice.com job data to .csv
+
+```{r}
+
+write.csv(dStData, "diceStripped.csv", row.names=FALSE)
+
+```
+
+
+```{r}
+
+diceRaw <- read.csv("diceStripped.csv", header = TRUE, stringsAsFactors = FALSE) # Read the .csv file
+
+```
+
+
+
+```{r}
+
+diceData <- diceRaw %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+
+```
+
+#### Final cleaning of dice.com data
+
+```{r}
+
+diceClean <- diceData %>% .[!(. %in% remove)] %>% {gsub("c(", "", ., fixed="TRUE")} %>% {gsub(")", "", ., fixed="TRUE") } %>% { gsub('"', "", ., fixed="TRUE") }%>%str_replace_all("&", "")%>%str_replace_all("/", "")%>%str_replace_all(",", "")%>%str_trim(side='both')%>%{gsub("\\)|\\]|\\(|[0-9]", "", .)}%>%{gsub("^[^a-z]*", "", .)}%>%{gsub("[^[:alpha:]]+$", "", .)}
+
+diceClean <- diceClean[diceClean != ""]
+```
+
+
+```{r}
+
+head(diceClean)
+
+```
+
+
+```{r}
+
+write.csv(diceClean, "diceClean.csv", row.names=FALSE)
+
+```
+
+
+#### Extract keywords from Glassdoor data
+
+```{r}
+glD <- vector()
+
+```
+
+
+```{r}
+for (i in 1:length(glData))
+{
+  u <- tryCatch(glData[i] %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex), 
+         error = function(e){list(result = NA, error = e)})
+  
+  glD <- c(glD, u)
+}
+```
+
+
+```{r}
+glDClean1 <- glD%>%str_split(',')%>%unlist()
+```
+
+#### Further remove the funny elements from resulting vector
+
+```{r}
+glDClean1 <- glDClean1 %>% .[!(. %in% remove)] %>% {gsub("c(", "", ., fixed="TRUE")} %>% {gsub(")", "", ., fixed="TRUE") } %>% { gsub('"', "", ., fixed="TRUE") }%>%str_replace_all("&", "")%>%str_replace_all("/", "")%>%str_replace_all(",", "")%>%str_trim(side='both')%>%{gsub("\\)|\\]|\\(|[0-9]", "", .)}%>%{gsub("^[^a-z]*", "", .)}%>%{gsub("[^[:alpha:]]+$", "", .)}
+glDClean1 <- glDClean1[glDClean1 != ""]
+```
+
+```{r}
+head(glDClean1)
+
+```
+
+####For glassdoor.com data form a dataframe with the words frequency of occurence computed by calling the `table` function on the `glDClean1` vector
+```{r}
+
+d <- as.data.frame(table(glDClean1))
+colnames(d)<-c("skill","frequency")
+d <- d %>%arrange(desc(d$frequency))
+head(d)
+```
+
+
+#### Write to csv
+```{r}
+write.csv(glDClean1, "glassD_cleaned1.csv", row.names=FALSE)
+
+```
+
+
+#### For dice.com data form a dataframe with the words frequency of occurence computed by calling the `table` function on the `diceClean` vector
+
+```{r}
+
+dd <- as.data.frame(table(diceClean))
+colnames(dd)<-c("skill","frequency")
+dd <- dd %>%arrange(desc(dd$frequency))
+head(dd)
+
+```
+
+#### merge the two Vectors `diceClean` and `glDClean1` and form a single dataframe with the words frequency of occurence computed by calling the `table` on the resulting vactor `allVec`
+
+```{r}
+allVec <- c(diceClean, glDClean1)
+alldata <- as.data.frame(table(allVec))
+colnames(alldata)<-c("skill","frequency")
+alldata <- alldata %>%arrange(desc(alldata$frequency))
+head(alldata)
+```
+
+#### How the skills compare glassdoor.com
+
+```{r}
+
+
+top20 <- head(d, n = 20)
+
+dplt <- ggplot(data=top20, aes(x = reorder(skill, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in Data science Job") + ylab("Frequency") +
+  ggtitle("Most valuable Data Science Skills") +
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = d$skill, freq = d$frequency, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+
+#### How the skills compare dice.com
+
+```{r}
+
+
+top20d <- head(dd, n = 20)
+
+dplt <- ggplot(data=top20d, aes(x = reorder(skill, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in Data science Job") + ylab("Frequency") +
+  ggtitle("Most valuable Data Science Skills") +
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = dd$skill, freq = dd$frequency, min.freq = 1,
+          max.words=500, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+
+
+
+
+
+
+
+
+
+

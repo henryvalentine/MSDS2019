@@ -184,15 +184,128 @@ Answer:
 
 #### 5.32 Fuel efficiency of manual and automatic cars, Part I. 
 
-Each year the US Environmental
-Protection Agency (EPA) releases fuel economy data on cars manufactured in that year.
+Each year the US Environmental Protection Agency (EPA) releases fuel economy data on cars manufactured in that year.
 Below are summary statistics on fuel efficiency (in miles/gallon) from random samples of cars with
 manual and automatic transmissions manufactured in 2012. Do these data provide strong evidence
 of a di???erence between the average fuel efficiency of cars with manual and automatic transmissions
 in terms of their average city mileage? Assume that conditions for inference are satisfied.
 
+```{r}
+
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/data606_h5_img2.png')
+```
+
+Answer:
+
+H0: ??diff=0 => The difference of average miles is equal to zero.
+
+HA: ??diff???0 The difference of average miles is NOT equal to zero.
+
+```{r}
+n <- 26
+
+# for Manual vehicles
+mean_m <- 19.85
+sd_m <- 4.51
+
+# for Automatic vehicles
+mean_a <- 16.12
+sd_a <- 3.58
+
+# difference in sample means
+mean_Diff <- mean_m - mean_m
+
+# standard error of this point estimate
+SE_Diff <- ( (sd_a ^ 2 / n) + ( sd_m ^ 2 / n) ) ^ 0.5
+
+t_val <- (mean_Diff - 0) / SE_Diff
+df <- n - 1
+p <- pt(t_val, df = df)
+paste('p-value is: ', p)
+
+```
+
+The p-value is less than 0.05, which means we can conclude that there is strong evidence of a difference in fuel efficiency between these type of vehicles. Therefore, we reject the null hypothesis H0.
 
 
+#### 5.48 Work hours and education. 
+The General Social Survey collects data on demographics,
+education, and work, among many other characteristics of US residents.47 Using ANOVA, we can
+consider educational attainment levels for all 1,172 respondents at once. Below are the distributions
+of hours worked by educational attainment and relevant summary statistics that will be helpful in
+carrying out this analysis.
 
 
+```{r}
 
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/data606_h5_img3.png')
+```
+
+
+(a) Write hypotheses for evaluating whether the average number of hours worked varies across the
+five groups.
+
+Answer:
+
+H0: $\mul=\muh=\muj=\mub=\mug$ => The difference of ALL averages is equal
+
+HA: The avg hours across some or all groups does vary
+
+(b) Check conditions and describe any assumptions you must make to proceed with the test.
+
+Answer:
+
+##### The data in each group appears relatively normal and the variability is similar across each group. Assumption for ANOVA, that observations are independent.
+
+#### The data within each group are nearly normal: The box plots do not support nearly normal data within each group. Each group has outliers some groups seem to follow a normal distribution.
+
+#### The variability across the groups is about equal: There seems to be a similarity of variability in between some of the groups just by observing the standard deviations.
+
+(c) Below is part of the output associated with this test. Fill in the empty cells.
+
+
+```{r}
+
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/data606_h5_img4.png')
+```
+
+```{r}
+mu <- c(38.67, 39.6, 41.39, 42.55, 40.85)
+sd <- c(15.81, 14.97, 18.1, 13.62, 15.51)
+n <- c(121, 546, 97, 253, 155)
+df <- data.frame (mu, sd, n)
+```
+
+
+```{r}
+n <- sum(df$n)
+k <- length(df$mu)
+
+#degrees of freedom
+df <- k - 1
+dfResidual <- n - k
+
+# let's use the qf function on the Pr(>F) to get the F-statistic:
+
+Prf <- 0.0682
+F_statistic <- qf( 1 - Prf, df , dfResidual)
+
+
+MSG <- 501.54
+MSE <- MSG / F_statistic
+
+
+SSG <- df * MSG
+SSE <- 267382
+
+
+SST <- SSG + SSE
+dft <- df + dfResidual
+
+```
+
+(d) What is the conclusion of the test?
+
+Answer:
+
+#### The null hypothesis will not be rejected since that the p-value = 0.0682, is greater than 0.05, we can say that there is not a significant difference between the groups

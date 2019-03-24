@@ -67,6 +67,12 @@ can be done using the `summary` command:
 summary(nc)
 ```
 
+
+```{r}
+nc <- na.omit(nc)
+
+```
+
 As you review the variable summaries, consider which variables are categorical 
 and which are numerical. For numerical variables, are there outliers? If you 
 aren't sure or want to take a closer look at the data, make a graph.
@@ -97,8 +103,9 @@ ggplot(aes(y = nc.weight , x = nc.habit, fill = nc.habit), data = df) + geom_box
 
 
 ```{r}
-meanweightFunc <-  function(x){
-  mean(x$weight)
+meanweightFunc <-  function(x)
+  {
+    mean(x$weight)
   
   }
 
@@ -140,7 +147,7 @@ hypothesis tests and constructing confidence intervals.
 
 
 inference(nc$weight, x = nc$habit,
-                est=c("mean"), 
+                est="mean", 
                 type="ht", null = 0,alternative = "twosided",
                 method="theoretical")
 
@@ -227,7 +234,7 @@ by(nc$mage, nc$mature, max)
 by(nc$mage, nc$mature, min)
 ```
 
-#### The cutoff age is 35 years. It is evident that the youngest mature mother is 35years and the oldest not mature mother is 34years.
+#### Errors in the inference functions didn't allow me to finish this Lab, while I can't callthe by() function if mean, max, min are the targetted function
 
 -   Pick a pair of numerical and categorical variables and come up with a 
 research question evaluating the relationship between these variables. 
@@ -250,7 +257,7 @@ inference(y = nc$weeks, x = nc$habit, est = "mean", type = "ht", null = 0,
           order = c("smoker","nonsmoker"))
 ```
 
-#### The null hypothesis stands because there isn't clear evidence to suggest the length of pregnancies vary between smokers and non-smokers.
+#### I can't call the ineference function when x is included
 
 <div id="license">
 This is a product of OpenIntro that is released under a [Creative Commons 

@@ -95,8 +95,101 @@ n
 Luke's sample size should be  664 students
 
 
+#### 5.20 High School and Beyond, Part I. 
+The National Center of Education Statistics conducted
+a survey of high school seniors, collecting test data on reading, writing, and several other subjects.
+Here we examine a simple random sample of 200 students from this survey. Side-by-side box plots
+of reading and writing scores as well as a histogram of the di???erences in scores are shown below.
+
+```{r}
+
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Home%20works/data606_h5_20.png')
+```
+
+(a) Is there a clear difference in the average reading and writing scores?
+
+Answer: 
+#### There seems to be a slight difference between the means, while the distribution of differences appear to be quite normal
+
+(b) Are the reading and writing scores of each student independent of each other?
+
+Answer:
+
+#### I will say No, because the scores of either reading or writing are independant, but one student can have scores for both sides in the sample.
+
+(c) Create hypotheses appropriate for the following research question: is there an evident difference
+in the average scores of students in the reading and writing exam?
+
+Answer
+
+H_0: The difference of average in between reading and writing equal zero. That is: ??r?????w=0
+
+H_A: The difference of average in between reading and writing does NOT equal zero. That is: ??r?????w???0
+
+(d) Check the conditions required to complete this test.
+
+Answer:
+
+#### a) Independence of observations: The difference histogram suggested the data are paired, which implies that they would not be independent.
+
+#### b) The observations are from nearly normal distribution: The provided box plot has no outliers and thereby imply resonably normal distribution
+
+(e) The average observed difference in scores is ¯xread???write = ???0.545, and the standard deviation
+of the differences is 8.887 points. Do these data provide convincing evidence of a difference
+between the average scores on the two exams?
+
+Answer:
+
+H0: ??diff=0 =>  There is no difference between the average scores
+
+HA: ??diff???0 => There exists a difference between the average scores
+
+```{r}
+sd_Diff <- 8.887
+mean_Dif <- -0.545
+n <- 200
+
+SE_Diff <- sd_Diff / sqrt(n)
+
+# to calculate T statistic
+t_value <- (mean_Dif - 0) / SE_Diff
+
+df <- n - 1
+
+p <- pt(t_value, df = df)
+
+paste('p-value is: ', p)
+```
+
+The NULL hypothesis stands because the p-value is not less that 0.05, which indicates that no convincing evidence of a difference in student's reading and writing exam scores exists.
+
+(f) What type of error might we have made? Explain what the error means in the context of the
+application.
+
+Answer:
+
+#### Type I error: Incorrectly reject the null hypothesis.
+
+Type II error: Incorrectly reject the alternative hypothesis.
+
+Our conclusion that no difference exists between the average student reading and writing exam scores might have been a wrong one. We might have wrongly rejected the alternative hypothesis, HA.
+
+(g) Based on the results of this hypothesis test, would you expect a confidence interval for the
+average difference between the reading and writing scores to include 0? Explain your reasoning.
+
+Answer:
+
+#### Being that it has been determined that there is no clear evidence of a difference in average means, I would expect the confidence interval to include 0.
 
 
+#### 5.32 Fuel efficiency of manual and automatic cars, Part I. 
+
+Each year the US Environmental
+Protection Agency (EPA) releases fuel economy data on cars manufactured in that year.
+Below are summary statistics on fuel efficiency (in miles/gallon) from random samples of cars with
+manual and automatic transmissions manufactured in 2012. Do these data provide strong evidence
+of a di???erence between the average fuel efficiency of cars with manual and automatic transmissions
+in terms of their average city mileage? Assume that conditions for inference are satisfied.
 
 
 

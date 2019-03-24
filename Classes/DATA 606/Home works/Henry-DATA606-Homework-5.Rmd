@@ -1,0 +1,100 @@
+---
+title: "DATA606 Homework 5"
+author: "Henry Otuadinma"
+date: "24 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 5.6 Working backwards, Part II. 
+A 90% confidence interval for a population mean is (65, 77). The population distribution is approximately normal and the population standard deviation is unknown. This confidence interval is based on a simple random sample of 25 observations. Calculate the sample mean, the margin of error, and the sample standard deviation.
+
+```{r}
+smean= (77+65)/2
+
+paste('The Sample mean is:', round(smean, 4))
+```
+
+We know that the margin of error ME is $\frac{x2???x1}{2}$, and we have that confidence interval CI is (x1,x2)
+
+```{r}
+n <- 25
+x1 <- 65
+x2 <- 77
+
+ME <- (x2 - x1) / 2
+
+paste('The margin of error (ME) is:', round(ME, 4))
+```
+
+For sample standard deviation, $ME = t??????SE$, We will usthe qt() function, df = 25 - 1.
+
+```{r}
+df <- 25 - 1
+p <- 0.9
+p2tails <- p + (1 - p)/2
+
+tval <- qt(p2tails, df)
+
+# Since ME = t * SE
+SE <- ME / tval
+
+# Since SE = sd/sqrt(n)
+sd <- SE * sqrt(n)
+
+paste('The standard deviation is:', round(sd, 4))
+```
+
+#### 5.14 SAT scores. 
+SAT scores of students at an Ivy League college are distributed with a
+standard deviation of 250 points. Two statistics students, Raina and Luke, want to estimate the
+average SAT score of students at this college as part of a class project. They want their margin of
+error to be no more than 25 points.
+(a) Raina wants to use a 90% confidence interval. How large a sample should she collect?
+
+Answer:
+
+we have that $ME = z???SE$ and $SE = \frac{sd}{\sqrt(n)} => ME = Z.\frac{sd}{\sqrt(n)} => n = (\frac{z.sd}{ME})^2$
+
+```{r}
+z <- 1.65 # 90% CI
+ME <- 25
+sd <- 250
+
+n <- ((z * sd) / ME ) ^ 2
+paste('Raina should use a sample of size ', n)
+```
+From the above, the original calculation yielded 272.25 so it ia approximated to 273 students
+
+
+(b) Luke wants to use a 99% confidence interval. Without calculating the actual sample size,
+determine whether his sample should be larger or smaller than Raina's, and explain your
+reasoning.
+(c) Calculate the minimum required sample size for Luke.
+
+
+Luke's sample should be larger since it will require a higher z number multiplied by the standard deviation and then squared.
+
+(c) Calculate the minimum required sample size for Luke.
+
+```{r}
+
+z <- 2.575 # due to 99% Confidence interval
+ME <- 25
+sd <- 250
+
+n <- ((z * sd) / ME ) ^ 2
+
+```
+
+
+
+
+
+
+
+
+

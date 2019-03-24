@@ -32,7 +32,7 @@ library(DT)
 #### We curated a list of the top 10 thought leaders and wrote the list to a csv file
 
 ```{r}
-thoughtleaders <- read.csv('thought_leaders.csv', header = TRUE)
+thoughtleaders <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/thought_leaders.csv', header = TRUE)
 ```
 
 
@@ -53,7 +53,7 @@ datatable(thoughtleaders, colnames= c("Name", "Occupation", "Link"), class = 'ce
 
 ```{r}
 #read the keyword tags from csv
-tag_ex <- read.csv('keyword_tags.csv', header = TRUE)
+tag_ex <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/keyword_tags.csv', header = TRUE)
 tag_ex <- as.character(tag_ex$x)
 ```
 
@@ -136,7 +136,7 @@ df <- data.frame(title=ta, year=ayn, keyword=abT)
 
 #### write to csv
 
-```{r}
+```{r, eval=FALSE}
 
 write.csv(df, "an_Ng.csv", row.names=FALSE)
 
@@ -144,7 +144,7 @@ write.csv(df, "an_Ng.csv", row.names=FALSE)
 
 ```{r}
 #read from csv
-an_df <- read.csv('an_Ng.csv', header = TRUE)
+an_df <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/an_Ng.csv', header = TRUE)
 ```
 
 ```{r}
@@ -327,12 +327,12 @@ write.csv(aa, "kr_keywords.csv", row.names=FALSE)
 
 ```{r}
 #read from csv
-kira_df <- read.csv('kira_radinsky.csv', header = TRUE)
+kira_df <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/kira_radinsky.csv', header = TRUE)
 ```
 
 ```{r}
 #read from csv
-allkw <- read.csv('kr_keywords.csv', header = TRUE)
+allkw <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/kr_keywords.csv', header = TRUE)
 allkw <- as.character(allkw$x)
 ```
 

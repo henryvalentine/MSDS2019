@@ -1,5 +1,5 @@
 ---
-title: "Data Science Thought Leaders"
+title: "Data Science Thought Leaders sections 2 & 9c"
 author: "Henry Otuadinma"
 date: "20 March 2019"
 output: html_document
@@ -7,4 +7,425 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(aRxiv)
+library(stringr)
+library(xml2)
+library(rvest)
+library(textrank)
+library(lattice)
+library(igraph)
+library(ggraph)
+library(ggplot2)
+library(wordcloud)
+library(curl)
+library(dplyr)
+library(DT)
 ```
+
+## Thought leaders based on popular naratives {.tabset .tabset-pills .tabset-fade}
+
+#### We looked up top influencers/thought leaders in data science and this yielded a lot of people but we narrowed them down to the top 10 we think have huge influence in different areas of research and interests in data science.
+
+#### For deeper insight, we chose to focus on two of them: <a href="http://www.andrewng.org/">Andrew Ng</a> and <a href="http://blog.kiraradinsky.com/">Kira Radinsky</a>. We could retrieve Andrew Ng's publications  from <a href="http://www.arxiv.org/">arXiv</a>, while web-scraping was carried out on <a href="https://dl.acm.org">Association for Computing Machinery website</a> for Kira Radinsky's publications, which yielded useful information for studies. We extracted the abstracts from their publications to see what topics and areas interest them.
+
+#### We curated a list of the top 10 thought leaders and wrote the list to a csv file
+
+```{r}
+thoughtleaders <- read.csv('thought_leaders.csv', header = TRUE)
+```
+
+
+```{r}
+
+datatable(thoughtleaders, colnames= c("Name", "Occupation", "Link"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+#### We generated tags we feel feature often in topics that interest them and saved these in a .csv. These will help in filtering appropriate keywords from their publications
+
+```{r}
+#read the keyword tags from csv
+tag_ex <- read.csv('keyword_tags.csv', header = TRUE)
+tag_ex <- as.character(tag_ex$x)
+```
+
+
+### Andrew Y. Ng
+
+##### <a href="https://www.andrewng.org">His personal website </a>
+
+#### His publications were sourced from the arxive api
+
+```{r}
+
+#These queries returned different results
+
+aNgArxiv = arxiv_search('au: "Andrew Ng"') 
+aNgArxiv1 = arxiv_search('au: "Andrew Y. Ng"')
+
+```
+
+#### combine Andrew Ng's data
+
+```{r}
+
+aNgDf <- rbind(aNgArxiv, aNgArxiv1)
+
+# Removing the first row because the paper was later withdrawn for corrections
+aNgDf = aNgDf[-1,]
+row.names(aNgDf) <- NULL
+```
+
+
+```{r}
+submitted = str_extract(aNgDf$submitted, '\\d+')
+anNg <- aNgDf %>% select(title, authors)
+anNg['submitted'] <- submitted
+```
+
+```{r}
+
+datatable(head(anNg), colnames= c("Title", "Author(s)", "Date"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+ta <- vector()
+abT <- vector()
+ayn <- vector()
+
+```
+
+```{r}
+
+for(i in 1: nrow(aNgDf))
+{
+  row <- aNgDf[i,]
+  
+  k <- row$abstract %>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+  
+  for(j in 1: length(k))
+  {
+    ta <- c(ta, row$title)
+    ayn <- c(ayn, as.numeric(str_extract(row$submitted, "\\d+")))
+    abT <- c(abT, k[j])
+  }
+}
+
+```
+
+
+```{r}
+df <- data.frame(title=ta, year=ayn, keyword=abT)
+```
+
+#### write to csv
+
+```{r}
+
+write.csv(df, "an_Ng.csv", row.names=FALSE)
+
+```
+
+```{r}
+#read from csv
+an_df <- read.csv('an_Ng.csv', header = TRUE)
+```
+
+```{r}
+ 
+aNkeywords <-an_df%>% select(year, keyword)%>% group_by(keyword, year) %>% mutate(frequency = n())%>%unique()
+```
+
+
+#### sort keywords in descending order
+
+```{r}
+aNkw <- aNkeywords[order(-aNkeywords$frequency),, drop=FALSE]
+
+```
+
+
+```{r}
+
+datatable(head(aNkw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+#### Top 20 keywords in Andrew Ng's publications over the years
+
+```{r}
+
+dplt <- ggplot(data=head(aNkw, 20), aes(x = year, y=frequency, fill = keyword)) +
+  geom_bar(position="fill", stat = "identity") + 
+  ggtitle("top Keywords in Andrew Ng's publications over the years") +
+ xlab("Keyword")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold"))
+ dplt + theme(legend.position="right")
+
+```
+
+
+#### Top 20 keywords in Andrew Ng's publications without considering the years
+
+```{r}
+topKeyW <-as.data.frame(table(abT))
+names(topKeyW)<-c("keyword","frequency")
+```
+
+```{r}
+
+dplt <- ggplot(data=head(topKeyW, 20), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords")+
+  ylab("Frquency")+
+  ggtitle("Andrew Ng's top Keywords without the years") +
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+
+### Kira Radinsky
+
+##### <a href="http://kiraradinsky.com">Her personal website</a>
+
+##### Her publications sourced by searching for her name on <a href="https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0"> Association for Computing Machinery website</a>
+
+```{r, eval=FALSE}
+
+# Hand-picked links according to relevance
+
+kradlinks <- c('citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2433500', 'citation.cfm?id=2433448', 'citation.cfm?id=1963455', 'citation.cfm?id=2187958', 'citation.cfm?id=3192292', 'citation.cfm?id=2433431', 'citation.cfm?id=1487070', 'citation.cfm?id=3219882', 'citation.cfm?id=2348364', 'citation.cfm?id=3096469', 'citation.cfm?id=1935850', 'citation.cfm?id=2422275')
+
+```
+
+
+```{r, eval=FALSE}
+kradTitles <- vector()
+kradAbstracts <- vector()
+kradYears <- vector()
+
+```
+
+##### Make a search on http://dl.acm.org and pull links
+
+```{r, eval=FALSE}
+
+khtms <- tryCatch(html_nodes(read_html(curl('https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.details'), 
+         error = function(e){list(result = NA, error = e)})
+```
+
+
+##### The above search returned a lot of links but they need to be filtered to get the relevant ones
+
+
+```{r, eval=FALSE}
+
+for(i in 1: length(khtms))
+{
+  href <- html_attr(html_nodes(khtms[i], 'div.title a'), 'href')
+  
+  if(href %in% kradlinks)
+  {
+    
+    kradTitles <- c(kradTitles, khtms[i]%>%html_nodes('div.title a')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+    
+    kradYears <- c(kradYears, khtms[i]%>%html_nodes('span.publicationDate')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+    
+    r <- html_node(read_html(curl(paste('https://dl.acm.org/', href, '&preflayout=flat', sep=''), handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.flatbody')
+    
+    paragraphs <- html_nodes(r, 'p')
+    
+    pTexts <- NULL
+    
+    for(j in 1: length(paragraphs))
+    {
+      pText <- paragraphs[j]%>% html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>% str_replace_all('\"', '')%>%str_trim(side='both')%>%tolower()
+      pTexts <- paste(pTexts, o, collapse=",") 
+    }
+    
+    kradAbstracts <- c(kradAbstracts, pText)
+    
+    Sys.sleep(10)
+    
+  }
+  
+}
+
+```
+
+
+
+```{r, eval=FALSE}
+tt <- vector()
+aa <- vector()
+yy <- vector()
+
+```
+
+
+```{r, eval=FALSE}
+
+for(i in 1: length(kradAbstracts))
+{
+  k <- kradAbstracts[i] %>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+  
+  for(j in 1: length(k))
+  {
+    tt <- c(tt, kradTitles[i])
+    yy <- c(yy, as.numeric(str_extract(kradYears[i], "\\d+")))
+    aa <- c(aa, k[j])
+  }
+}
+
+```
+
+```{r, eval=FALSE}
+dfk<- data.frame(title=tt, year=yy, keyword=aa)
+
+```
+
+
+#### write to csv
+
+```{r, eval=FALSE}
+
+write.csv(dfk, "kira_radinsky.csv", row.names=FALSE)
+
+```
+
+#### Write all keywords to .csv
+```{r, eval=FALSE}
+
+write.csv(aa, "kr_keywords.csv", row.names=FALSE)
+```
+
+#### read from .csv
+
+```{r}
+#read from csv
+kira_df <- read.csv('kira_radinsky.csv', header = TRUE)
+```
+
+```{r}
+#read from csv
+allkw <- read.csv('kr_keywords.csv', header = TRUE)
+allkw <- as.character(allkw$x)
+```
+
+
+```{r}
+
+datatable(head(kira_df), colnames= c("Title", "Year", "Keyword"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+ 
+kkeywords <-kira_df%>% select(year, keyword)%>% group_by(keyword, year) %>% mutate(frequency = n())%>%unique()
+```
+
+
+#### sort keywords in descending order
+
+```{r}
+kw <- kkeywords[order(-kkeywords$frequency),, drop=FALSE]
+```
+
+```{r}
+
+datatable(head(kw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+#### Top 20 keywords in Kira Radinsky's publications over the years
+
+```{r}
+
+kw1 <- subset(kw, year != '2014' & year != '2015' & year != '2016')
+```
+
+
+```{r}
+
+dplt <- ggplot(data=head(kw1, 20), aes(x = year, y=frequency, fill = keyword)) +
+  geom_bar(position="fill", stat = "identity") + 
+  ggtitle("top Keywords in Kira Radinsky's publications over the years") +
+ xlab("Keyword")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold"))
+ dplt + theme(legend.position="right")
+
+```
+
+
+#### Top 20 keywords in Kira Radinsky's publications without considering the years
+
+```{r}
+kTopics <-as.data.frame(table(allkw))
+names(kTopics) <- c('keyword', 'frequency')
+```
+
+```{r}
+
+dplt <- ggplot(data=head(kTopics, 20), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords")+
+  xlab("Frequency")+
+  ylab("Frquency")+
+  ggtitle("Kira Radinsky's top Keywords without the years") +
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+
+## Conclusion
+
+##### From the above representations, it is obvious that both thought leaders focused on AI earlier on but later started shifting their focus to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+
+##### These two individuals were chosen because we observed that all the leaders followed a similar trend. They start with one broad area of interest first and then start focusing more on more than one specialised topics as the time go by.
+
+##### We are of the belief that drilled-down insight on the interests of the other thought leaders will yield similar results.
+
+#### The sources of this study were gotten from their publications/paers and do not reflect in its entirty, their complete interest areas. A more robust approach should also involve mining for appropriate keywords from their tweets, blogs, interviews, and key notes delivered in conferences
+
+#### The list we curated is based on evidences of influence and dedicated activities these people have put towards data science, therefore, someone else can have their own list different from ours
+

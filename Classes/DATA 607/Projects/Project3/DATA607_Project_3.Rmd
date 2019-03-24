@@ -18,6 +18,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(wordcloud)
 library(curl)
+library(dplyr)
 ```
 
 ### Webscrapping
@@ -38,52 +39,174 @@ tag_ex <- tolower(tag_ex)
 remove <- c("bein", "buil", "brin", "blis", "brig", "blic")
 ```
 
-#### 1. Pulling job links with search tags containing "Data Scientist" on:
+### 1. Pulling job links with search tags containing "Data Scientist" on:
 
+#### ------------------------- ziprecruiter.com ---------------------------------
+
+```{r}
+
+zpLinks <-vector()
+zDst <-vector()
+```
+
+##### Search for Data Scientist on www.ziprecruiter.com and pull the job links from 28 listing pages
+
+
+```{r}
+
+zlinks <-vector()
+zlocation <-vector()
+ztitle <-vector()
+zdescriptions <-vector()
+
+```
+
+#### This for-loop didn't produce the needed results
+
+```{r, warning=FALSE, message=FALSE}
+
+zUrl <- 'https://www.ziprecruiter.com/candidate/search?search=data+scientist&location=&page='
+
+for(i in 41: 28)
+{
+  zlinks <- tryCatch(html_nodes(read_html(curl(paste(zUrl, i, sep = ""), handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.job_content'), 
+         error = function(e){list(result = NA, error = e)})
+  
+  zpLinks <- c(zpLinks, zlinks)
+  Sys.sleep(10)
+}
+
+```
+
+#### The code below was used to do what the for-loop above was supposed to do.... Incrementing the `page` parameter in the url
+```{r}
+
+w <- tryCatch(html_nodes(read_html(curl('https://www.ziprecruiter.com/candidate/search?search=data+scientist&location=&page=1', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.job_content'), 
+         error = function(e){list(result = NA, error = e)})
+zpLinks <- c(zpLinks, w)
+```
+
+```{r}
+
+length(zpLinks)
+
+```
+
+#### ------------------------- ziprecruiter.com ---------------------------------
+
+```{r}
+
+mnLinks <-vector()
+mnDst <-vector()
+
+```
+
+##### Search for Data Scientist on www.monster.com and pull the job links from 24 listing pages
+
+```{r}
+
+mnUrl <- 'https://www.monster.com/jobs/search/?q=Data-Scientist&stpage=1&page='
+
+for(i in 1: 24)
+{
+  mnUri <- paste(mnUrl, i, sep = "")
+  
+  mnlinks <- html_nodes(read_html(curl(mnUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.summary')
+  
+  mnLinks <- c(mnLinks, mnlinks)
+  Sys.sleep(5)
+}
+
+```
+
+```{r}
+
+mlinks <-vector()
+mlocation <-vector()
+mtitle <-vector()
+mdescriptions <-vector()
+
+```
+
+```{r}
+
+for(i in 1: length(mnLinks))
+{
+  htm <- mnLinks[[i]]
+  
+  mlinks <- c(mlinks,html_attr(html_nodes(htm, 'h2.title a'), "href"))
+  mtitle <- c(mtitle,html_text(html_nodes(htm, 'h2.title a')))
+  mlocation <- c(mlocation,html_text(html_nodes(htm, 'div.location a')))
+}
+
+```
+
+
+```{r}
+for(i in 1: length(mlinks))
+{
+  mnUri <-mlinks[i]
+  
+ tt <- tryCatch(read_html(curl(mnUri, handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
+          html_nodes('div#JobDescription') %>% 
+          html_text(), 
+         error = function(e){list(result = NA, error = e)})
+  
+mdescriptions <- c(mdescriptions, tt)
+  
+  Sys.sleep(5)
+}
+
+```
+
+```{r}
+mtitle[10]
+length(mlinks)
+
+```
 
 #### ------------------------- Glassdor ---------------------------------
 
 ```{r}
-
-gldLinks <-vector()
-gldDst <-vector()
+#gldLinks <-vector()
+#gldDst <-vector()
 ```
 
 ##### Search for Data Scientist on glassdoor.com and pull the job links from 30 listing pages
 
 ```{r}
 
-gldUrl <- 'https://www.glassdoor.com/Job/data-scientist-jobs-SRCH_KO0,14_IP'
+#gldUrl <- 'https://www.glassdoor.com/Job/data-scientist-jobs-SRCH_KO0,14_IP'
 
-for(i in 1: 30)
-{
-  gldUri <- paste(gldUrl, i, '.htm', sep = "")
+#for(i in 1: 30)
+#{
+#  gldUri <- paste(gldUrl, i, '.htm', sep = "")
   
-  gLinks <- html_attr(html_nodes(read_html(curl(gldUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.jobTitle a.jobLink'), "href")
+#  gLinks <- html_attr(html_nodes(read_html(curl(gldUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.jobTitle a.jobLink'), "href")
   
-  gldLinks <- c(gldLinks, gLinks)
-}
+#  gldLinks <- c(gldLinks, gLinks)
+#}
 
 ```
 
 
 ```{r}
-glData <- vector()
+#glData <- vector()
 ```
 
 #### Navigate to individua job page and Scrape the job descriptions on them
 
 ```{r}
 
-for (i in 1:length(gldLinks))
-{
-  tt <- tryCatch(read_html(curl(paste('https://www.glassdoor.com', gldLinks[i], sep = ""), handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
-          html_nodes('div.jobDescriptionContent') %>% 
-          html_text(), 
-         error = function(e){list(result = NA, error = e)})
+#for (i in 1:length(gldLinks))
+#{
+#  tt <- tryCatch(read_html(curl(paste('https://www.glassdoor.com', gldLinks[i], sep = ""), handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
+#          html_nodes('div.jobDescriptionContent') %>% 
+#          html_text(), 
+#         error = function(e){list(result = NA, error = e)})
   
-  glData <- c(glData, tt)
-}
+#  glData <- c(glData, tt)
+#}
 
 ```
 
@@ -94,53 +217,79 @@ for (i in 1:length(gldLinks))
 
 ```{r}
 
-dScientist <- vector()
-dScience <- vector()
+#dScientist <- vector()
+#dScience <- vector()
 
 ```
 
 
 ```{r}
 
-dstUrl <- 'https://www.dice.com/jobs/q-Data+Scientist-jobs?p='
+#dstUrl <- 'https://www.dice.com/jobs/q-Data+Scientist-jobs?p='
 
-for(i in 1: 50)
-{
-  diceUri <- paste(dstUrl, i, sep = "")
+#for(i in 1: 50)
+#{
+#  diceUri <- paste(dstUrl, i, sep = "")
   
-  dLinks <- html_attr(html_nodes(read_html(curl(diceUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'ul.list-inline:not(ul.details) a'), "href")
+#  dLinks <- html_attr(html_nodes(read_html(curl(diceUri, handle = new_handle("useragent" = "Mozilla/5.0"))), 'ul.list-inline:not(ul.details) a'), "href")
   
-  dScientist <- c(dScientist, dLinks)
-}
+#  dScientist <- c(dScientist, dLinks)
+#}
 
 ```
 
 ```{r}
-dStData <- vector()
-dscData <- vector()
+#dStData <- vector()
+#dscData <- vector()
 ```
 
 #### Navigate to individua job page and Scrape the job descriptions on them
 
 ```{r}
+# The for-loop below takes a lot of time to run. Uncomment to run it
 
-for (i in 1:length(dScientist))
-{
-  tt <- tryCatch(read_html(curl(paste('https://www.dice.com', dScientist[i], sep = ""), handle = new_handle("useragent" = "Mozilla/5.0")))%>% 
-          html_nodes('div#jobdescSec') %>% 
-          html_text(), 
-         error = function(e){list(result = NA, error = e)})
+#for (i in 1:length(dScientist))
+#{
+#  tt <- tryCatch(read_html(curl(paste('https://www.dice.com', dScientist[i], sep = ""), handle = new_handle("useragent" = #"Mozilla/5.0")))%>% 
+#          html_nodes('div#jobdescSec') %>% 
+#          html_text(), 
+#         error = function(e){list(result = NA, error = e)})
   
-  dStData <- c(dStData, tt)
-}
+#  dStData <- c(dStData, tt)
+#}
 
 ```
+
+#### Get the job cities
+
+```{r}
+diceJobCities <- vector()
+glassJobCities <- vector()
+```
+
+
+```{r}
+
+dicelinks <- read.csv("diceDstLinks.csv", header = TRUE, stringsAsFactors = FALSE) # Read the .csv file
+
+```
+
+```{r}
+dicelinks <- dicelinks$x
+```
+
+```{r}
+
+write.csv(diceJobCities, "diceJobCities.csv", row.names=FALSE)
+
+```
+
 
 #### Write Extracted and partially cleaned dice.com job data to .csv
 
 ```{r}
 
-write.csv(dStData, "diceStripped.csv", row.names=FALSE)
+# write.csv(dStData, "diceStripped.csv", row.names=FALSE)
 
 ```
 
@@ -186,52 +335,61 @@ write.csv(diceClean, "diceClean.csv", row.names=FALSE)
 #### Extract keywords from Glassdoor data
 
 ```{r}
-glD <- vector()
+# glD <- vector()
 
 ```
 
 
 ```{r}
-for (i in 1:length(glData))
-{
-  u <- tryCatch(glData[i] %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex), 
-         error = function(e){list(result = NA, error = e)})
+#for (i in 1:length(glData))
+#{
+#  u <- tryCatch(glData[i] %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex), 
+#         error = function(e){list(result = NA, error = e)})
   
-  glD <- c(glD, u)
-}
+#  glD <- c(glD, u)
+#}
 ```
 
 
 ```{r}
-glDClean1 <- glD%>%str_split(',')%>%unlist()
+#glDClean1 <- glD%>%str_split(',')%>%unlist()
 ```
 
 #### Further remove the funny elements from resulting vector
 
 ```{r}
-glDClean1 <- glDClean1 %>% .[!(. %in% remove)] %>% {gsub("c(", "", ., fixed="TRUE")} %>% {gsub(")", "", ., fixed="TRUE") } %>% { gsub('"', "", ., fixed="TRUE") }%>%str_replace_all("&", "")%>%str_replace_all("/", "")%>%str_replace_all(",", "")%>%str_trim(side='both')%>%{gsub("\\)|\\]|\\(|[0-9]", "", .)}%>%{gsub("^[^a-z]*", "", .)}%>%{gsub("[^[:alpha:]]+$", "", .)}
-glDClean1 <- glDClean1[glDClean1 != ""]
-```
+# glDClean1 <- glDClean1 %>% .[!(. %in% remove)] %>% {gsub("c(", "", ., fixed="TRUE")} %>% {gsub(")", "", ., fixed="TRUE") } %>% { gsub('"', "", ., fixed="TRUE") }%>%str_replace_all("&", "")%>%str_replace_all("/", "")%>%str_replace_all(",", "")%>%str_trim(side='both')%>%{gsub("\\)|\\]|\\(|[0-9]", "", .)}%>%{gsub("^[^a-z]*", "", .)}%>%{gsub("[^[:alpha:]]+$", "", .)}
 
-```{r}
-head(glDClean1)
+#glDClean1 <- glDClean1[glDClean1 != ""]
 
 ```
 
-####For glassdoor.com data form a dataframe with the words frequency of occurence computed by calling the `table` function on the `glDClean1` vector
+```{r}
+#head(glDClean1)
+
+```
+
+#### Write to csv
+
+```{r}
+# write.csv(glDClean1, "glassD_cleaned1.csv", row.names=FALSE)
+
+```
+
 ```{r}
 
-d <- as.data.frame(table(glDClean1))
+glassdoor <- read.csv("glassD_cleaned1.csv", header = TRUE, stringsAsFactors = FALSE) # Read the .csv file
+
+```
+
+####For glassdoor.com data form a dataframe with the keywords' frequency of occurence computed by calling the `table` function on the `glassdoor` vector
+
+```{r}
+
+d <- as.data.frame(table(glassdoor))
 colnames(d)<-c("skill","frequency")
 d <- d %>%arrange(desc(d$frequency))
 head(d)
-```
-
-
-#### Write to csv
-```{r}
-write.csv(glDClean1, "glassD_cleaned1.csv", row.names=FALSE)
-
 ```
 
 
@@ -246,10 +404,16 @@ head(dd)
 
 ```
 
-#### merge the two Vectors `diceClean` and `glDClean1` and form a single dataframe with the words frequency of occurence computed by calling the `table` on the resulting vactor `allVec`
+#### merge the two Vectors `diceClean` and `glassdoor` and form a single dataframe with the words frequency of occurence computed by calling the `table` function on the resulting vactor `allVec`
 
 ```{r}
-allVec <- c(diceClean, glDClean1)
+
+glassdoor <- glassdoor$x
+
+```
+
+```{r}
+allVec <- c(diceClean, glassdoor)
 alldata <- as.data.frame(table(allVec))
 colnames(alldata)<-c("skill","frequency")
 alldata <- alldata %>%arrange(desc(alldata$frequency))
@@ -265,8 +429,8 @@ top20 <- head(d, n = 20)
 
 dplt <- ggplot(data=top20, aes(x = reorder(skill, frequency), y=frequency, fill = "steelblue")) +
   geom_bar(stat = "identity") +
- xlab("Keywords in Data science Job") + ylab("Frequency") +
-  ggtitle("Most valuable Data Science Skills") +
+ xlab("Keywords in Data science Jobs") + ylab("Frequency") +
+  ggtitle("Most valuable Data Science Skills on glassdoor.com") +
   theme(plot.title = element_text(lineheight = .8, face = "bold")) +
   theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
  dplt + theme(legend.position="none")
@@ -291,8 +455,8 @@ top20d <- head(dd, n = 20)
 
 dplt <- ggplot(data=top20d, aes(x = reorder(skill, frequency), y=frequency, fill = "steelblue")) +
   geom_bar(stat = "identity") +
- xlab("Keywords in Data science Job") + ylab("Frequency") +
-  ggtitle("Most valuable Data Science Skills") +
+ xlab("Keywords in Data science Jobs") + ylab("Frequency") +
+  ggtitle("Most valuable Data Science Skills on dice.com") +
   theme(plot.title = element_text(lineheight = .8, face = "bold")) +
   theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
  dplt + theme(legend.position="none")
@@ -308,8 +472,12 @@ wordcloud(words = dd$skill, freq = dd$frequency, min.freq = 1,
 ```
 
 
+#### Next: 1. Doing a weighted ranking of the skills from the two sites to compare side-by-side
+####       2. uploading the data to a cloud database and do the querying from there
 
+```{r}
 
+```
 
 
 

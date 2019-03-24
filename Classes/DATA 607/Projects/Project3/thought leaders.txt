@@ -1,0 +1,418 @@
+
+
+```{r}
+filtertags <- c("algorithms","human knowledge", "mined from Web", "real-time predictions", "future", "predictions", "Web", "economical growth", "Web content", "predicted", "predict","leverage data","data","Web resources", "mine", "mined","mining", "data-warehousing","data warehousing","data warehouse","predictive","iot","predictive models","predictive models","future outcomes","patterns","Web activities","actionable forecasts","artificial-intelligence prediction capacity","prediction capacity","artificial-intelligence","ai","Web sources","knowledge-intensive reasoning","event prediction","feature extraction","novel algorithms","algorithms","search engines","judgment acquisition","raters","training phase","training ","retrieval evaluation","evaluation phase","discrepancy","learning","rank","relevance judgments","search results","combinatorial questions","evaluation","evaluation process","pairwise judgments","ranking","statistical preference", "statistical learning","learning algorithm","conjecture","Google Trends","automated extraction","predictive power","Query auto-completion","search engines", "search experience","query popularity","ranking candidates","time-series","forecast","predicting","time-series modeling","modeling","queries","drug","drug discovery", "algorithmic","unsupervised-approach","potential drug","prototype drug"," molecules","Electronic commerce","commerce","eBay","marketplaces","inventory","product","identifiers","brand","data", "business insights","SalesPredict","structured data","unstructured data","data science","research","engineering","data science","machine learning","information retrieval","natural language processing","data mining","algorithm","modeling techniques","modeling","news ","news events","prediction","data privacy","data ethics","ethics"," data governance", "governance","big data", "business","medicine","web","web page","retrieval","crawling","crawling strategy","empirical analysis","analysis","page content","prediction accuracy","prediction performance","World Wide Web","web contents","metrics","architectural perspective","searching","dynamic collections","time-sensitive information","taia","time-varying","queries","Web search","information retrieval","analytics","artificial intelligence","research","computer science","business trends","banking","finance","social media","marketing","technology","innovative solutions","innovative","boost performance","drive efficiency","analyse market","analyse","informative exploration","commerce","predictive analytics","predictive modeling","business analysts","financial institutions","databases","visualise", "visualisation","performance indicators","intelligent strategies","teams","data scientists","data science team","Hadoop","data culture","data-driven","research-specific process","data team","teamwork","scientific method","agile","hospitals","pharmacy","graph","graphs","moocs","peer assessment","object detection","deep learning","autonomous driving","speech recognition","text-to-Speech","Deep Voice","Deep Speech","Palliative Care","optical properties","deep neural networks","deep-learning systems","healthcare","temperature","unsupervised learning","audio Classification","Factor Graphs","Neural Tensor Networks","Neural networks","Deep neural networks","DNN","Acoustic Models","Recurrent DNN","rnn","cnn","vocabulary","Telco","Travel","eCommerce","E-COMMERCE","digital strategy","telecommunications","Telecommunication","Telecom","business intelligence","healthcare","Healthcare Systems","iot","internet of things","customers","customers","data lakes ","Data lakes","Reinforcement Learning","5g","5g network","retail","cognitive computing","machine to machine","blockchain","deepmind","robot","customer experience","data management","data analysis","customer data")
+
+tag_ex <- paste0(filtertags, collapse = '|')
+tag_ex <- tolower(tag_ex)
+
+```
+
+
+
+#### 2. Bernard Marr : https://bernardmarr.com
+
+##### publications sourced from: https://www.wiley.com/en-us/search?pq=Bernard%20Marr%7Crelevance and https://www.koganpage.com/author/bernard-marr
+
+```{r}
+
+# His books published by wiley
+
+bMarrWiley <- c('https://www.wiley.com/en-us/Big+Data%3A+Using+SMART+Big+Data%2C+Analytics+and+Metrics+To+Make+Better+Decisions+and+Improve+Performance-p-9781118965832', 'https://www.wiley.com/en-ng/Artificial+Intelligence+in+Practice%3A+How+50+Successful+Companies+Used+Artificial+Intelligence+to+Solve+Problems-p-9781119548218', 'https://www.wiley.com/en-us/Big+Data+For+Small+Business+For+Dummies-p-9781119027034', 'https://www.wiley.com/en-us/Big+Data+in+Practice%3A+How+45+Successful+Companies+Used+Big+Data+Analytics+to+Deliver+Extraordinary+Results-p-9781119231394')
+
+
+# His books pubished by koganpage
+
+bMarrKogan <- c('https://www.koganpage.com/product/data-strategy-9780749479855', 'https://www.koganpage.com/product/data-driven-hr-9780749482466')
+
+```
+
+```{r}
+
+bernMarrBooks <- vector()
+bernMarrTitles <- vector()
+bernMarrAbstarcts <- vector()
+bernMarrYears <- vector()
+
+```
+
+
+```{r}
+
+bMarrWHtmls <- vector()
+bMarrKHtmls <- vector()
+
+```
+
+#### Navigate the pages
+
+```{r} 
+
+for(i in 1: length(bMarrWiley))
+{
+  bmhtm <- tryCatch(html_nodes(read_html(curl(bMarrWiley[i], handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.product-details-content'), 
+         error = function(e){list(result = NA, error = e)})
+  
+  bMarrWHtmls <- c(bMarrWHtmls, bmhtm)
+  Sys.sleep(10)
+}
+
+```
+
+
+```{r} 
+
+for(i in 1: length(bMarrKogan))
+{
+  bmhtm <- tryCatch(html_nodes(read_html(curl(bMarrKogan[i], handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.section--product'), 
+         error = function(e){list(result = NA, error = e)})
+  
+  bMarrKHtmls <- c(bMarrKHtmls, bmhtm)
+  Sys.sleep(10)
+}
+
+```
+
+#### Extract contents
+
+```{r}
+
+for(i in 1: length(bMarrWHtmls))
+{
+  htm <- bMarrWHtmls[[i]]
+  
+  bernMarrTitles <- c(bernMarrTitles,htm %>% html_nodes('section.product-details h1.hidden-xs')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+
+  bernMarrAbstarcts <- c(bernMarrAbstarcts, htm %>% html_nodes('section#description-section')%>%html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+  bernMarrYears <- c(bernMarrYears, htm%>% html_nodes('div.product-summary span:nth-of-type(2n)')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+}
+
+```
+
+
+```{r}
+
+for(i in 1: length(bMarrKHtmls))
+{
+  htm <- bMarrKHtmls[[i]]
+  
+  bernMarrTitles <- c(bernMarrTitles,htm %>% html_nodes('h1.product-datasheet__title')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+
+  bernMarrAbstarcts <- c(bernMarrAbstarcts, htm %>% html_nodes('div.product__details--about p:nth-of-type(1n+2)')%>%html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+  bernMarrYears <- c(bernMarrYears, htm%>% html_nodes('div.book-details__text time')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+}
+```
+
+
+```{r}
+
+x <- bernMarrAbstarcts %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+```
+
+```{r}
+bmAbstracts <-as.data.frame(table(x))
+colnames(bmAbstracts)<-c("keyword","frequency")
+head(bmAbstracts)
+```
+
+#### Ben Marr's Abstracts
+
+```{r}
+
+dplt <- ggplot(data=bmAbstracts, aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in Ben Marr's abstracts")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = bmAbstracts$keyword, freq = bmAbstracts$frequency, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+#### 3. D.J Patil: https://www.linkedin.com/in/dpatil; 
+
+##### publications sourced from: https://www.goodreads.com/search?q=d.j.patil
+
+
+```{r}
+
+djBooks <- vector()
+djTitles <- vector()
+djAbstarcts <- vector()
+djYears <- vector()
+
+```
+
+```{r}
+djlinks <- c('https://www.goodreads.com/book/show/41543548-ethics-and-data-science', 'https://www.goodreads.com/book/show/20818383-building-data-science-teams', 'https://www.goodreads.com/book/show/24780653-data-driven?from_search=true', 'https://www.goodreads.com/book/show/15760705-data-jujitsu?from_search=true', 'https://www.goodreads.com/book/show/24380755-analytics-and-big-data?from_search=true', 'https://www.goodreads.com/book/show/34083662-hospital-clinical-pharmacy?from_search=true')
+```
+
+#### Navigate the pages
+
+```{r}
+
+djhtml <- vector()
+
+```
+
+```{r} 
+
+for(i in 1: length(djlinks))
+{
+  djhtm <- tryCatch(html_nodes(read_html(curl(djlinks[i], handle = new_handle("useragent" = "Mozilla/5.0"))), 'div#metacol'), 
+         error = function(e){list(result = NA, error = e)})
+  
+  djhtml <- c(djhtml, djhtm)
+  Sys.sleep(10)
+}
+
+```
+
+
+```{r}
+for(i in 1: length(djhtml))
+{
+  htm <- djhtml[[i]]
+  
+  djTitles <- c(djTitles,htm %>% html_nodes('h1#bookTitle')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+
+  djAbstarcts <- c(djAbstarcts, htm %>% html_nodes('div#description span:nth-of-type(2)')%>% html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+  djYears <- c(djYears, htm%>% html_node('div#details div:nth-of-type(2)')%>% html_text()%>% str_extract("\\w+ \\w+ \\d{4}"))
+}
+
+```
+
+
+
+```{r}
+
+dj <- djAbstarcts %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+```
+
+```{r}
+djAbs <-as.data.frame(table(dj))
+colnames(djAbs)<-c("keyword","frequency")
+head(djAbs)
+```
+
+#### D.J Patil's Abstracts
+
+```{r}
+
+dplt <- ggplot(data=head(djAbs, 10), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in D.J. Patil's abstracts")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = bmAbstracts$keyword, freq = bmAbstracts$frequency, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+
+#### 4. Kira Radinsky: http://kiraradinsky.com
+
+##### publications sourced from: https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0
+
+```{r}
+
+# Hand-picked links according to relevance
+
+kradlinks <- c('citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2433500', 'citation.cfm?id=2433448', 'citation.cfm?id=1963455', 'citation.cfm?id=2187958', 'citation.cfm?id=3192292', 'citation.cfm?id=2433431', 'citation.cfm?id=1487070', 'citation.cfm?id=3219882', 'citation.cfm?id=2348364', 'citation.cfm?id=3096469', 'citation.cfm?id=1935850', 'citation.cfm?id=2422275')
+
+```
+
+
+```{r}
+kradTitles <- vector()
+kradAbstarcts <- vector()
+kradYears <- vector()
+
+```
+
+##### Make a search on http://dl.acm.org and pull links
+
+```{r}
+
+khtms <- tryCatch(html_nodes(read_html(curl('https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.details'), 
+         error = function(e){list(result = NA, error = e)})
+```
+
+##### The above search returned a lot of links but they need to be filtered to get the relevant ones
+
+```{r}
+
+for(i in 1: length(khtms))
+{
+  href <- html_attr(html_nodes(khtms[i], 'div.title a'), 'href')
+  
+  if(href %in% kradlinks)
+  {
+    
+    kradTitles <- c(kradTitles, khtms[i]%>%html_nodes('div.title a')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+    
+    kradYears <- c(kradYears, khtms[i]%>%html_nodes('span.publicationDate')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+    
+    r <- html_node(read_html(curl(paste('https://dl.acm.org/', href, '&preflayout=flat', sep=''), handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.flatbody')
+    
+    paragraphs <- html_nodes(r, 'p')
+    
+    pTexts <- NULL
+    
+    for(j in 1: length(paragraphs))
+    {
+      pText <- paragraphs[j]%>% html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>% str_replace_all('\"', '')%>%str_trim(side='both')%>%tolower()
+      pTexts <- paste(pTexts, o, collapse=",")
+    }
+    
+    kradAbstarcts <- c(kradAbstarcts, pText)
+    
+    Sys.sleep(10)
+    
+  }
+  
+}
+
+```
+
+
+```{r}
+
+k <- kradAbstarcts %>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+```
+
+```{r}
+kTopics <-as.data.frame(table(k))
+colnames(kTopics)<-c("keyword","frequency")
+kTopics
+```
+
+#### Kira Radinsky's Abstracts
+
+```{r}
+
+# Top 10 keywords
+
+dplt <- ggplot(data=head(kTopics, 10), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in Kira Radinsky's abstracts")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = kTopics$keyword, freq = kTopics$frequency, min.freq = 1,
+          max.words=30, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```
+
+#### 5. Ronald Avalon: http://www.ronaldvanloon.com
+
+#### Posts sourced from his blog
+
+```{r}
+
+avlinks <- c('http://www.ronaldvanloon.com/succeed-in-the-intelligent-era-with-an-end-to-end-data-management-framework/','http://www.ronaldvanloon.com/data-analytics-is-transforming-healthcare-systems/', 'http://www.ronaldvanloon.com/iot-how-the-internet-of-things-is-driving-a-knowledge-revolution/', 'http://www.ronaldvanloon.com/seamless-customer-experience-for-telecoms-a-practical-approach/', 'http://www.ronaldvanloon.com/how-deep-learning-will-change-customer-experience/', 'http://www.ronaldvanloon.com/the-need-for-telecom-service-providers-to-reinvent-themselves/', 'http://www.ronaldvanloon.com/digital-meets-5g-shaping-the-cxo-agenda/', 'http://www.ronaldvanloon.com/telecom-digital-transformation-in-the-sales-and-network-distribution/','http://www.ronaldvanloon.com/webinar-how-to-improve-customer-experience-with-big-data/', 'http://www.ronaldvanloon.com/discover-hidden-value-your-customer-data-ronald-van-loon/','http://www.ronaldvanloon.com/digital-transformation-the-ultimate-guide-to-becoming-an-information-company/','http://www.ronaldvanloon.com/telecom-enterprise-messaging-is-the-new-black/','http://www.ronaldvanloon.com/5g-revolution-telcos-becoming-the-new-app-store-for-industrial-apps/','http://www.ronaldvanloon.com/3-ways-how-ai-will-augment-the-human-workforce/','http://www.ronaldvanloon.com/succeed-in-the-intelligent-era-with-an-end-to-end-data-management-framework/','https://dataconomy.com/author/ronaldvanloon/','http://www.ronaldvanloon.com/who-will-be-your-next-customer-awesome-big-data-case-story/','http://www.ronaldvanloon.com/discover-hidden-value-your-customer-data-ronald-van-loon/','http://www.ronaldvanloon.com/impact-of-big-data-be-relevant-or-be-redundant-ronald-van-loon-interview/')
+    
+```
+
+
+```{r}
+
+avTitles <- vector()
+avAbstarcts <- vector()
+avYears <- vector()
+
+```
+
+```{r}
+avHtmls <- vector()
+
+```
+
+```{r} 
+
+for(i in 1: length(avlinks))
+{
+  avhtm <- tryCatch(html_nodes(read_html(curl(avlinks[i], handle = new_handle("useragent" = "Mozilla/5.0"))), 'article.post'), 
+         error = function(e){list(result = NA, error = e)})
+  
+  avHtmls <- c(avHtmls, avhtm)
+  Sys.sleep(10)
+}
+
+```
+
+#### Extract contents
+
+```{r}
+
+for(i in 1: length(avHtmls))
+{
+  htm <- avHtmls[[i]]
+  
+  avTitles <- c(avTitles,htm %>% html_nodes('div.heading h1.entry-title')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+
+  avAbstarcts <- c(avAbstarcts, htm %>% html_nodes('div.detail')%>%html_text()%>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+  avYears <- c(avYears, htm%>% html_nodes('div.info time')%>% html_text()%>% str_replace_all('\n', '')%>%str_replace_all('\t', '')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower())
+  
+}
+
+```
+
+
+```{r}
+
+avEx <- avAbstarcts %>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
+```
+
+```{r}
+avAbstractsAll <-as.data.frame(table(avEx))
+colnames(avAbstractsAll)<-c("keyword","frequency")
+head(avAbstractsAll)
+```
+
+#### Ronald Avalon's Abstracts
+
+```{r}
+
+dplt <- ggplot(data=head(avAbstractsAll, 10), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
+  geom_bar(stat = "identity") +
+ xlab("Keywords in Ben Marr's abstracts")+
+  theme(plot.title = element_text(lineheight = .8, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
+ dplt + theme(legend.position="none")
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+wordcloud(words = avAbstractsAll$keyword, freq = avAbstractsAll$frequency, min.freq = 1,
+          max.words=30, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+
+```

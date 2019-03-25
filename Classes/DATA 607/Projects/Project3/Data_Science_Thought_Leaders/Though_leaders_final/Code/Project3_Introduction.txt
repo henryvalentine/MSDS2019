@@ -1,0 +1,33 @@
+DATA SCIENCE THOUGHT LEADERSHIP
+
+Project Objective: The objective of this project is to answer the following questions:
+1) Who are today’s “thought leaders” in data science? 
+2) What are the topics that data scientists care most about? 
+3) How do these change over time, and across geographical location?
+
+Let's start by defining the terms: Thought Leader and Data Science. 
+
+A Thought Leader is one whose views on a subject are taken to be authoritative and influential. Thought leaders are the informed opinion leaders and the go-to people in their field of expertise. They are trusted sources who move and inspire people with innovative ideas; turn ideas into reality, and know and show how to replicate their success. A thought leader is an individual or firm that is recognized as an authority in a specialized field and whose expertise is sought and often rewarded. Thought leaders are commonly asked to speak at public events, conferences or webinars to share their insight with a relevant audience. The Oxford English Dictionary gives as its first citation for the phrase an 1887 description of Henry Ward Beecher as "one of the great thought-leaders in America." The term had earlier (1876) been applied to Ralph Waldo Emerson, who was said to manifest "the wizard power of a thought-leader."
+
+Data science (DS) is a multi-disciplinary field that uses scientific methods, processes, algorithms and systems to extract knowledge and insights from structured and unstructured data. Data science encompasses the fields of data mining and big data. Data science is a "concept to unify statistics, data analysis, machine learning and their related methods" in order to "understand and analyze actual phenomena" with data. It employs techniques and theories drawn from many fields within the context of mathematics, statistics, information science, and computer science. Data Science is closely related with fields such as Machine Learning (ML), Artificial Intelligence (AI) and Computer Visualization.
+
+There are some inherent contradictions associated with thought leadership. Given that thinking is supposed to be an individual activity, wherein one relies on one's own logic and intelligence to form an understanding, opinion and make potential choices, it is paradoxical to have external thoughts being anointed as the "leader" or best way to think about a subject. Having said that, the real difficulty arises when trying to decide who or what makes someone a thought leader in any given field. This issue is further compounded if the field in question is a rapidly changing, complex domain such as Data Science. There are no easily available metrics (for example: a Nobel Prize in Data Science) that can be easily referred to, for determining thought leadership.   
+
+Given this, we've adopted the following approach and structure for this project:
+
+1) People as Thought Leaders
+	a) Based on popular metrics such as number of followers, blogs, tweets, web lists.
+	b) Based on academic research papers and publications presented at industry conferences.
+
+2) Universities as Thought Leaders
+	a) Based on faculty research published.
+	b) Based on academic enrolment in courses in Data Science and related subjects.
+	
+3) Countries as Thought Leaders
+	a) Based on publications.
+
+We would have liked to delve into private corporations as thought leaders, but there is very limited data available in the public domain for this. Having a successful business model in implementing the key concepts of DS would have been a good metric in categorizing a company as a thought leader, but given the closely-held nature of companies that are at the forefront of DS/ML/AI, there was a paucity of data for analysis. 	
+	
+Further, we tried to analyze the changing trends in the sub-areas being researched across geographies across time. This would give insight into how different countries or regions are prioritizing their subjects of interest and where one could expect the fastest advancement into these sub-topics within the DS/ML/AI domains.
+
+We also attempt to show how one could go about determining the sub-topics that individual thought-leaders under 1.a) are most interested in, by taking a deeper dive into scraping and parsing material available on the wor

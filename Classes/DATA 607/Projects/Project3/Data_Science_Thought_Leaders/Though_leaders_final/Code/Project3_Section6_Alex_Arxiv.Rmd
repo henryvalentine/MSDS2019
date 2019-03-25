@@ -1,0 +1,223 @@
+---
+title: "Project3-Section_6_ArxivPapers"
+author: "Alexander Ng"
+date: "3/23/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(knitr)
+library(aRxiv)
+library(kableExtra)
+```
+
+## Trends in Topics of Data Science Research
+
+We analyze the trends in data science topics over the last decade using data from the arXiv paper repository from 2009-2018.
+The data suggests that all topics of data science have experienced significant nearly exponential growth.
+However, if we examine the topics more closely, some areas have become hotter while others have diminished on a relative basis.
+
+### Using the arXiv research website for Data
+
+To explore these trends, we gathered data from the arXiv research website.  [Arxiv website](http://www.arxiv.org) hosts a popular and longstanding 
+forum for academic research in mathematics, physics, statistics and computer science.   Researchers submit papers electronically and are catalogued in the arxiv database.
+
+We are able to obtain detailed research paper submission data through the R package __aRxiv__ to retrieve metadata information.
+This API allows us to query papers based on useful criteria such as:
+
+* submission date
+* authors
+* subject classification (self-described by authors)
+* title of the papers
+
+The range of dates and subject classifications below are native arXiv categories.  Our tags are the same as those chosen by 
+the AIIndex.org 2018 paper in its data collection methodology.  [AIIndex 2018](http://cdn.aiindex.org/2018/AI%20Index%202018%20Annual%20Report.pdf)
+
+
+```{r}
+
+# A list of categories and years
+# -----------------------------------------------------------------------------
+ds_categories = c("stat.ML", "cs.AI", "cs.CV", "cs.LG", "cs.RO", "cs.CL", "cs.NE")
+ds_descriptions = c("Stat Machine Learning", "Artificial Intelligence", "Computer Vision",
+                    "Computer Learning", "Robotics", "Computation and Language" ,
+                      "Neural and Evolutionary Computing")
+
+subject_names = data.frame( categories = ds_categories ,
+                            desc = ds_descriptions, stringsAsFactors = FALSE)
+
+years_list = c( 2009:2018 )
+
+```
+
+```{r}
+
+# Set up an empty dataframe of years range for row and data science
+# topics for columns.   Values will store paper counts in arXiv by year and topic.
+# ----------------------------------------------------------------------------------
+info = data.frame (matrix( data = 0, 
+                                   nrow = length(years_list), 
+                                   ncol = length(ds_categories) ,
+                                   dimnames = list( as.character( years_list ), ds_categories ) ) )
+
+```
+
+### Collecting the paper counts
+
+The following section downloads the paper counts by topic and year.
+Note that this step is computationally intensive and will cause an online resource restriction by the arXiv server 
+if they feel that this query causes excessive or abusive use of computational resources.
+
+As a result, we save the results to a local disk file.  The following code chunk should set *eval* to equal *TRUE* to confirm the code
+works and allows downloads.  Otherwise, for visualization graphics (or project final assembly), this step should be skipped.
+The downloaded data can be read from a file and the next code chunk.
+The data file is posted online.
+
+```{r eval=FALSE}
+
+#
+#  Query the arXiv server for paper counts:  
+#  Outer loop is on subjects
+#  Inner loop is on years.
+# -------------------------------------------------------------------------
+for(subject in ds_categories )
+{
+  for( y in years_list )
+  {
+  
+    
+      qry = paste0("cat:", subject, " AND submittedDate:[", 
+                  y, 
+                  " TO ", 
+                  y+1, "]")
+      
+      qry_count = arxiv_count(qry)
+      info[as.character(y), subject] = qry_count
+      print(paste(qry, " ", qry_count, "\n"))
+      
+      # Sleeping is essential to throttle API load on the arXiv server.
+      # ------------------------------------------------------------------
+      Sys.sleep(3)
+  }
+}
+
+#  Write the contents to files to avoid re-running the above code during
+#  final project assembly
+# ------------------------------------------------------------------------
+write.csv(info, file="Arxiv_topic_counts.csv", row.names = TRUE)
+
+```
+
+
+And reload the paper counts here.
+
+```{r}
+
+subject_year_counts = as_tibble( read.csv("Arxiv_topic_counts.csv") )
+
+```
+
+
+### Data Wrangling
+
+Some minor data wrangling is needed to extract the marginal sums and fractions of annual production by topic.
+This is illustrated in the next code chunk.
+
+Note that for each year in the *Period* files, the paper count is from Jan 1 of that year until Dec 31 of the same year.
+
+```{r}
+
+# Set the names to make algebraic notation less cumbersome
+# --------------------------------------------------------------------------------
+names(subject_year_counts) = c("Period", as.character(subject_names$categories) )
+
+# Calculate and store row sums
+# -----------------------------------------------------------------
+subject_year_counts %>% 
+  group_by(Period) %>% 
+  mutate( sum = stat.ML + cs.AI + cs.CV + cs.LG + cs.RO + cs.CL + cs.NE) %>% 
+  mutate( stat.ML.pct  = stat.ML / sum , 
+          cs.AI.pct    = cs.AI   / sum ,
+          cs.CV.pct    = cs.CV   / sum ,  
+          cs.LG.pct    = cs.LG   / sum ,
+          cs.RO.pct    = cs.RO   / sum ,
+          cs.CL.pct    = cs.CL   / sum ,
+          cs.NE.pct    = cs.NE   / sum 
+          ) -> subject_year_counts
+
+#
+#  Plot the change in percent importance of different topics over the last 10 years
+# ----------------------------------------------------------------------------------
+subject_year_counts %>% select( Period, stat.ML.pct:cs.NE.pct) %>%
+       gather(key="Subject", value = "fraction", stat.ML.pct:cs.NE.pct) -> pct_data
+
+ggplot( pct_data , aes(x=Period, y = fraction, fill= Subject ) ) + 
+  geom_bar(stat="identity", position="fill") +
+  scale_fill_brewer(palette="Set2") +
+  scale_x_discrete(limits=2009:2018) +
+  ggtitle("Percent of Data Science Papers by Topic on arXiv from 2009-2018")
+
+# Show only 2009 and 2018 statistics and merger with longer descriptions
+# Then display data by year-as-column to focus on changes
+# ---------------------------------------------------------------------------------
+pct_data %>% filter( Period == 2009 | Period == 2018 ) %>%
+    mutate( topicCode = str_sub( Subject, start= 1, end = -5), fraction = 100 * fraction) %>%
+    inner_join( subject_names, by = c("topicCode" = "categories") ) %>%
+    select( Period, fraction, desc ) %>% 
+    spread( key = Period, value = fraction ) -> table_to_show
+```
+
+The table below clearly shows significant changes in relative interest over a decade.
+
+* Pure AI has decreased in its relative important from 31.9 to 11.1 percent.
+* Computer Learning, Machine Learning, Computer Vision have grown to 71.3 percent of papers
+* Neural Computing and Robotics have remained static and relatively minor topics.
+
+
+```{r}
+
+knitr::kable(table_to_show, digit = 1 , 
+             caption = "Percent Share of Articles by Topic" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+
+```
+
+### Trends in the Total Volume of Research
+
+The evidence below will show exponential growth in data science research.  Statistic and machine learning and computer vision are driving the bulk of this work.
+
+
+```{r}
+#
+# Plot the change in absolute papers submitted
+# -----------------------------------------------------------------
+subject_year_counts %>% select( Period, stat.ML:cs.NE) %>%
+  gather(key="Subject", value = "Count", stat.ML:cs.NE) -> abs_data
+
+ggplot( abs_data , aes(x=Period, y = Count, fill= Subject ) ) + 
+  geom_area() +
+  scale_fill_brewer(palette="Set2") +
+  scale_x_discrete(limits=2009:2018) +
+  ggtitle("Count of Data Science Papers by Topic on arXiv from 2009-2018") +
+  theme(legend.position= c(.1, .9 ),
+        legend.justification = c("left", "top"))
+
+
+
+```
+
+### Explosive Growth of Research
+
+```{r}
+knitr::kable(subject_year_counts %>% select( Period, sum ) %>% spread( key = Period, value = sum ) , 
+             caption = "Total Data Science Articles on Arxiv by Year" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+A simple calculation from the above table allows us toconclude that the volume of research (by article count) has grown 47 percent annually.  This explosive growth in research has resulted in a 32 fold increase in research in the most recent decade.   Whether the quality matches the quantity is another issue. But this is compelling supporting evidence that artificial intelligence is revolutionizing academic research and thought leadership.
+

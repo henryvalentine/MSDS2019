@@ -1,0 +1,15 @@
+Summary of Findings and Conclusion
+
+We have completed a wide-ranging tour of thought leadership in data science.  While the precise definition of thought leadership may be debated, we find consistently that some people, universities, research topics and nations stand out in ability, productivity and influence in Data Science. This creates the possibility of winners and losers at all levels.
+
+Based on popular narrative, Andrew Ng and Kira Radinsky can be considered to be two of the primary thought leaders in Data Science. Over the past few years, they have shifted their focus from AI to more specific topics of specializations such as deep learning, predictive analytics, and speech recognition. 
+
+We conclude that the top influential data scientist by paper count is Yoshua Bengio with 174 papers. He is noted for his expertise in deep learning along with Geoffrey Hinton and Yann LeCun. We conclude that thought leadership within the field of academic research does not equate to business thought leadership. However, without conceptual innovations made possible by academia, the application of these ideas to business is impossible.
+
+Regarding sub-topics being researched, Computer / Machine Learning and Computer Vision have grown in popularity at the cost of pure AI, while Neural Computing and Robotics have remained largely stable.
+
+When it comes to countries and regions, the USA leads in terms of patents in DS/AI/ML, while Europe leads in terms of generating research publications. China is catching up rapidly - for example Tsingshua University led the way in terms of research papers in this domain during 2018. Universities in the USA are showing a steady increase in enrolment in AI/ML courses, and Carnegie Melon continues to lead the way in research in this domain.
+
+We relied on a variety of sources for the data used in our analysis, such as the AI Index Report for 2018, the CS Rankings, axXiv and ACM websites, as well as personal websites of individuals such as Andrew Ng. 
+
+In terms of future research, we think that understanding what's driving the changes in topics of interest for popular data science professionals as well as academia would be a good area to focus on. Analyzing how thought leadership in this field will evolve over the coming decade will be an important challenge for those of us practicing in this dynamic field.

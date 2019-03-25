@@ -1,0 +1,60 @@
+
+Notes from Alexander Ng on the integrated draft on Project 3:
+
+Title and Headings
+
+1. Jagdish's last name is missing and should be added back.
+
+2. The introductory paragraph defining thought leader is slightly repetitive and omits nations as thought leaders.
+Since we are treating people, universities and countries as thought leaders, we need to include all three.
+
+The original text is here:
+
+A Thought Leader is one whose views on a subject are taken to be authoritative and influential. Thought leaders are the informed opinion leaders and the go-to people in their field of expertise. They are trusted sources who move and inspire people with innovative ideas; turn ideas into reality, and know and show how to replicate their success. A thought leader is an individual or firm that is recognized as an authority in a specialized field and whose expertise is sought and often rewarded. Thought leaders are commonly asked to speak at public events, conferences or webinars to share their insight with a relevant audience. The Oxford English Dictionary gives as its first citation for the phrase an 1887 description of Henry Ward Beecher as “one of the great thought-leaders in America.” The term had earlier (1876) been applied to Ralph Waldo Emerson, who was said to manifest “the wizard power of a thought-leader.”
+
+The proposed text is here:
+
+
+A thought leader is an individual, organization or nation state that is recognized as an authority in a specialized field and whose expertise is sought and often rewarded.  They are trusted sources who move and inspire people with innovative ideas; turn ideas into reality, and know and show how to replicate their success. Thought leaders are commonly asked to speak at public events, conferences or webinars to share their insight with a relevant audience. The Oxford English Dictionary gives as its first citation for the phrase an 1887 description of Henry Ward Beecher as “one of the great thought-leaders in America.
+
+
+3.  The paragraph is the first section below is a non-sequitur and a digression.
+It discusses what we don't discuss.   Strike it entirely is my suggestion -- will improve the flow.
+
+We would have liked to delve into private corporations as thought leaders, but there is very limited data available in the public domain for this. Having a successful business model in implementing the key concepts of DS would have been a good metric in categorizing a company as a thought leader, but given the closely-held nature of companies that are at the forefront of DS/ML/AI, there was a paucity of data for analysis.
+
+4. The 2 paragraphs discuss the structure of the paper out of order and 1 last note should be added regarded the HTML format.  The reader needs to read both tabs of each section otherwise the paper is confusing.
+
+Here is the old text:
+
+Further, we tried to analyze the changing trends in the sub-areas being researched across geographies across time. This would give insight into how different countries or regions are prioritizing their subjects of interest and where one could expect the fastest advancement into these sub-topics within the DS/ML/AI domains.
+
+We also attempt to show how one could go about determining the sub-topics that individual thought-leaders under 1.a) are most interested in, by taking a deeper dive into scraping and parsing material available on the work
+
+Here is the new text:
+
+This report is organized by the entity considered as a thought leader.   We begin by analyzing the role of individuals as thought leaders.   One section considers individuals based on popular acclaim while the following section considers tangible research metrics such as publication statistics.   Next, we examine universities - possibly the preeminent type of organization - for this type of study.  This is followed by our evaluation of nations and geographical regions.  Then, we focus on trends in research topics looking at which subtopics of data science have waxed and waned.  The final section concludes.
+
+One technical note on how to read this report.   To take advantage of the HTML format, we use a tabbed interface for each section of the report.   The reader will find a tab labeled "Introduction and Analysis" and second tab "Summary and Conclusion".   Please read both to fully understand the report.
+
+
+In Section 3:
+
+5.  Change the section heading from : Thought Leader
+to:   Thought Leadership Through Research
+
+6.  In the conclusion tab of Section 3 there is an error.   The word "within" should be "without"
+
+"However, within conceptual innovations made possible by academia, the application of these ideas to business is impossible." has an error.  It should be
+
+"However, without conceptual innovations made possible by academia..."
+
+In Section 7: conclusion
+
+7.  I don't suggest using a tabbed format because there is no data to present.  I recommend using narrative text instead of bullet points.  Just keep the conclusion to 2-3 paragraphs.
+
+Here is a proposal for the conclusion:
+
+We have completed a wide-ranging tour of thought leadership in data science.   While the precise definition of thought leadership may be debated, we find consistently that some people, universities, research topics and nations stand out in ability, productivity and influence in Data Science.   This creates the possibility of winners and losers at all levels.
+
+Analyzing how thought leadership in this field will evolve over the coming decade will be an important challenge for those of us practicing in this dynamic field.

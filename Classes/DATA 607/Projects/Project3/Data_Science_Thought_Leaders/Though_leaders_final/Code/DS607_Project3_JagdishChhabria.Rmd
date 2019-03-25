@@ -1,0 +1,164 @@
+---
+title: "DS607_Project3_JagdishChhabria"
+author: "Jagdish Chhabria"
+date: "March 21, 2019"
+output: pdf_document
+---
+
+
+## Universities as Thought Leaders
+# Research Papers Published at Key Conferences
+
+The section below loads the required packages and input data files containing the following details of research papers in Artificial Intelligence (AI), Data Science (DS), Machine Learning (ML), Visualization (VI): Names of faculty members who authored these papers, universities they're affiliated to, conferences they presented at, and the year of publication. The conferences selected were restricted to those in the above fields only.
+
+```{r}
+library(XML)
+library(xml2)
+library(RCurl)
+library(rvest)
+library(dplyr)
+library(httr)
+library(stringr)
+library(data.table)
+
+fileurl<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/author-info-ds.csv"
+ds.authors<-read.csv(file=fileurl, header=TRUE, na.strings = "NA", stringsAsFactors = TRUE)
+#ds.authors<-fread(fileurl, header=TRUE, na.strings = "NA", stringsAsFactors = FALSE)
+#ds.authors
+
+```
+
+The section below filters the data for the 2 main columns of interest: University and Adjusted Count. The adjusted count is a score that measures contribution by authors based on joint ownership with other authors. The detailed methodology is available at http://csrankings.org/#/index?all
+
+The analysis below aims to determine which university across the globe, can be deemed to be a thought leader in the Data Science, Artificial Intelligence, Machine Learning and Visualization areas, based on the contribution of their faculty members by writing research papers.
+
+The following section selects the required columns, and calculates an aggregate of the adjusted count by university.Then it renames the columns, and derives the top 10 universities based on this adjusted count metric.
+
+```{r}
+paper.count<-ds.authors%>%select(university,adjustedcount)
+summary.paper.count<-aggregate(. ~ university, data = paper.count, sum)%>%setorder(-adjustedcount)
+summary.paper.count$adjustedcount<-round(summary.paper.count$adjustedcount,2)
+colnames(summary.paper.count)<-c("University", "Research_Adj_Count")
+#summary.paper.count
+top10<-summary.paper.count[1:10,]
+top10
+```
+
+The following section generates a barplot showing the top 10 universities by adjusted count of research papers. It shows that Carnegie Mellon sits at the top of the stack by a big margin. So it can considered as the prime thought leader from an institutional perspective.
+
+As a topic for further research, it is notable that a big name like Stanford University is missing from the top 10 universities. We suspect that this could be on account of factors like departmental affiliations of faculty members and their choices on whether to present their research at pure Data Science type conferences vis-a-vis other conferences geared towards other domains such as Statistics or Economics. Also, it's likely that if the focus is extended to all of Computer Science instead of a narrower selection of AI, DS, ML etc, then universities like Stanford may show a more significant presence while perhaps the universities in the top 10 are more exclusively focusing on AI, ML and DS research. 
+
+```{r}
+library(ggplot2)
+library(RColorBrewer)
+
+ggplot(top10, aes(x=reorder(University,Research_Adj_Count), y=Research_Adj_Count, fill=University))+ geom_bar(stat="identity",color="black") + coord_flip() + theme(legend.position='none') + ylab("Adjusted Research Paper Count") + xlab("Universities as Thought Leaders")
+
+```
+
+
+# Trends in Data Science sub-topics as evidenced by change in research paper counts over the years
+
+From the data and graph below, it can be seen that Machine Learning, Neural Networks and Computer Visualization are showing a very rapid growth in research publications.
+
+```{r}
+library(XML)
+library(xml2)
+library(RCurl)
+library(rvest)
+library(dplyr)
+library(httr)
+library(stringr)
+library(data.table)
+library(readxl)
+library(tidyr)
+library(rlang)
+
+fileurl3<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/AIPapersByTopic.csv"
+
+ai.subtopics<-read.csv(fileurl3)
+colnames(ai.subtopics)<-c("Year", "Machine Learning", "Neural Networks", "Computer Vision", "Search optimization", "NLP", "Fuzzy Systems", "Decision Making", "Total")
+ai.subtopics
+ai.subtopics.long<-gather(ai.subtopics, key="Sub_Topic", value=Paper_Count, 2:8)
+ggplot(ai.subtopics.long, aes(x=Year, y=Paper_Count, group=Sub_Topic,colour=Sub_Topic)) + geom_line()+xlab("Years")+ylab("Paper Count")
+
+```
+
+
+# Percentage of AI and ML course enrollments in US Universities at the Undergraduate Level
+
+```{r}
+
+library(RCurl)
+library(rvest)
+library(dplyr)
+library(httr)
+library(stringr)
+library(data.table)
+library(readxl)
+library(tidyr)
+library(rlang)
+
+fileurl2<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/USAI-MLUndergradEnrolmentPercentage.csv"
+
+undergrad<-read.csv(fileurl2)
+colnames(undergrad)<-c("University", "Domain", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017")
+#undergrad
+undergrad.long<-gather(undergrad, key="Year", value=Percent_Share, 3:10)
+undergrad.long$UnivDomain=paste(undergrad.long$University, undergrad.long$Domain, sep="-")
+undergrad.long$Percent_Share=round(undergrad.long$Percent_Share*100,2)
+undergrad.long
+
+```
+
+The following graph shows the academic enrolment at the undergraduate level in AI and ML courses in selected US universities, over the 2010-2017 period. From this, it can be seen that academic enrolment has been trending up over the past few years in these universities, which can be seen as representative across all US universities.
+
+```{r}
+library(ggplot2)
+
+ggplot(undergrad.long, aes(x=Year, y=Percent_Share, group=UnivDomain,colour=UnivDomain)) + geom_line()+xlab("Years")+ylab("Percent of Total")
+
+```
+
+
+## Regions and Countries as Thought Leaders
+
+The following section collects the inputs: regional percentage share of Artificial Intelligence publications over the 1998-2017 period. The data is loaded and tidied from a wide format to a long format, setting it up for further analysis.
+
+```{r }
+library(XML)
+library(xml2)
+library(RCurl)
+library(rvest)
+library(dplyr)
+library(httr)
+library(stringr)
+library(data.table)
+library(readxl)
+library(tidyr)
+library(rlang)
+
+fileurl<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/RegionalShareofAIPublications.csv"
+
+regional.ai<-read.csv(fileurl)
+colnames(regional.ai)<-c("Region","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011", "2012","2013","2014","2015","2016","2017")
+#regional.ai
+regional.ai.long<-gather(regional.ai, key="Year", value=Percentage_Share, 2:21)
+regional.ai.long
+
+```
+
+
+# Countries as Thought Leaders
+The following section shows a regional breakdown of AI papers published on Scopus for the uears 1998-2017. The source of this data is Elsevier. The broad regional categories are: USA, Europe, China and Rest of World (RoW). Based on this, it can be seen that Europe is the leading contributor to papers and publications in this domain over the years followed closely by RoW. China can be seen steadily increasing its share of research publications in this area. Based on this metric, Europe can be considered as the Thought Leader from a regional perspective.
+
+```{r}
+
+ggplot(regional.ai.long, aes(x=Year, y=Percentage_Share, fill=Region)) +
+geom_bar(stat="identity", colour="black") +
+guides(fill=guide_legend(reverse=TRUE)) +
+scale_fill_brewer(palette="Pastel1") + theme(text = element_text(size=11),axis.text.x = element_text(angle=90, hjust=1))
+
+```
+
+

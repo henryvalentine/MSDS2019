@@ -1,0 +1,295 @@
+---
+title: "Project3-Section_3_ArxivPapers"
+author: "Alexander Ng"
+date: "3/23/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(aRxiv)
+library(kableExtra)
+```
+
+## Thought Leaders: Academic Leaders Based On Research Metrics
+
+
+### Measuring Thought Leadership Through Research Paper Counts
+
+[Arxiv website](http://www.arxiv.org) is one of the top electronic paper repositories for academic research in multiple fields: computer science, physics, mathematics and statistics.  Researchers submit papers electronically and are catalogued in the arxiv database.
+By analyzing the level of activity of a researcher in submitting papers on data science topics to arxiv, we get an objective, quantifiable, and relevant measure of their thought leadership.
+
+In the next section, we will describe the data collection process, its limitation and outputs.  After showing how the data and raw files are processed, we wrangle the consolidated data into usable form.  Then, we present rankings of the top leaders and descriptive statistics of the papers and conclude with some interpretative remarks.
+
+### Data Collection Process
+
+  We are able to obtain detailed research paper submission data through the R package __aRxiv__ to retrieve metadata information.
+This API allows us to query papers based on useful criteria such as:
+
+* submission date
+* authors
+* subject classification (self-described by authors)
+* title of the papers
+
+The range of dates and subject classifications below are native arXiv categories.  
+Our 7 subject classification categories are the same as those chosen by 
+the AIIndex.org 2018 paper in its data collection methodology.  [AIIndex 2018](http://cdn.aiindex.org/2018/AI%20Index%202018%20Annual%20Report.pdf)
+Because we discuss the arXiv API at length in another section of this project on time trends in research, we give a brief summary here.
+
+
+In this section, we identify the specific steps relevant to author page counts.
+
+To obtain authors and titles of papers, we require downloading the full record of each paper submission.
+This raw data required 1 hour to download through a series of trial and error batch scripts because of two issues:
+
+a) server limits the number of records returned if the count is too high (over 15000 per pull)
+b) server disables the requestors API access if numerous requests are submitted in parallel or in a short time.
+
+By defining granular queries, we limited most API requests to under 5000 records and successfully gathered all paper records.  
+This yielded 70 raw files by year and category.   We combined them into a single big file in two steps:  we aggregated all years into one category file, and all category files into a single big file.
+
+The big file had 7 columns: 
+* ID  (unique identifier of the article)
+* submitted (date/time of submission)
+* updated (date/time of last revision submitted)
+* title ( name of the paper)
+* authors ( a pipe delimited list of co-authors of the papers)
+* primary_category (used for the query )
+* categories (pipe-delimited list of alternate categories)
+
+The most important step to produce a single consolidated records file was eliminating unnecessary fields: the abstract.   Each paper's record includes its abstract.  For most papers, an abstract represents 90 percent of the record size.   Due to the large file size, this simplification was needed to allow all records to fit into memory on our PC.   
+
+The final result is a flat file with 57193 records called **output_all_subjects.csv**.
+
+### Code to download and merge data files
+
+The code to download the required data below has been described in the previous section.   Due to the fact that the arXiv server API may produce variable results or throttle access, we show but don't run the code block below.  This is controlled by setting **eval=FALSE** in the relevant code chunks.
+
+
+```{r}
+
+# A list of categories and years
+# -----------------------------------------------------------------------------
+ds_categories = c("stat.ML", "cs.AI" , "cs.CV", "cs.LG", "cs.RO", "cs.CL", "cs.NE")
+ds_descriptions = c("Stat Machine Learning", "Artificial Intelligence" , "Computer Vision",
+                    "Computer Learning", "Robotics", "Computation and Language" ,
+                      "Neural and Evolutionary Computing")
+
+subject_names = data.frame( categories = ds_categories ,
+                            desc = ds_descriptions, stringsAsFactors = FALSE)
+
+years_list = c( 2009:2018 )
+```
+
+```{r eval=FALSE}
+# Set up an empty dataframe of years range for row and data science
+# topics for columns.   Values will store paper counts in arXiv by year and topic.
+# ----------------------------------------------------------------------------------
+info = data.frame (matrix( data = 0, 
+                           nrow = length(years_list), 
+                           ncol = length(ds_categories) ,
+                           dimnames = list( as.character( years_list ), ds_categories ) ) )
+
+#
+#  Query the arXiv server for paper counts:  
+#  Outer loop is on subjects
+#  Inner loop is on years.
+# -------------------------------------------------------------------------
+for(subject in subject_names$categories )
+{
+  for( y in years_list )
+  {
+    
+    
+    qry = paste0("cat:", subject, " AND submittedDate:[", 
+                 y, 
+                 " TO ", 
+                 y+1, "]")
+    
+    qry_count = arxiv_count(qry)
+    qry_details = arxiv_search(qry, batchsize = 100, limit = 11000, start = 0 )
+    
+    info[as.character(y), subject] = qry_count
+    print(paste(qry, " ", qry_count, "\n"))
+    
+    output_filename = paste0(subject, "_", y, "_", "results.csv")
+    
+    write.csv(qry_details, file = output_filename)
+    
+    print(paste0("Wrote file: ", output_filename, Sys.time() ) )
+    
+    # Sleeping is essential to throttle API load on the arXiv server.
+    # ------------------------------------------------------------------
+    Sys.sleep(5)
+  }
+}
+
+print("Retrieval of arXiv query records is now completed.")
+
+for(j in seq_along(ds_categories ) )
+{
+    subject = ds_categories[j]  
+
+    outputdf = list( )   
+    
+    my_files = paste0(subject, "_", years_list, "_", "results.csv")
+    
+    for( i in  seq_along(my_files) )
+    {
+       fulldata <- read_csv(file = my_files[i])
+       print(paste0( "Loaded ", i, " ", my_files[i] ) )
+       
+       #  Strip out the abstract which takes up most file space.
+       # ------------------------------------------------------------------------
+       fulldata %>% select( id, submitted, updated, title, authors, primary_category, categories) -> tempdata
+       
+       outputdf[[i]] = tempdata    
+       
+       Sys.sleep(1)
+    }
+    
+    #  Write all the year files for one subject to one tibble and then 
+    #  dump to one subject specific file
+    # -----------------------------------------
+    big_data = bind_rows(outputdf)
+    
+    output_big_subject = paste0("bigdata_", subject, ".csv")
+  
+    write_csv(big_data, output_big_subject )
+    
+    print(paste0( "Wrote file ", output_big_subject, " to disk ", Sys.time() ) )
+}
+
+my_files = paste0("bigdata_", ds_categories, ".csv")
+  
+outputdf = list()
+
+for(j in seq_along(my_files ) )
+{
+    fulldata <- read_csv(file = my_files[j])
+    print(paste0( "Loaded ", j, " ", my_files[j] ) )
+    outputdf[[j]] = fulldata    
+    Sys.sleep(1)
+}
+  
+# We row-bind the list of dataframes into one big one using
+# a nice one-liner in dplyr.   The result is one big tibble.
+#---------------------------------------------------------------------
+big_data = bind_rows(outputdf)
+    
+output_all_subjects = "output_all_subjects.csv"
+    
+write_csv(big_data, output_all_subjects )
+    
+print(paste0( "Wrote file ", output_all_subjects, " to disk ", Sys.time() ) )
+
+```
+
+
+### Wrangling the data
+
+The entire analysis in this section depends only on loading the raw files in the next code chunk.   We illustrate the content with a few records below.
+
+```{r}
+
+big_paper_set = read_csv("output_all_subjects.csv")
+
+knitr::kable(head(big_paper_set, 4) ,  
+             caption = "Representative Records from the Paper Records" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+Next, we remove duplicate records in the raw data set.  Duplicate records arise because a paper may be classified as matching two or more computer science categories.   For example, a paper may fall into Statistical Machine learning (stat.ML) and Computer Vision (cs.CV).
+This removes roughly 12000 duplicate records.  
+
+
+```{r}
+
+# Remove duplicate records and true all information.
+# -----------------------------------------------------------------------------------
+big_paper_clean <- ( big_paper_set %>% distinct( id, authors, .keep_all = TRUE))
+
+nrow(big_paper_clean)
+
+```
+
+```{r}
+paper_authors = big_paper_clean$authors
+
+author_names  = str_split(paper_authors, "\\|")  # separates all the authors
+
+# The coauthors of a paper are consecutively listed in preceded by all authors
+# of earlier papers.
+# ---------------------------------------------------------------------
+authors_unlisted = unlist(author_names)
+
+num_author_paper_tuple = length(authors_unlisted)
+
+# Index j corresponds to the j-th paper in big_paper_clean
+# Value at index j corresponds to the number of co-authors in paper j
+# ----------------------------------------------------------------------
+vec_coauthor_counts = unlist( lapply(author_names, length ) )
+
+paper_author_map = tibble( id  = character(num_author_paper_tuple), author = character(num_author_paper_tuple) )
+
+idx_unlisted = 0
+```
+
+The following code chunk maps the papers to authors in a 1-to-many relationship.
+Due to the inefficiency of the process, (over 10 minutes) to generate the mapping, I am saving the results to a flat file
+and setting **eval=FALSE**.  At the next step, the data is reloaded from file to a dataframe for analysis.
+
+```{r eval=FALSE}
+for( id_idx in  1:length(big_paper_clean$id)  )
+{
+     num_coauthors = vec_coauthor_counts[id_idx]
+  
+     for(s in 1:num_coauthors)
+     {
+          paper_author_map$id[ idx_unlisted + s ] = big_paper_clean$id[ id_idx]  
+          paper_author_map$author[ idx_unlisted + s ] = authors_unlisted [ idx_unlisted + s]
+      
+     }
+     idx_unlisted = idx_unlisted + num_coauthors
+
+     if( id_idx %% 100 == 0 )
+     {
+         print(paste0(" idx = ", id_idx))
+     }
+}
+
+write_csv(paper_author_map, "paper_author_map.csv")
+
+```
+
+```{r}
+
+paper_author_map = read_csv("paper_author_map.csv")
+
+```
+
+### Findings
+
+```{r}
+
+by_author <- group_by( paper_author_map , author )
+
+rankings <- summarize( by_author, numPapers = n() ) %>% arrange( desc( numPapers))
+
+knitr::kable(head(rankings, 30) , caption = "Top 30 Authors by Data Science Paper Counts (2009-2018)")
+
+summary( rankings)
+
+
+```
+
+We conclude that the top influential data scientist by paper count is Yoshua Bengio with 174 papers.  He is noted for his expertise in deep learning along with Geoffrey Hinton and Yann LeCun.   By comparison, other thought leaders mentioned earlier like Kira Radinsky have written only 4 papers.   We also see that the average number of papers written is 2.2 with a median of 1 papers.  Thus, the distribution of publishing researchers is highly skewed to the right.
+
+We conclude that thought leadership within the field of academic research does not equate to business thought leadership.  However, within conceptual innovations made possible by academia, the application of these ideas to business is impossible.

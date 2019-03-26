@@ -1,43 +1,139 @@
 ---
-title: "Data Science Thought Leaders sections 2 & 9c"
-author: "Henry Otuadinma"
-date: "20 March 2019"
-output: html_document
+title: "Project -3 Data 607
+"
+author: Tyrannosaurus (Alexander Ng, Arun Reddy, Henry Otuadinma, Jagdish Chhabria)
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    Collapsed: false
+    code_folding: show
+    theme: united
+    highlight: tango
+   
+   
+    
+
 ---
+
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(aRxiv)
-library(stringr)
-library(xml2)
-library(rvest)
-library(textrank)
-library(lattice)
-library(igraph)
-library(ggraph)
-library(ggplot2)
-library(wordcloud)
-library(curl)
-library(dplyr)
-library(DT)
+```
+***
+
+### R Packages Used
+
+This assignment was accomplished by utilizing these packages for both data analysis and visualizations.
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+
+library("dplyr")
+library("RCurl")
+library("XML")
+library("xml2")
+library("jsonlite")
+library("ggplot2")
+library("DT")
+library("kableExtra")
+library("data.table")
+library("tidyr")
+library("lubridate")
+#library("XLConnectJars")
+#library("XLConnect")
+library("stringr")
+library("formattable")
+library("aRxiv")
+library("tidyverse")
+library("rvest")
+library("textrank")
+library("lattice")
+library("igraph")
+library("ggraph")
+library("wordcloud")
+library("curl")
+library("treemap")
+options(scipen = 999)
+
+
 ```
 
-## Thought leaders based on popular naratives {.tabset .tabset-pills .tabset-fade}
+### Collabration and Team members
 
-##### We looked up top influencers/thought leaders in data science and this yielded a lot of people but we narrowed them down to the top 10 we think have huge influence in different areas of research and interests in data science.
+Alexander Ng, Arun Reddy, Henry Otuadinma, Jagdish Chhabria
 
-##### For deeper insight, we chose to focus on two of them: <a href="http://www.andrewng.org/">Andrew Ng</a> and <a href="http://blog.kiraradinsky.com/">Kira Radinsky</a>. We could retrieve Andrew Ng's publications  from <a href="http://www.arxiv.org/">arXiv</a>, while web-scraping was carried out on <a href="https://dl.acm.org">Association for Computing Machinery website</a> for Kira Radinsky's publications, which yielded useful information for studies. We extracted the abstracts from their publications to see what topics and areas interest them.
+Our team consists of four members. Each one of us collabrated with each other using Webex, Slack, GitHub.
 
-##### We curated a list of the top 10 thought leaders and wrote the list to a csv file
+### 1. Thought Leadership in Data Science {.tabset .tabset-fade .tabset-pills}
+
+#### Reading this report in HTML
+
+The reader needs to read both tabs of each section otherwise the paper is confusing.
+
+#### Overview
+
+DATA SCIENCE THOUGHT LEADERSHIP
+
+Project Objective: The objective of this project is to answer the following questions:
+1) Who are today's "thought leaders" in data science? 
+2) What are the topics that data scientists care most about? 
+3) How do these change over time, and across geographical location?
+
+Let's start by defining the terms: Thought Leader and Data Science. 
+
+A thought leader is an individual, organization or nation state that is recognized as an authority in a specialized field and whose expertise is sought and often rewarded.  They are trusted sources who move and inspire people with innovative ideas; turn ideas into reality, and know and show how to replicate their success. Thought leaders are commonly asked to speak at public events, conferences or webinars to share their insight with a relevant audience. The Oxford English Dictionary gives as its first citation for the phrase an 1887 description of Henry Ward Beecher as "one of the great thought-leaders in America.
+
+Data science (DS) is a multi-disciplinary field that uses scientific methods, processes, algorithms and systems to extract knowledge and insights from structured and unstructured data. Data science encompasses the fields of data mining and big data. Data science is a "concept to unify statistics, data analysis, machine learning and their related methods" in order to "understand and analyze actual phenomena" with data. It employs techniques and theories drawn from many fields within the context of mathematics, statistics, information science, and computer science. Data Science is closely related with fields such as Machine Learning (ML), Artificial Intelligence (AI) and Computer Visualization.
+
+There are some inherent contradictions associated with thought leadership. Given that thinking is supposed to be an individual activity, wherein one relies on one's own logic and intelligence to form an understanding, opinion and make potential choices, it is paradoxical to have external thoughts being anointed as the "leader" or best way to think about a subject. Having said that, the real difficulty arises when trying to decide who or what makes someone a thought leader in any given field. This issue is further compounded if the field in question is a rapidly changing, complex domain such as Data Science. There are no easily available metrics (for example: a Nobel Prize in Data Science) that can be easily referred to, for determining thought leadership.
+
+##### Outline of paper structure and summary of findings
+Given this, we've adopted the following approach and structure for this project:
+
+1) People as Thought Leaders
+	a) Based on popular metrics such as number of followers, blogs, tweets, web lists.
+	b) Based on academic research papers and publications presented at industry conferences.
+
+2) Universities as Thought Leaders
+	a) Based on faculty research published.
+	b) Based on academic enrolment in courses in Data Science and related subjects.
+	
+3) Countries as Thought Leaders
+	a) Based on publications.
+
+
+	
+This report is organized by the entity considered as a thought leader.   We begin by analyzing the role of individuals as thought leaders.   One section considers individuals based on popular acclaim while the following section considers tangible research metrics such as publication statistics.   Next, we examine universities - possibly the preeminent type of organization - for this type of study.  This is followed by our evaluation of nations and geographical regions.  Then, we focus on trends in research topics looking at which subtopics of data science have waxed and waned.  The final section concludes.
+
+We also attempt to show how one could go about determining the sub-topics that individual thought-leaders under 1.a) are most interested in, by taking a deeper dive into scraping and parsing material available on the work.
+
+
+##### Strengths, weakness of our and other approaches
+
+ Our methods & research relied on the gathering the information from Research publications, trends in the topic of interests, Geographic trends, academic metrics, popular narratives.
+ Most of the methods and analysis are based solely on either analysis based on Social media or University research which might not give the complete 360 degrees. For instance, social media analysis can tell who's the famous person and who has the most following but it doesn't say that the person or firm in question is thought leader.
+ Nicola Tesla, who was a pioneer in his field has no social media access but his work touched human existence.
+
+
+
+### 2. People Who are thought leaders based on Popular narrative {.tabset .tabset-fade .tabset-pills}
+
+#### Introduction and Analysis
+
+ We looked up top influencers/thought leaders in data science and this yielded a lot of people but we narrowed them down to the top 10 we think have huge influence in different areas of research and interests in data science.
+
+ For deeper insight, we chose to focus on two of them: <a href="http://www.andrewng.org/">Andrew Ng</a> and <a href="http://blog.kiraradinsky.com/">Kira Radinsky</a>. We could retrieve Andrew Ng's publications  from <a href="http://www.arxiv.org/">arXiv</a>, while web-scraping was carried out on <a href="https://dl.acm.org">Association for Computing Machinery website</a> for Kira Radinsky's publications, which yielded useful information for studies. We extracted the abstracts from their publications to see what topics and areas interest them.**
+
+ We curated a list of the top 10 thought leaders and wrote the list to a csv file
 
 ```{r}
 thoughtleaders <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/thought_leaders.csv', header = TRUE)
 ```
 
-
 ```{r}
-
 datatable(thoughtleaders, colnames= c("Name", "Occupation", "Link"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
@@ -45,11 +141,9 @@ datatable(thoughtleaders, colnames= c("Name", "Occupation", "Link"), class = 'ce
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
-
 ```
 
-
-#### We generated tags we feel feature often in topics that interest them and saved these in a .csv. These will help in filtering appropriate keywords from their publications
+ We generated tags we feel feature often in topics that interest them and saved these in a .csv. These will help in filtering appropriate keywords from their publications
 
 ```{r}
 #read the keyword tags from csv
@@ -58,27 +152,22 @@ tag_ex <- as.character(tag_ex$x)
 ```
 
 
-### Andrew Y. Ng
+I. Andrew Y. Ng
 
-##### <a href="https://www.andrewng.org">His personal website </a>
+ <a href="https://www.andrewng.org">His personal website </a>
 
-#### His publications were sourced from the arxive api
+ His publications were sourced from the arxive api
 
 ```{r}
-
 #These queries returned different results
-
 aNgArxiv = arxiv_search('au: "Andrew Ng"') 
 aNgArxiv1 = arxiv_search('au: "Andrew Y. Ng"')
-
 ```
 
-#### combine Andrew Ng's data
+ combine Andrew Ng's data
 
 ```{r}
-
 aNgDf <- rbind(aNgArxiv, aNgArxiv1)
-
 # Removing the first row because the paper was later withdrawn for corrections
 aNgDf = aNgDf[-1,]
 row.names(aNgDf) <- NULL
@@ -92,7 +181,6 @@ anNg['submitted'] <- submitted
 ```
 
 ```{r}
-
 datatable(head(anNg), colnames= c("Title", "Author(s)", "Date"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
@@ -100,7 +188,6 @@ datatable(head(anNg), colnames= c("Title", "Author(s)", "Date"), class = 'cell-b
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
-
 ```
 
 
@@ -108,11 +195,9 @@ datatable(head(anNg), colnames= c("Title", "Author(s)", "Date"), class = 'cell-b
 ta <- vector()
 abT <- vector()
 ayn <- vector()
-
 ```
 
 ```{r}
-
 for(i in 1: nrow(aNgDf))
 {
   row <- aNgDf[i,]
@@ -126,7 +211,6 @@ for(i in 1: nrow(aNgDf))
     abT <- c(abT, k[j])
   }
 }
-
 ```
 
 
@@ -134,12 +218,10 @@ for(i in 1: nrow(aNgDf))
 df <- data.frame(title=ta, year=ayn, keyword=abT)
 ```
 
-#### write to csv
+ write to csv
 
 ```{r, eval=FALSE}
-
 write.csv(df, "an_Ng.csv", row.names=FALSE)
-
 ```
 
 ```{r}
@@ -153,16 +235,14 @@ aNkeywords <-an_df%>% select(year, keyword)%>% group_by(keyword, year) %>% mutat
 ```
 
 
-#### sort keywords in descending order
+sort keywords in descending order
 
 ```{r}
 aNkw <- aNkeywords[order(-aNkeywords$frequency),, drop=FALSE]
-
 ```
 
 
 ```{r}
-
 datatable(head(aNkw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
@@ -170,24 +250,21 @@ datatable(head(aNkw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
-
 ```
 
-#### Top 20 keywords in Andrew Ng's publications over the years
+Top 20 keywords in Andrew Ng's publications over the years
 
 ```{r}
-
 dplt <- ggplot(data=head(aNkw, 20), aes(x = year, y=frequency, fill = keyword)) +
   geom_bar(position="fill", stat = "identity") + 
   ggtitle("top Keywords in Andrew Ng's publications over the years") +
- xlab("Keyword")+
+   xlab("Year")+
   theme(plot.title = element_text(lineheight = .8, face = "bold"))
  dplt + theme(legend.position="right")
-
 ```
 
 
-#### Top 20 keywords in Andrew Ng's publications without considering the years
+Top 20 keywords in Andrew Ng's publications without considering the years
 
 ```{r}
 topKeyW <-as.data.frame(table(abT))
@@ -195,55 +272,38 @@ names(topKeyW)<-c("keyword","frequency")
 ```
 
 ```{r}
-
 dplt <- ggplot(data=head(topKeyW, 20), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
   geom_bar(stat = "identity") +
- xlab("Keywords")+
+ xlab("Keyword")+
   ylab("Frquency")+
   ggtitle("Andrew Ng's top Keywords without the years") +
   theme(plot.title = element_text(lineheight = .8, face = "bold")) +
   theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
  dplt + theme(legend.position="none")
-
 ```
 
 
-### Kira Radinsky
+II. Kira Radinsky
 
-##### <a href="http://kiraradinsky.com">Her personal website</a>
+<a href="http://kiraradinsky.com">Her personal website</a>
 
-##### Her publications sourced by searching for her name on <a href="https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0"> Association for Computing Machinery website</a>
-
+ Her publications sourced by searching for her name on <a href="https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0"> Association for Computing Machinery website</a>
 ```{r, eval=FALSE}
-
 # Hand-picked links according to relevance
-
 kradlinks <- c('citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2491802', 'citation.cfm?id=2187918', 'citation.cfm?id=2493181', 'citation.cfm?id=2433500', 'citation.cfm?id=2433448', 'citation.cfm?id=1963455', 'citation.cfm?id=2187958', 'citation.cfm?id=3192292', 'citation.cfm?id=2433431', 'citation.cfm?id=1487070', 'citation.cfm?id=3219882', 'citation.cfm?id=2348364', 'citation.cfm?id=3096469', 'citation.cfm?id=1935850', 'citation.cfm?id=2422275')
-
 ```
-
-
 ```{r, eval=FALSE}
 kradTitles <- vector()
 kradAbstracts <- vector()
 kradYears <- vector()
-
 ```
-
-##### Make a search on http://dl.acm.org and pull links
-
+ Make a search on http://dl.acm.org and pull links
 ```{r, eval=FALSE}
-
 khtms <- tryCatch(html_nodes(read_html(curl('https://dl.acm.org/results.cfm?within=owners.owner%3DHOSTED&srt=_score&query=Kira+Radinsky&Go.x=0&Go.y=0', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.details'), 
          error = function(e){list(result = NA, error = e)})
 ```
-
-
-##### The above search returned a lot of links but they need to be filtered to get the relevant ones
-
-
+ The above search returned a lot of links but they need to be filtered to get the relevant ones
 ```{r, eval=FALSE}
-
 for(i in 1: length(khtms))
 {
   href <- html_attr(html_nodes(khtms[i], 'div.title a'), 'href')
@@ -274,21 +334,13 @@ for(i in 1: length(khtms))
   }
   
 }
-
 ```
-
-
-
 ```{r, eval=FALSE}
 tt <- vector()
 aa <- vector()
 yy <- vector()
-
 ```
-
-
 ```{r, eval=FALSE}
-
 for(i in 1: length(kradAbstracts))
 {
   k <- kradAbstracts[i] %>% str_replace_all('\n', ' ')%>%str_replace_all('\t', ' ')%>%str_replace_all('\r', '')%>%str_trim(side='both')%>%tolower()%>% str_extract_all(tag_ex)%>%unlist()
@@ -300,45 +352,28 @@ for(i in 1: length(kradAbstracts))
     aa <- c(aa, k[j])
   }
 }
-
 ```
-
 ```{r, eval=FALSE}
 dfk<- data.frame(title=tt, year=yy, keyword=aa)
-
 ```
-
-
-#### write to csv
-
+ write to csv
 ```{r, eval=FALSE}
-
 write.csv(dfk, "kira_radinsky.csv", row.names=FALSE)
-
-```
-
-#### Write all keywords to .csv
+ Write all keywords to .csv
 ```{r, eval=FALSE}
-
 write.csv(aa, "kr_keywords.csv", row.names=FALSE)
 ```
-
-#### read from .csv
-
+ read from .csv
 ```{r}
 #read from csv
 kira_df <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/kira_radinsky.csv', header = TRUE)
 ```
-
 ```{r}
 #read from csv
 allkw <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Projects/Project3/Data_Science_Thought_Leaders/kr_keywords.csv', header = TRUE)
 allkw <- as.character(allkw$x)
 ```
-
-
 ```{r}
-
 datatable(head(kira_df), colnames= c("Title", "Year", "Keyword"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
@@ -346,24 +381,16 @@ datatable(head(kira_df), colnames= c("Title", "Year", "Keyword"), class = 'cell-
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
-
 ```
-
-
 ```{r}
  
 kkeywords <-kira_df%>% select(year, keyword)%>% group_by(keyword, year) %>% mutate(frequency = n())%>%unique()
 ```
-
-
-#### sort keywords in descending order
-
+ sort keywords in descending order
 ```{r}
 kw <- kkeywords[order(-kkeywords$frequency),, drop=FALSE]
 ```
-
 ```{r}
-
 datatable(head(kw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell-border stripe', options = list(
   initComplete = JS(
     "function(settings, json) {",
@@ -371,60 +398,813 @@ datatable(head(kw), colnames= c("Year", "Keyword", "Frequency"), class = 'cell-b
     "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
     "}")
 ))
-
 ```
-
-
-#### Top 20 keywords in Kira Radinsky's publications over the years
-
+ Top 20 keywords in Kira Radinsky's publications over the years
 ```{r}
-
 kw1 <- subset(kw, year != '2014' & year != '2015' & year != '2016')
 ```
-
-
 ```{r}
-
 dplt <- ggplot(data=head(kw1, 20), aes(x = year, y=frequency, fill = keyword)) +
   geom_bar(position="fill", stat = "identity") + 
   ggtitle("top Keywords in Kira Radinsky's publications over the years") +
- xlab("Keyword")+
+ xlab("Year")+
   theme(plot.title = element_text(lineheight = .8, face = "bold"))
  dplt + theme(legend.position="right")
-
 ```
-
-
-#### Top 20 keywords in Kira Radinsky's publications without considering the years
-
+ 
+ 
+ Top 20 keywords in Kira Radinsky's publications without considering the years
 ```{r}
 kTopics <-as.data.frame(table(allkw))
 names(kTopics) <- c('keyword', 'frequency')
 ```
-
 ```{r}
-
 dplt <- ggplot(data=head(kTopics, 20), aes(x = reorder(keyword, frequency), y=frequency, fill = "steelblue")) +
   geom_bar(stat = "identity") +
- xlab("Keywords")+
-  xlab("Frequency")+
+ xlab("Keyword")+
   ylab("Frquency")+
   ggtitle("Kira Radinsky's top Keywords without the years") +
   theme(plot.title = element_text(lineheight = .8, face = "bold")) +
   theme(axis.text.x = element_text(angle = 90, vjust = .5, size = 9))+ coord_flip()
  dplt + theme(legend.position="none")
+```
+
+
+#### Summary and Conclusion
+
+
+From the above representations, it is obvious that both thought leaders focused on AI earlier on but later started shifting their focus to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+
+These two individuals were chosen because we observed that all the leaders followed a similar trend. They start with one broad area of interest first and then start focusing more on more than one specialised topics as the time go by.
+
+We are of the belief that drilled-down insight on the interests of the other thought leaders will yield similar results.
+
+The sources of this study were gotten from their publications/papers and do not reflect in its entirty, their complete interest areas. A more robust approach should also involve mining for appropriate keywords from their tweets, blogs, interviews, and key notes delivered in conferences
+
+The list we curated is based on evidences of influence and dedicated activities these people have put towards data science, therefore, someone else can have their own list different from ours
+
+### 3. Thought Leadership Through Research {.tabset .tabset-fade .tabset-pills}
+
+
+#### Introduction and Analysis
+
+
+##### Measuring Thought Leadership Through Research Paper Counts
+
+[Arxiv website](http://www.arxiv.org) is one of the top electronic paper repositories for academic research in multiple fields: computer science, physics, mathematics and statistics.  Researchers submit papers electronically and are catalogued in the arxiv database.
+By analyzing the level of activity of a researcher in submitting papers on data science topics to arxiv, we get an objective, quantifiable, and relevant measure of their thought leadership.
+
+In the next section, we will describe the data collection process, its limitation and outputs.  After showing how the data and raw files are processed, we wrangle the consolidated data into usable form.  Then, we present rankings of the top leaders and descriptive statistics of the papers and conclude with some interpretative remarks.
+
+#####  Data Collection Process
+
+  We are able to obtain detailed research paper submission data through the R package __aRxiv__ to retrieve metadata information.
+This API allows us to query papers based on useful criteria such as:
+
+* submission date
+* authors
+* subject classification (self-described by authors)
+* title of the papers
+
+The range of dates and subject classifications below are native arXiv categories.  
+Our 7 subject classification categories are the same as those chosen by 
+the AIIndex.org 2018 paper in its data collection methodology.  [AIIndex 2018](http://cdn.aiindex.org/2018/AI%20Index%202018%20Annual%20Report.pdf)
+Because we discuss the arXiv API at length in another section of this project on time trends in research, we give a brief summary here.
+
+
+In this section, we identify the specific steps relevant to author page counts.
+
+To obtain authors and titles of papers, we require downloading the full record of each paper submission.
+This raw data required 1 hour to download through a series of trial and error batch scripts because of two issues:
+
+a) server limits the number of records returned if the count is too high (over 15000 per pull)
+b) server disables the requestors API access if numerous requests are submitted in parallel or in a short time.
+
+By defining granular queries, we limited most API requests to under 5000 records and successfully gathered all paper records.  
+This yielded 70 raw files by year and category.   We combined them into a single big file in two steps:  we aggregated all years into one category file, and all category files into a single big file.
+
+The big file had 7 columns: 
+* ID  (unique identifier of the article)
+* submitted (date/time of submission)
+* updated (date/time of last revision submitted)
+* title ( name of the paper)
+* authors ( a pipe delimited list of co-authors of the papers)
+* primary_category (used for the query )
+* categories (pipe-delimited list of alternate categories)
+
+The most important step to produce a single consolidated records file was eliminating unnecessary fields: the abstract.   Each paper's record includes its abstract.  For most papers, an abstract represents 90 percent of the record size.   Due to the large file size, this simplification was needed to allow all records to fit into memory on our PC.   
+
+The final result is a flat file with 57193 records called **output_all_subjects.csv**.
+
+##### Code to download and merge data files
+
+The code to download the required data below has been described in the previous section.   Due to the fact that the arXiv server API may produce variable results or throttle access, we show but don't run the code block below.  This is controlled by setting **eval=FALSE** in the relevant code chunks.
+
+
+```{r}
+#####  A list of categories and years
+#####  -----------------------------------------------------------------------------
+ds_categories = c("stat.ML", "cs.AI" , "cs.CV", "cs.LG", "cs.RO", "cs.CL", "cs.NE")
+ds_descriptions = c("Stat Machine Learning", "Artificial Intelligence" , "Computer Vision",
+                    "Computer Learning", "Robotics", "Computation and Language" ,
+                      "Neural and Evolutionary Computing")
+subject_names = data.frame( categories = ds_categories ,
+                            desc = ds_descriptions, stringsAsFactors = FALSE)
+years_list = c( 2009:2018 )
+```
+
+```{r eval=FALSE}
+#####  Set up an empty dataframe of years range for row and data science
+#####  topics for columns.   Values will store paper counts in arXiv by year and topic.
+##### ----------------------------------------------------------------------------------
+info = data.frame (matrix( data = 0, 
+                           nrow = length(years_list), 
+                           ncol = length(ds_categories) ,
+                           dimnames = list( as.character( years_list ), ds_categories ) ) )
+
+#####   Query the arXiv server for paper counts:  
+#####   Outer loop is on subjects
+#####  Inner loop is on years.
+#####  -------------------------------------------------------------------------
+for(subject in subject_names$categories )
+{
+  for( y in years_list )
+  {
+    
+    
+    qry = paste0("cat:", subject, " AND submittedDate:[", 
+                 y, 
+                 " TO ", 
+                 y+1, "]")
+    
+    qry_count = arxiv_count(qry)
+    qry_details = arxiv_search(qry, batchsize = 100, limit = 11000, start = 0 )
+    
+    info[as.character(y), subject] = qry_count
+    print(paste(qry, " ", qry_count, "\n"))
+    
+    output_filename = paste0(subject, "_", y, "_", "results.csv")
+    
+    write.csv(qry_details, file = output_filename)
+    
+    print(paste0("Wrote file: ", output_filename, Sys.time() ) )
+    
+    #####  Sleeping is essential to throttle API load on the arXiv server.
+    #####  ------------------------------------------------------------------
+    Sys.sleep(5)
+  }
+}
+print("Retrieval of arXiv query records is now completed.")
+for(j in seq_along(ds_categories ) )
+{
+    subject = ds_categories[j]  
+    outputdf = list( )   
+    
+    my_files = paste0(subject, "_", years_list, "_", "results.csv")
+    
+    for( i in  seq_along(my_files) )
+    {
+       fulldata <- read_csv(file = my_files[i])
+       print(paste0( "Loaded ", i, " ", my_files[i] ) )
+       
+       #####   Strip out the abstract which takes up most file space.
+       #####  ------------------------------------------------------------------------
+       fulldata %>% select( id, submitted, updated, title, authors, primary_category, categories) -> tempdata
+       
+       outputdf[[i]] = tempdata    
+       
+       Sys.sleep(1)
+    }
+    
+    #####   Write all the year files for one subject to one tibble and then 
+    #####   dump to one subject specific file
+    #####  -----------------------------------------
+    big_data = bind_rows(outputdf)
+    
+    output_big_subject = paste0("bigdata_", subject, ".csv")
+  
+    write_csv(big_data, output_big_subject )
+    
+    print(paste0( "Wrote file ", output_big_subject, " to disk ", Sys.time() ) )
+}
+my_files = paste0("bigdata_", ds_categories, ".csv")
+  
+outputdf = list()
+for(j in seq_along(my_files ) )
+{
+    fulldata <- read_csv(file = my_files[j])
+    print(paste0( "Loaded ", j, " ", my_files[j] ) )
+    outputdf[[j]] = fulldata    
+    Sys.sleep(1)
+}
+  
+#####  We row-bind the list of dataframes into one big one using
+#####  a nice one-liner in dplyr.   The result is one big tibble.
+##### ---------------------------------------------------------------------
+big_data = bind_rows(outputdf)
+    
+output_all_subjects = "output_all_subjects.csv"
+    
+write_csv(big_data, output_all_subjects )
+    
+print(paste0( "Wrote file ", output_all_subjects, " to disk ", Sys.time() ) )
+```
+
+
+#####  Wrangling the data
+
+The entire analysis in this section depends only on loading the raw files in the next code chunk.   We illustrate the content with a few records below.
+
+```{r}
+big_paper_set = read_csv("https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/output_all_subjects.csv")
+knitr::kable(head(big_paper_set, 4) ,  
+             caption = "Representative Records from the Paper Records" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+Next, we remove duplicate records in the raw data set.  Duplicate records arise because a paper may be classified as matching two or more computer science categories.   For example, a paper may fall into Statistical Machine learning (stat.ML) and Computer Vision (cs.CV).
+This removes roughly 12000 duplicate records.  
+
+
+```{r}
+#####  Remove duplicate records and true all information.
+#####  -----------------------------------------------------------------------------------
+big_paper_clean <- ( big_paper_set %>% distinct( id, authors, .keep_all = TRUE))
+nrow(big_paper_clean)
+```
+
+```{r}
+paper_authors = big_paper_clean$authors
+author_names  = str_split(paper_authors, "\\|")  # separates all the authors
+#####  The coauthors of a paper are consecutively listed in preceded by all authors
+#####  of earlier papers.
+#####  ---------------------------------------------------------------------
+authors_unlisted = unlist(author_names)
+num_author_paper_tuple = length(authors_unlisted)
+#####  Index j corresponds to the j-th paper in big_paper_clean
+#####  Value at index j corresponds to the number of co-authors in paper j
+#####  ----------------------------------------------------------------------
+vec_coauthor_counts = unlist( lapply(author_names, length ) )
+paper_author_map = tibble( id  = character(num_author_paper_tuple), author = character(num_author_paper_tuple) )
+idx_unlisted = 0
+```
+
+The following code chunk maps the papers to authors in a 1-to-many relationship.
+Due to the inefficiency of the process, (over 10 minutes) to generate the mapping, I am saving the results to a flat file
+and setting **eval=FALSE**.  At the next step, the data is reloaded from file to a dataframe for analysis.
+
+```{r eval=FALSE}
+for( id_idx in  1:length(big_paper_clean$id)  )
+{
+     num_coauthors = vec_coauthor_counts[id_idx]
+  
+     for(s in 1:num_coauthors)
+     {
+          paper_author_map$id[ idx_unlisted + s ] = big_paper_clean$id[ id_idx]  
+          paper_author_map$author[ idx_unlisted + s ] = authors_unlisted [ idx_unlisted + s]
+      
+     }
+     idx_unlisted = idx_unlisted + num_coauthors
+     if( id_idx %% 100 == 0 )
+     {
+         print(paste0(" idx = ", id_idx))
+     }
+}
+write_csv(paper_author_map, "paper_author_map.csv")
+```
+
+```{r}
+paper_author_map = read_csv("https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/paper_author_map.csv")
+```
+
+#### Summary and Conclusions
+
+```{r}
+by_author <- group_by( paper_author_map , author )
+rankings <- summarize( by_author, numPapers = n() ) %>% arrange( desc( numPapers))
+knitr::kable(head(rankings, 30) , caption = "Top 30 Authors by Data Science Paper Counts (2009-2018)")
+summary( rankings)
+```
+
+We conclude that the top influential data scientist by paper count is Yoshua Bengio with 174 papers.  He is noted for his expertise in deep learning along with Geoffrey Hinton and Yann LeCun.   By comparison, other thought leaders mentioned earlier like Kira Radinsky have written only 4 papers.   We also see that the average number of papers written is 2.2 with a median of 1 papers.  Thus, the distribution of publishing researchers is highly skewed to the right.
+
+We conclude that thought leadership within the field of academic research does not equate to business thought leadership.  However, without conceptual innovations made possible by academia, the application of these ideas to business is impossible.
+
+
+***
+
+
+
+### 4. Geographic Trends {.tabset .tabset-fade .tabset-pills}
+
+
+
+#### Introduction and Analysis
+
+Data science covers a tremendous system of themes under its umbrella including Deep learning, IoT, AI, and different others. It is a complete amalgamation of data inference, analysis, algorithm computation and technology to take care of multifaceted business issues. With the unabated expanding notoriety of information science and new mechanical and advanced improvements, the applications and employment of information science are expanding significantly after some time. The accompanying patterns in this field are relied upon to proceed in the coming year too.
+
+##### Patents 
+
+###### Overview
+
+Universities contribute fundamentally to AI explore in explicit fields, with Chinese colleges dominating. Numerous AI licenses incorporate developments that can be connected in various ventures - media communications, transportation, restorative sciences, individual gadgets, processing and human-PC collaboration (HCI) included profoundly in the related enterprises.
+
+
+###### Data & Import Cleansing
+```{r}
+patentsURL<-("https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Data-Sets/Patents.csv")
+patents_Raw<-fread(patentsURL,fill = TRUE,header = TRUE,stringsAsFactors = FALSE)
+names(patents_Raw)[1]<-"Year"
+patents_Raw$Year<-as.character(patents_Raw$Year)
+patents_Data<- patents_Raw %>% gather(Countries,PatentCount,-Year)
+patents_Data$PatentCount[is.na(patents_Data$PatentCount)]<-0
+patents_Data$Year<-as.Date(patents_Data$Year,format("%Y"))
+patents_Data$Year<-year(patents_Data$Year)
+patents_Data_byCountry<-patents_Data %>% group_by(Countries) %>% summarise(TotalPatents=sum(PatentCount)) %>% arrange(desc(TotalPatents))
+```
+
+
+###### Analysis & Observation
+
+```{r}
+# Bar chart showing the Count of patents by Country
+ggplot(patents_Data_byCountry,aes(x=reorder(Countries,TotalPatents),y=TotalPatents))+
+  geom_col(fill="tomato2",color="black")+
+  xlab("Countries")+
+  ylab("Total Patents")+
+  
+  labs(title = "Total AI Patents by Country period: 2004-2014")+
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+```
+```{r chunk_name, results="hide"}
+"US is leading country in Total Patents in Artificial intelligence followed by Japan and China."
 
 ```
 
 
-## Conclusion
+##### Robotics 
 
-##### From the above representations, it is obvious that both thought leaders focused on AI earlier on but later started shifting their focus to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+###### Summary and Analysis
 
-##### These two individuals were chosen because we observed that all the leaders followed a similar trend. They start with one broad area of interest first and then start focusing more on more than one specialised topics as the time go by.
+![Robo and DataScience](https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Images/Self%20Driving%20Cars.jpeg)
 
-##### We are of the belief that drilled-down insight on the interests of the other thought leaders will yield similar results.
+With the advance in data science, the field of robotics has definitely improved to a great extent.
+data science, AI, and robotics have a pretty much symbiotic relationship. Each enhances the other to power innovative machines and technologies that are making our lives more convenient than ever. The collaboration between data science, AI, and ML has given us things like self-driving cars, smart assistants, robo-surgeons and nurses, and so much more.
 
-##### The sources of this study were gotten from their publications/papers and do not reflect in its entirty, their complete interest areas. A more robust approach should also involve mining for appropriate keywords from their tweets, blogs, interviews, and key notes delivered in conferences
 
-##### The list we curated is based on evidences of influence and dedicated activities these people have put towards data science, therefore, someone else can have their own list different from ours
+
+###### Data & Import Cleansing
+```{r}
+RoboticsURL<-"https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Data-Sets/Robotic%20Installations.csv"
+Robotics_Raw <-fread(RoboticsURL,fill = TRUE,header = TRUE,stringsAsFactors = FALSE)
+Robotics_DS<-Robotics_Raw[29:nrow(Robotics_Raw),]
+Robotics_Data<- Robotics_DS %>% gather(Year,No_of_Robotic_Installations,-Countries)
+
+```
+
+
+###### Analysis & Observation
+```{r}
+ggplot(Robotics_Data, aes(x=Year, y=No_of_Robotic_Installations, group=Countries, color=Countries)) +
+  geom_line(size=2) + geom_point()+
+  scale_color_brewer(palette="Paired")+
+  xlab("Years")+
+  ylab("# of Robotic Installations")+
+  labs(title = "Robotic Installations Regionally by Year")+
+  theme_minimal()
+```
+```{r robo, results="hide"}
+" From the line chart it is evident that China is leading in Robotics installations, followed by Europe, Japan, and North America. The trend is increasing every year"
+
+```
+
+
+##### AI Publications 
+
+###### Overview
+![Artificial Intelligence and Data Science](https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Images/AI%20and%20DS.jpg)
+According to the Harvard Business Review, "companies with strong basic analytics - such as sales data and market trends - make breakthroughs in complex and critical areas after layering in artificial intelligence."
+AI innovations like those aren't possible without the right data and specialized data science staff who know how to use it.
+In 2014, about 30% of AI patents originated in the U.S, followed by South Korea and Japan, which each hold 16% of AI patents. Of the top inventor regions, South Korea
+and Taiwan have experienced the most growth, with the number of AI patents in 2014 nearly 5x that in 2004 .
+RAI is defined as the share of a country's publication output in AI relative to the global share of publications in AI. A value of 1.0 indicates that a country's research activity in AI corresponds exactly with the global activity in AI. A value higher than 1.0 implies a greater emphasis, while a value lower than 1.0 suggests a lesser focus.
+
+
+
+###### Data & Import Cleansing
+```{r}
+RABR<-read.csv("https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Data-Sets/Research_activity_by_region.csv",stringsAsFactors = FALSE)
+names(RABR)<-str_replace_all(names(RABR),"X","")
+RABR
+RABR<-gather(RABR,Year,Percent_of_Publications,-Region)
+RABR$Percent_of_Publications<- percent(RABR$Percent_of_Publications,digits = 0)
+RABR_2017<-RABR %>% filter(Year %in% c(2017,2016,2015)) 
+```
+
+
+###### Analysis & Observation
+```{r}
+ggplot(RABR_2017,aes(x=reorder(Region,Percent_of_Publications),y=Percent_of_Publications,fill=Year))+
+  geom_col(position="dodge",color="black")+
+  xlab("Region")+
+  ylab("% of AI publications")+
+  scale_fill_brewer(palette = "Dark1")+
+  labs(title = "Percent of AI papers by Countries: 2015 to 2017")+
+theme(axis.text.x = element_text(angle=65, vjust=0.6))
+```
+```{r AI, results="hide"}
+" Europe is leading overall every year 2015 - 2017 in terms of % of AI Publications followed by China and US.
+In China the trend is upward year over year although they are standing second in place"
+
+```
+
+###### By Research Area 
+
+###### Overview
+
+The graphs below and on the following page show the number of Scopus papers affiliated with government, corporate, and medical organizations.
+In 2017, the Chinese government produced nearly 4x the number of AI papers produced by Chinese corporations. China has also experienced a 400% increase in
+government-affiliated AI papers since 2007, while corporate AI papers only increased by 73% in the same period.
+In the U.S., a relatively large proportion of total AI papers are corporate. In 2017, the proportion of corporate AI papers in the U.S. was 6.6x the proportion of
+corporate AI papers in China, and 4.1x that of Europe.
+
+
+
+
+
+###### Data & Import Cleansing
+```{r}
+RSector<-read.csv("https://raw.githubusercontent.com/DataScienceAR/Cuny-Assignments/master/Data-607/Data-Sets/Research_focus_by_Region_in_AI.csv",stringsAsFactors = FALSE)
+RSector_Stg1<-gather(RSector,Country,Relative_Activity_Index,-Research.Sector)
+RSector_Stg1$Country<-factor(RSector_Stg1$Country)
+RSector_Stg1$Research.Sector<-factor(RSector_Stg1$Research.Sector)
+RSector_Stg1<-RSector_Stg1 %>% group_by(Country) %>% mutate(label_y=cumsum(Relative_Activity_Index)-0.2*Relative_Activity_Index)
+```
+
+
+###### Analysis & Observation
+```{r}
+library(treemap)
+treemap(RSector_Stg1,index = c("Country","Research.Sector"),
+        vSize = "Relative_Activity_Index",
+        algorithm = "pivotSize",
+        #lowerbound.cex.labels=1.6,
+        title="Research Focus by Region in AI",
+        fontsize.labels = c(15,10),
+        align.labels = list(c("centre","centre"),c("left","top")))
+
+
+
+ggplot(RSector_Stg1, aes(x = Country, y = Relative_Activity_Index,
+                         fill = Research.Sector)) +
+  geom_col() +
+    xlab("Region")+
+  ylab("Relative Activity Index")+
+  labs(title = "Research Focus by Region in AI")+
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+```
+
+
+```{r Focus, results="hide"}
+" 
+1. United States is leading overall in terms of the research in AI but is lagging behind in Agricultural compared to Europe and China.
+2. United States is leading in Humanities in AI and Medical and Health Sector of AI compared to China and Europe.
+3. China is at the top position when it comes to Engineering and Technology.
+
+"
+
+```
+
+#### Summary and Conclusion
+
+1. United States is leading Country in Total patents in Artificial Intelligence followed by Japan and China.
+2. China is leading in Robotics installations, followed by Europe, Japan, and North America. The trend is increasing every year
+3. Europe is leading overall every year 2015 - 2017 in terms of % of AI Publications followed by China and US. In China the trend is upward year  over year although they are standing second in place.
+4. United States is leading overall in terms of the research in AI but is lagging behind in Agricultural AI sector compared to Europe and China.
+5. United States is leading in Humanities in AI and Medical and Health Sector of AI compared to China and Europe. China is at the top position when it comes to Engineering and Technology.
+
+
+
+
+
+
+### 5. Trends in Topics of interest {.tabset .tabset-fade .tabset-pills}
+
+#### Overview
+
+We analyze the trends in data science topics over the last decade using data from the arXiv paper repository from 2009-2018.
+The data suggests that all topics of data science have experienced significant nearly exponential growth.
+However, if we examine the topics more closely, some areas have become hotter while others have diminished on a relative basis.
+
+###### Data Import and Cleansing
+
+Using the arXiv research website for Data
+
+To explore these trends, we gathered data from the arXiv research website.  [Arxiv website](http://www.arxiv.org) hosts a popular and longstanding 
+forum for academic research in mathematics, physics, statistics and computer science.   Researchers submit papers electronically and are catalogued in the arxiv database.
+
+We are able to obtain detailed research paper submission data through the R package __aRxiv__ to retrieve metadata information.
+This API allows us to query papers based on useful criteria such as:
+
+* submission date
+* authors
+* subject classification (self-described by authors)
+* title of the papers
+
+The range of dates and subject classifications below are native arXiv categories.  Our tags are the same as those chosen by 
+the AIIndex.org 2018 paper in its data collection methodology.  [AIIndex 2018](http://cdn.aiindex.org/2018/AI%20Index%202018%20Annual%20Report.pdf)
+
+```{r}
+# A list of categories and years
+# -----------------------------------------------------------------------------
+ds_categories = c("stat.ML", "cs.AI", "cs.CV", "cs.LG", "cs.RO", "cs.CL", "cs.NE")
+ds_descriptions = c("Stat Machine Learning", "Artificial Intelligence", "Computer Vision",
+                    "Computer Learning", "Robotics", "Computation and Language" ,
+                      "Neural and Evolutionary Computing")
+subject_names = data.frame( categories = ds_categories ,
+                            desc = ds_descriptions, stringsAsFactors = FALSE)
+years_list = c( 2009:2018 )
+```
+
+```{r}
+# Set up an empty dataframe of years range for row and data science
+# topics for columns.   Values will store paper counts in arXiv by year and topic.
+# ----------------------------------------------------------------------------------
+info = data.frame (matrix( data = 0, 
+                                   nrow = length(years_list), 
+                                   ncol = length(ds_categories) ,
+                                   dimnames = list( as.character( years_list ), ds_categories ) ) )
+```
+
+Collecting the paper counts
+
+The following section downloads the paper counts by topic and year.
+Note that this step is computationally intensive and will cause an online resource restriction by the arXiv server 
+if they feel that this query causes excessive or abusive use of computational resources.
+
+As a result, we save the results to a local disk file.  The following code chunk should set *eval* to equal *TRUE* to confirm the code
+works and allows downloads.  Otherwise, for visualization graphics (or project final assembly), this step should be skipped.
+The downloaded data can be read from a file and the next code chunk.
+The data file is posted online.
+
+```{r eval=FALSE}
+#
+#  Query the arXiv server for paper counts:  
+#  Outer loop is on subjects
+#  Inner loop is on years.
+# -------------------------------------------------------------------------
+for(subject in ds_categories )
+{
+  for( y in years_list )
+  {
+  
+    
+      qry = paste0("cat:", subject, " AND submittedDate:[", 
+                  y, 
+                  " TO ", 
+                  y+1, "]")
+      
+      qry_count = arxiv_count(qry)
+      info[as.character(y), subject] = qry_count
+      print(paste(qry, " ", qry_count, "\n"))
+      
+      # Sleeping is essential to throttle API load on the arXiv server.
+      # ------------------------------------------------------------------
+      Sys.sleep(3)
+  }
+}
+#  Write the contents to files to avoid re-running the above code during
+#  final project assembly
+# ------------------------------------------------------------------------
+write.csv(info, file="Arxiv_topic_counts.csv", row.names = TRUE)
+```
+
+And reload the paper counts here.
+```{r}
+subject_year_counts = as_tibble( read.csv("https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/Arxiv_topic_counts.csv") )
+```
+####### Data Wrangling
+
+Some minor data wrangling is needed to extract the marginal sums and fractions of annual production by topic.
+This is illustrated in the next code chunk.
+
+Note that for each year in the *Period* files, the paper count is from Jan 1 of that year until Dec 31 of the same year.
+
+```{r}
+# Set the names to make algebraic notation less cumbersome
+# --------------------------------------------------------------------------------
+names(subject_year_counts) = c("Period", as.character(subject_names$categories) )
+# Calculate and store row sums
+# -----------------------------------------------------------------
+subject_year_counts %>% 
+  group_by(Period) %>% 
+  mutate( sum = stat.ML + cs.AI + cs.CV + cs.LG + cs.RO + cs.CL + cs.NE) %>% 
+  mutate( stat.ML.pct  = stat.ML / sum , 
+          cs.AI.pct    = cs.AI   / sum ,
+          cs.CV.pct    = cs.CV   / sum ,  
+          cs.LG.pct    = cs.LG   / sum ,
+          cs.RO.pct    = cs.RO   / sum ,
+          cs.CL.pct    = cs.CL   / sum ,
+          cs.NE.pct    = cs.NE   / sum 
+          ) -> subject_year_counts
+#
+#  Plot the change in percent importance of different topics over the last 10 years
+# ----------------------------------------------------------------------------------
+subject_year_counts %>% select( Period, stat.ML.pct:cs.NE.pct) %>%
+       gather(key="Subject", value = "fraction", stat.ML.pct:cs.NE.pct) -> pct_data
+ggplot( pct_data , aes(x=Period, y = fraction, fill= Subject ) ) + 
+  geom_bar(stat="identity", position="fill") +
+  scale_fill_brewer(palette="Set2") +
+  scale_x_discrete(limits=2009:2018) +
+  ggtitle("Percent of Data Science Papers by Topic on arXiv from 2009-2018")
+# Show only 2009 and 2018 statistics and merger with longer descriptions
+# Then display data by year-as-column to focus on changes
+# ---------------------------------------------------------------------------------
+pct_data %>% filter( Period == 2009 | Period == 2018 ) %>%
+    mutate( topicCode = str_sub( Subject, start= 1, end = -5), fraction = 100 * fraction) %>%
+    inner_join( subject_names, by = c("topicCode" = "categories") ) %>%
+    select( Period, fraction, desc ) %>% 
+    spread( key = Period, value = fraction ) -> table_to_show
+```
+
+The table below clearly shows significant changes in relative interest over a decade.
+
+* Pure AI has decreased in its relative important from 31.9 to 11.1 percent.
+* Computer Learning, Machine Learning, Computer Vision have grown to 71.3 percent of papers
+* Neural Computing and Robotics have remained static and relatively minor topics.
+
+
+```{r}
+knitr::kable(table_to_show, digit = 1 , 
+             caption = "Percent Share of Articles by Topic" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+####### Trends in the Total Volume of Research
+
+The evidence below will show exponential growth in data science research.  Statistic and machine learning and computer vision are driving the bulk of this work.
+
+
+```{r}
+#
+# Plot the change in absolute papers submitted
+# -----------------------------------------------------------------
+subject_year_counts %>% select( Period, stat.ML:cs.NE) %>%
+  gather(key="Subject", value = "Count", stat.ML:cs.NE) -> abs_data
+ggplot( abs_data , aes(x=Period, y = Count, fill= Subject ) ) + 
+  geom_area() +
+  scale_fill_brewer(palette="Set2") +
+  scale_x_discrete(limits=2009:2018) +
+  ggtitle("Count of Data Science Papers by Topic on arXiv from 2009-2018") +
+  theme(legend.position= c(.1, .9 ),
+        legend.justification = c("left", "top"))
+```
+
+####### Explosive Growth of Research
+
+```{r}
+knitr::kable(subject_year_counts %>% select( Period, sum ) %>% spread( key = Period, value = sum ) , 
+             caption = "Total Data Science Articles on Arxiv by Year" ) %>%
+       kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+A simple calculation from the above table allows us toconclude that the volume of research (by article count) has grown 47 percent annually.  This explosive growth in research has resulted in a 32 fold increase in research in the most recent decade.   Whether the quality matches the quantity is another issue. But this is compelling supporting evidence that artificial intelligence is revolutionizing academic research and thought leadership.
+
+***
+
+#### Summary and Conclusion
+
+1. exponential growth in data science research.  Statistic and machine learning and computer vision are driving the bulk of this work.
+2. Pure AI has decreased in its relative important from 31.9 to 11.1 percent.
+3. Computer Learning, Machine Learning, Computer Vision have grown to 71.3 percent of papers
+4. Neural Computing and Robotics have remained static and relatively minor topics.
+5. Volume of research (by article count) has grown 47 percent annually.  This explosive growth in research has resulted in a 32 fold increase in    research in the most recent decade.   Whether the quality matches the quantity is another issue. But this is compelling supporting evidence that artificial intelligence is revolutionizing academic research and thought leadership.
+
+
+### 6. Academia:  Top Ranked Universities in AI, ML or DS {.tabset .tabset-fade .tabset-pills}
+
+#### Introduction and Analysis
+
+The section below loads the required packages and input data files containing the following details of research papers in Artificial Intelligence (AI), Data Science (DS), Machine Learning (ML), Visualization (VI): Names of faculty members who authored these papers, universities they're affiliated to, conferences they presented at, and the year of publication. The conferences selected were restricted to those in the above fields only.
+
+```{r}
+
+fileurl<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/author-info-ds.csv"
+ds.authors<-read.csv(file=fileurl, header=TRUE, na.strings = "NA", stringsAsFactors = TRUE)
+#ds.authors<-fread(fileurl, header=TRUE, na.strings = "NA", stringsAsFactors = FALSE)
+#ds.authors
+```
+
+The section below filters the data for the 2 main columns of interest: University and Adjusted Count. The adjusted count is a score that measures contribution by authors based on joint ownership with other authors. The detailed methodology is available at http://csrankings.org/#/index?all
+
+The analysis below aims to determine which university across the globe, can be deemed to be a thought leader in the Data Science, Artificial Intelligence, Machine Learning and Visualization areas, based on the contribution of their faculty members by writing research papers.
+
+The following section selects the required columns, and calculates an aggregate of the adjusted count by university.Then it renames the columns, and derives the top 10 universities based on this adjusted count metric.
+
+```{r}
+paper.count<-ds.authors%>%select(university,adjustedcount)
+summary.paper.count<-aggregate(. ~ university, data = paper.count, sum)%>%setorder(-adjustedcount)
+summary.paper.count$adjustedcount<-round(summary.paper.count$adjustedcount,2)
+colnames(summary.paper.count)<-c("University", "Research_Adj_Count")
+#summary.paper.count
+top10<-summary.paper.count[1:10,]
+top10
+```
+
+The following section generates a barplot showing the top 10 universities by adjusted count of research papers. It shows that Carnegie Mellon sits at the top of the stack by a big margin. So it can considered as the prime thought leader from an institutional perspective.
+
+As a topic for further research, it is notable that a big name like Stanford University is missing from the top 10 universities. We suspect that this could be on account of factors like departmental affiliations of faculty members and their choices on whether to present their research at pure Data Science type conferences vis-a-vis other conferences geared towards other domains such as Statistics or Economics. Also, it's likely that if the focus is extended to all of Computer Science instead of a narrower selection of AI, DS, ML etc, then universities like Stanford may show a more significant presence while perhaps the universities in the top 10 are more exclusively focusing on AI, ML and DS research. 
+
+```{r}
+library(ggplot2)
+library(RColorBrewer)
+ggplot(top10, aes(x=reorder(University,Research_Adj_Count), y=Research_Adj_Count, fill=University))+ geom_bar(stat="identity",color="black") + coord_flip() + theme(legend.position='none') + ylab("Adjusted Research Paper Count") + xlab("Universities as Thought Leaders")
+```
+
+
+##### Trends in Data Science sub-topics as evidenced by change in research paper counts over the years
+
+From the data and graph below, it can be seen that Machine Learning, Neural Networks and Computer Visualization are showing a very rapid growth in research publications.
+
+```{r}
+
+fileurl3<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/AIPapersByTopic.csv"
+ai.subtopics<-read.csv(fileurl3)
+colnames(ai.subtopics)<-c("Year", "Machine Learning", "Neural Networks", "Computer Vision", "Search optimization", "NLP", "Fuzzy Systems", "Decision Making", "Total")
+ai.subtopics
+ai.subtopics.long<-gather(ai.subtopics, key="Sub_Topic", value=Paper_Count, 2:8)
+ggplot(ai.subtopics.long, aes(x=Year, y=Paper_Count, group=Sub_Topic,colour=Sub_Topic)) + geom_line()+xlab("Years")+ylab("Paper Count")
+```
+
+
+##### Percentage of AI and ML course enrollments in US Universities at the Undergraduate Level
+
+```{r}
+
+fileurl2<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/USAI-MLUndergradEnrolmentPercentage.csv"
+undergrad<-read.csv(fileurl2)
+colnames(undergrad)<-c("University", "Domain", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017")
+#undergrad
+undergrad.long<-gather(undergrad, key="Year", value=Percent_Share, 3:10)
+undergrad.long$UnivDomain=paste(undergrad.long$University, undergrad.long$Domain, sep="-")
+undergrad.long$Percent_Share=round(undergrad.long$Percent_Share*100,2)
+undergrad.long
+```
+
+The following graph shows the academic enrolment at the undergraduate level in AI and ML courses in selected US universities, over the 2010-2017 period. From this, it can be seen that academic enrolment has been trending up over the past few years in these universities, which can be seen as representative across all US universities.
+
+```{r}
+library(ggplot2)
+ggplot(undergrad.long, aes(x=Year, y=Percent_Share, group=UnivDomain,colour=UnivDomain)) + geom_line()+xlab("Years")+ylab("Percent of Total")
+```
+
+
+##### Regions and Countries as Thought Leaders
+
+The following section collects the inputs: regional percentage share of Artificial Intelligence publications over the 1998-2017 period. The data is loaded and tidied from a wide format to a long format, setting it up for further analysis.
+
+```{r }
+
+fileurl<-"https://raw.githubusercontent.com/completegraph/DATA607PROJ3/master/Code/RegionalShareofAIPublications.csv"
+regional.ai<-read.csv(fileurl)
+colnames(regional.ai)<-c("Region","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011", "2012","2013","2014","2015","2016","2017")
+#regional.ai
+regional.ai.long<-gather(regional.ai, key="Year", value=Percentage_Share, 2:21)
+regional.ai.long
+```
+
+
+##### Countries as Thought Leaders
+The following section shows a regional breakdown of AI papers published on Scopus for the uears 1998-2017. The source of this data is Elsevier. The broad regional categories are: USA, Europe, China and Rest of World (RoW). Based on this, it can be seen that Europe is the leading contributor to papers and publications in this domain over the years followed closely by RoW. China can be seen steadily increasing its share of research publications in this area. Based on this metric, Europe can be considered as the Thought Leader from a regional perspective.
+
+```{r}
+ggplot(regional.ai.long, aes(x=Year, y=Percentage_Share, fill=Region)) +
+geom_bar(stat="identity", colour="black") +
+guides(fill=guide_legend(reverse=TRUE)) +
+scale_fill_brewer(palette="Pastel1") + theme(text = element_text(size=11),axis.text.x = element_text(angle=90, hjust=1))
+```
+
+
+#### Summary and Conclusion
+
+1. Machine Learning, Neural Networks and Computer Visualization are showing a very rapid growth in research publications.
+2. The academic enrolment at the undergraduate level in AI and ML courses in selected US universities, over the 2010-2017 period. From this, it can be seen that academic enrolment has been trending up over the past few years in these universities, which can be seen as representative across all US universities.
+3. Europe is the leading contributor to papers and publications in this domain over the years followed closely by RoW. China can be seen steadily increasing its share of research publications in this area. Based on this metric, Europe can be considered as the Thought Leader from a regional perspective.
+4. Carnegie Mellon sits at the top of the stack by a big margin. So it can considered as the prime thought leader from an institutional perspective. A big name like Stanford University is missing from the top 10 universities. We suspect that this could be on account of factors like departmental affiliations of faculty members and their choices on whether to present their research at pure Data Science type conferences vis-a-vis other conferences geared towards other domains such as Statistics or Economics. Also, it's likely that if the focus is extended to all of Computer Science instead of a narrower selection of AI, DS, ML etc, then universities like Stanford may show a more significant presence while perhaps the universities in the top 10 are more exclusively focusing on AI, ML and DS research.
+
+
+### 7. Conclusion 
+
+Based on popular narrative, Andrew Ng and Kira Radinsky can be considered to be two of the primary thought leaders in Data Science. Over the pasy few years, they have shifted their focus from AI to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. 
+
+We conclude that the top influential data scientist by paper count is Yoshua Bengio with 174 papers. He is noted for his expertise in deep learning along with Geoffrey Hinton and Yann LeCun. We conclude that thought leadership within the field of academic research does not equate to business thought leadership. However, without conceptual innovations made possible by academia, the application of these ideas to business is impossible.
+
+Regarding sub-topics being researched, Computer / Machine Learning and Computer Vision have grown in popularity at the cost of pure AI, while Neural Computing and Robotics have remained largely stable.
+
+When it comes to countries and regions, the USA leads in terms of patents in DS/AI/ML, while Europe leads in terms of generating research publications. China is catching up rapidly - for example Tsingshua University led the way in terms of research papers in this domain during 2018. Universities in the USA are showing a steady increase in enrolment in AI/ML courses, and Carnegie Melon continutes to lead the way in research in this domain.
+
+We relied on a variety of sources for the data used in our analysis, such as the AI Index Report for 2018, the CS Rankings, aRxiv and ACM websites, as well as personal websites of individuals such as Andrew Ng. In terms of future research, we think that understanding what's driving the changes in topics of interest for popular data science professionals as well as academia would be a good area to focus on.
+
+

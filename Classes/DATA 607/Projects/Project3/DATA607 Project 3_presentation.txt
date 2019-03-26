@@ -1,0 +1,19 @@
+
+We looked up top influencers/thought leaders in data science and this yielded a lot of people but we narrowed them down to the top 10 we think have huge influence in different areas of research and interests in data science.
+
+ For deeper insight, we chose to focus on two of them: <a href="http://www.andrewng.org/">Andrew Ng</a> and <a href="http://blog.kiraradinsky.com/">Kira Radinsky</a>. We could retrieve Andrew Ng's publications  from <a href="http://www.arxiv.org/">arXiv</a>, while web-scraping was carried out on <a href="https://dl.acm.org">Association for Computing Machinery website</a> for Kira Radinsky's publications, which yielded useful information for studies. We extracted the abstracts from their publications to see what topics and areas interest them.**
+
+ We curated a list of the top 10 thought leaders and wrote the list to a csv file
+
+
+
+
+From the above representations, it is obvious that both thought leaders focused on AI earlier on but later started shifting their focus to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+
+These two individuals were chosen because we observed that all the leaders followed a similar trend. They start with one broad area of interest first and then start focusing more on more than one specialised topics as the time go by.
+
+We are of the belief that drilled-down insight on the interests of the other thought leaders will yield similar results.
+
+The sources of this study were gotten from their publications/papers and do not reflect in its entirty, their complete interest areas. A more robust approach should also involve mining for appropriate keywords from their tweets, blogs, interviews, and key notes delivered in conferences
+
+The list we curated is based on evidences of influence and dedicated activities these people have put towards data science, therefore, someone else can have their own list different from ours

@@ -1,0 +1,10 @@
+---
+title: "DATA606 Homework 6"
+author: "Henry Otuadinma"
+date: "26 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

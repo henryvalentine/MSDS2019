@@ -1,0 +1,24 @@
+One interesting part of the human nature is our love for entertainment and sharing of content. Over time, we have invested in entertainment in various forms but one of prominent and easy to access forms of these investments is online video hosting and publishing. One example of online platforms that fall into this category is YouTube.
+
+
+For the past 14 years, since it's launch, YouTube has strove to keep pace with evolving demands of user experience. It started with a single website that supported a single video format, 320x240 at 4:3 aspect ratio, but as of today, it has become a hub of entertainment in itself. Within this same space of time, a lot has changed as devices which include mobile, Tablets, wearables and SmartTVs etc., are consistently being upgraded to help users explore new ways to discover, share and consume content.
+
+The revamped new look of the YouTube interface is geared towards helping users be more comfortable with using the platform. One of the key features, the dark team, which can be turned on from the profile menu, gives a more cinematic look. The theme not only lets out the content play more vividly but is also easy on the eyes as it reduces screen glare.
+
+Big emphasis was placed on recommendations in the design of the new hom page. The home page is made up sections containing channels with contents related to previously consumed content. Also, when the user places the mouse over a video, a short-lived preview of the video will be played, giving the user a peek into the content of video to help determine if it's what they would want to play at all. 
+
+Creating playlists is also made more easy and simple as users can create playlists directly from the hompage by simply clicking the red play button next to “My Recommendations”.
+"The idea is to create a relationship of trust between the user and Youtube’s Machine Learning algorithms so that their typical experience consists in launching “My Recommendations” and adjusting the playlist on the go."
+
+
+One major addition to the redesign is the understanding of the fact that since the platform is rich with content, users can get addicted, therefore, a viewing limit is added and is set by default to around 30 minutes. This helps ensure users are made to be aware of the amount of time they have spent on the platform by triggering a warning, inviting the user to do something else, and stops the current playback. "This warning is also visible in advance so that the user knows beforehand where they should approximately stop watching videos"
+Also, the autoplay can be activated only within the playlists the user has created and never within computed recommendations where they didn’t make the selections themselves.
+
+
+Therefore, 
+1. YouTube platform targets individuals, academic institutions, organisations, Government agencies, (the list goes on),
+2. whose key goals are to share content with the world and also consume content shared by others,
+3. by readily providing them with the ability to either upload a video or even make live broadcasts, and also consume content shared by others in a non-addictive way
+
+https://uxdesign.cc/my-attempt-at-redesigning-youtube-for-a-more-intuitive-and-modern-experience-dbd7707c135c
+https://uxplanet.org/youtubes-design-revamp-and-takeaway-for-designers-81377a322c3b

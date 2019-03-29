@@ -1,19 +1,47 @@
 
-We looked up top influencers/thought leaders in data science and this yielded a lot of people but we narrowed them down to the top 10 we think have huge influence in different areas of research and interests in data science.
+- We looked up people who are regarded as influencers in data science.
+  This yielded a handful of people but we narrowed them down and curated a list containing those we think are in the top ten based on:
 
- For deeper insight, we chose to focus on two of them: <a href="http://www.andrewng.org/">Andrew Ng</a> and <a href="http://blog.kiraradinsky.com/">Kira Radinsky</a>. We could retrieve Andrew Ng's publications  from <a href="http://www.arxiv.org/">arXiv</a>, while web-scraping was carried out on <a href="https://dl.acm.org">Association for Computing Machinery website</a> for Kira Radinsky's publications, which yielded useful information for studies. We extracted the abstracts from their publications to see what topics and areas interest them.**
+Their Business and entrepreneurial activities
+Keynote deliveries in conferences
+Regular blogposts and tweets (that do not sound like rocket science)
+Social media Followership
+  
+- We then looked closer at their frequent activities which includes their blogs, linkedIn posts, and tweets, we realised that all their  
+  interests/activities followed a similar trend.
 
- We curated a list of the top 10 thought leaders and wrote the list to a csv file
+- So, for deeper insight, we chose to focus on two of them: Andrew Ng and Kira Radinsky. 
 
+Andrew Y. Ng: Co-Founder of Coursera; associate professor at Stanford University. Former head of Baidu AI Group, He is the founder of the Google Brain project, which developed large-scale artificial neural networks, one of which taught itself to recognize cats in videos, Passionate about ML/Deep Learning/Speech recognition
 
+Kira Radinsky: eBay Director of Data Science, founder and former CTO of SalesPredict which was acquired by eBay.
+ 			    Passionate about predictive analytics, data mining
 
+We could retrieve Andrew Ng’s publications from arXiv, while web-scraping was carried out on the Association for Computing Machinery website for Kira Radinsky’s publications. These yielded useful information for studies. So, we extracted the abstracts from their publications so as to see what topics and areas interest them.
 
-From the above representations, it is obvious that both thought leaders focused on AI earlier on but later started shifting their focus to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+Data wrangling
+Keyword filtering
 
-These two individuals were chosen because we observed that all the leaders followed a similar trend. They start with one broad area of interest first and then start focusing more on more than one specialised topics as the time go by.
+Challenges:
+JavaScript rendered websites
+Information not in one place
+
+VISUALISAIONS
+
+We then found out that both thought leaders we selected focused on AI earlier on but later started shifting their attentions to more specific topics of specialisations such as deep learning, predictive analytics, and speech recognition. In all, they have talked about AI more than any other topic because most part of the early stages of their carrier were focused on AI only but they started focusing on more than one areas of interest simultaneously with time.
+
+CONCLUSION
 
 We are of the belief that drilled-down insight on the interests of the other thought leaders will yield similar results.
-
-The sources of this study were gotten from their publications/papers and do not reflect in its entirty, their complete interest areas. A more robust approach should also involve mining for appropriate keywords from their tweets, blogs, interviews, and key notes delivered in conferences
-
 The list we curated is based on evidences of influence and dedicated activities these people have put towards data science, therefore, someone else can have their own list different from ours
+
+NEXT TO ALEX
+
+We also realised that the above findings are consistent when viewed from a wider scope such as Research publications by various authors just as Alex will show us next
+
+
+
+aRxiv: A repository holding more than 1.5M e-print of papers in computer science, physics, statistics, etc. It is owned and managed by Cornell University. They have a well documented api endpoints that cann be queried for different kinds of information on submitted papers. They also have an R package also called aRxiv which makes querying those endpoints in R very easy.
+
+Api: aRxiv (https://arxiv.org)
+Web-scraping: Association for Computing Machinery (https://dl.acm.org)

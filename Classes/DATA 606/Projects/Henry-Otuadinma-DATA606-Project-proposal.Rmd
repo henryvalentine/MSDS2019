@@ -7,4 +7,240 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(DT)
+library(tidyr)
+library(stringr)
+library(ggplot2)
 ```
+
+### The Economic value of college majors in the US.
+
+### Data Preparation
+
+### 1. All Students
+
+```{r}
+
+allStudents <- read.csv('all-ages.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+
+```
+
+```{r}
+datatable(allStudents, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+### 2. Graduate Students attending graduate schools
+
+```{r}
+
+gradStudents <- read.csv('grad-students.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+
+```
+
+
+```{r}
+datatable(gradStudents, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+### 3. Recent Graduates
+
+```{r}
+recentGraduates <- read.csv('recent-grads.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>%  arrange(Major_category)
+
+```
+
+```{r}
+datatable(recentGraduates, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+### Research question 
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+#### What college majors offer the best employment opportunities and salaries in the US?
+
+##### Here in Nigeria, we are ususally very mindful of courses we choose to study in the universities because a lot of courses end up fetching graduates certificates only which might do litle or nothing at all in helping put the graduate in an advantageous position to land a deserved job. A lot even end up working in fields completely unrelated to what they studied in school. But graduates of mainly Engineering, Medical related courses, selected pure Science courses usually have some kind of leverage/added advantage. So with these data sets, I want to see how this works in the US.
+
+### Cases 
+
+**What are the cases, and how many are there?**
+
+```{r}
+dim(allStudents)
+
+```
+
+```{r}
+dim(recentGraduates)
+
+```
+
+```{r}
+dim(gradStudents)
+
+```
+
+##### There are 173 cases and 11 variables (columns) in the `all-ages` data set, it contains basic earnings and labor force information for all ages. The `grad-students`  (ages 25+) data set contains 173 cases and 22 variables, while the `recent-grads` (ages <28) data set contains 173 cases and 21 variables. It contains a more detailed breakdown, including by sex and by the type of job they got
+
+
+### Data collection 
+
+**Describe the method of data collection.**
+
+##### This data set is a survey data collected by the  <a href="http://www.census.gov/programs-surveys/acs/data/pums.html">American Community Survey 2010-2012 Public Use Microdata Series (PUMS)</a>.
+
+##### I read a 2014 article: <a href="https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/">The Economic Guide To Picking A College Major</a> by fivethirtyeight about how college majors affect employment and unemployment rates in the US, and decided to have a closer look on this using a readily available data set that has been collected to help explain the situation in an exploratory and analytical way.
+
+### Type of study 
+
+**What type of study is this (observational/experiment)?**
+
+#### This is an observational study
+
+
+### Data Source 
+
+**If you collected the data, state self-collected. If not, provide a citation/link.**
+
+This was pulled from the ACS website by <a href="https://fivethirtyeight.com">Fivethirtyeigth</a> and stored in their <a href="https://github.com/fivethirtyeight/data/tree/master/college-majors">Github Repo</a> after performing some categorising on the cases
+
+
+### Response
+
+**What is the response variable, and what type is it (numerical/categorical)?**
+
+#### The response variables is College Major. It is a categorical variable
+
+
+### Explanatory
+
+**What is the explanatory variable(s), and what type is it (numerical/categorival)?**
+
+The explanatory variables include:
+
+1. The counts of employed and unemployed degree holders and 
+2. The statistics of their income.
+
+These variables are numerical
+
+### Relevant summary statistics 
+
+**Provide summary statistics for each the variables. Also include appropriate visualizations related to your research question (e.g. scatter plot, boxplots, etc). This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+#### allStudents
+```{r}
+str(allStudents)
+```
+```{r}
+summary(allStudents)
+```
+
+#### gradStudents
+
+```{r}
+str(gradStudents)
+```
+
+```{r}
+summary(gradStudents)
+```
+
+
+####Accademic Majors Categories distribution 
+
+#### Let's see how the Accademic Majors Categories are distributed by subsetting the Major_category variable from the `all-ages` data set: 
+
+```{r}
+categories <- as.data.frame(table(allStudents$Major_category))
+names(categories) <- c('category', 'frequency')
+```
+
+```{r}
+
+ggplot(categories, aes(x= reorder(category, frequency), y=frequency)) + 
+  geom_bar(stat = "identity", fill = "steelblue") +
+ xlab("Accademic Major") + ylab("Frequency") +
+  ggtitle("Accademic majors Categories vs Frequency") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x=element_blank(),
+        plot.title = element_text(color="black", size=14,hjust = 0.5)) + coord_flip() + theme(legend.position="none")
+
+```
+
+##### So, it appears engineering students tend to be in a better position to land jobs easily as the number of jobs demanding their skills seem to be high
+
+
+#### Salary distribution for all ages
+
+```{r}
+ggplot(allStudents, aes(x=Median)) + 
+  ggtitle("All ages' Median Salary") +
+  geom_histogram(fill = "steelblue", color='white', binwidth = 10000) +
+  theme(axis.title.x=element_blank(), 
+        plot.title = element_text(color="black", size=14,hjust = 0.5))
+
+```
+
+#####The salary distribution is right skewed which is andicator that highly paying jobs are few and or the chances to land them is very slim.
+
+#### Distribution of all unemployed students
+
+```{r}
+
+all <- allStudents$Unemployment_rate
+recent <- recentGraduates$Unemployment_rate
+graduates <- gradStudents$Grad_unemployment_rate
+
+allUnemployedRate <- cbind(all, recent, graduates)
+
+barplot(allUnemployedRate/nrow(allUnemployedRate), names.arg = c('All Students', 'Recent Graduates', 'Graduate Students'), xlab = "Unemployment Rate", col = heat.colors(nrow(allUnemployedRate)))
+
+```
+
+#### Graduate students have better chances of landing jobs than recent/fresh graduates. It is obvious that organisations tend to go more for experienced workforce than otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -196,12 +196,229 @@ $(document).ready(function () {
 <h4>6.6 2010 Healthcare Law.</h4>
 <p>On June 28, 2012 the U.S. Supreme Court upheld the much debated 2010 healthcare law, declaring it constitutional. A Gallup poll released the day after this decision indicates that 46% of 1,012 Americans agree with this decision. At a 95% confidence level, this sample has a 3% margin of error. Based on this information, determine if the following statements are true or false, and explain your reasoning.</p>
 <ol style="list-style-type: lower-alpha">
-<li><p>We are 95% confident that between 43% and 49% of Americans in this sample support the decision of the U.S. Supreme Court on the 2010 healthcare law.</p></li>
-<li>We are 95% confident that between 43% and 49% of Americans support the decision of the U.S. Supreme Court on the 2010 healthcare law.</li>
-<li>If we considered many random samples of 1,012 Americans, and we calculated the sample proportions of those who support the decision of the U.S. Supreme Court, 95% of those sample proportions will be between 43% and 49%.</li>
-<li><p>The margin of error at a 90% confidence level would be higher than 3%.</p></li>
+<li>We are 95% confident that between 43% and 49% of Americans in this sample support the decision of the U.S. Supreme Court on the 2010 healthcare law.</li>
 </ol>
-<p>6.6, 6.12, 6.20, 6.28, 6.44, 6.48</p>
+<p>Answer:</p>
+</div>
+<div id="false.-a-confidence-interval-is-used-to-estimate-the-population-proportion-not-the-sample-proportion." class="section level4">
+<h4>FALSE. A confidence interval is used to estimate the population proportion, not the sample proportion.</h4>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>We are 95% confident that between 43% and 49% of Americans support the decision of the U.S. Supreme Court on the 2010 healthcare law.</li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="true" class="section level4">
+<h4>True</h4>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>If we considered many random samples of 1,012 Americans, and we calculated the sample proportions of those who support the decision of the U.S. Supreme Court, 95% of those sample proportions will be between 43% and 49%.</li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="false-we-cant-say-for-sure-what-the-true-proportion-is-and-the-correct-interval-depends-on-correctly-estimating-the-proportion." class="section level4">
+<h4>FALSE : we can’t say for sure what the true proportion is, and the correct interval depends on correctly estimating the proportion.</h4>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>The margin of error at a 90% confidence level would be higher than 3%.</li>
+</ol>
+<p>Answer:</p>
+</div>
+<div id="false-90-confidence-interval-will-have-a-lower-margin-of-error-for-the-same-standard-error-se-as-the-z-score-for-90-confidence-interval-is-only-1.645-which-is-lower-than-that-for-a-95-confidence-interval." class="section level4">
+<h4>FALSE : 90% confidence interval will have a lower margin of error for the same standard error (SE) as the z-score for 90% confidence interval is only 1.645, which is lower than that for a 95% confidence interval.</h4>
+</div>
+<div id="legalization-of-marijuana-part-i." class="section level4">
+<h4>6.12 Legalization of marijuana, Part I.</h4>
+<div id="the-2010-general-social-survey-asked-1259-us-residents-do-you-think-the-use-of-marijuana-should-be-made-legal-or-not-48-of-the-respondents-said-it-should-be-made-legal" class="section level5">
+<h5>The 2010 General Social Survey asked 1,259 US residents: “Do you think the use of marijuana should be made legal, or not?” 48% of the respondents said it should be made legal</h5>
+</div>
+<div id="a-is-48-a-sample-statistic-or-a-population-parameter-explain." class="section level5">
+<h5>(a) Is 48% a sample statistic or a population parameter? Explain.</h5>
+</div>
+</div>
+<div id="it-is-a-sample-statistics-since-it-is-derived-from-the-sample-data" class="section level4">
+<h4>It is a sample statistics since it is derived from the sample data</h4>
+<div id="b-construct-a-95-confidence-interval-for-the-proportion-of-us-residents-who-think-marijuana-should-be-made-legal-and-interpret-it-in-the-context-of-the-data." class="section level5">
+<h5>(b) Construct a 95% confidence interval for the proportion of US residents who think marijuana should be made legal, and interpret it in the context of the data.</h5>
+<p>Answer:</p>
+<pre class="r"><code>n = 1259
+np = 0.48
+se = sqrt((np*(1-np))/n)
+t = qt(0.975,n-1)
+ME = t*se
+upper_limit = np + ME
+lowerr_limitl = np - ME
+paste('The confidence interval is: ', round(lowerr_limitl,4), ' and ', round(upper_limit,4), sep=&quot;&quot;)</code></pre>
+<pre><code>## [1] &quot;The confidence interval is: 0.4524 and 0.5076&quot;</code></pre>
+</div>
+</div>
+<div id="we-are-95-confident-that-between-45.24-and-50.76-of-us-residents-think-marijuana-should-be-legalised." class="section level4">
+<h4>We are 95% confident that between 45.24% and 50.76% of US residents think marijuana should be legalised.</h4>
+<div id="c-a-critic-points-out-that-this-95-confidence-interval-is-only-accurate-if-the-statistic-follows-a-normal-distribution-or-if-the-normal-model-is-a-good-approximation.-is-this-true-for-these-data-explain." class="section level5">
+<h5>(c) A critic points out that this 95% confidence interval is only accurate if the statistic follows a normal distribution, or if the normal model is a good approximation. Is this true for these data? Explain.</h5>
+<p>Answer:</p>
+</div>
+</div>
+<div id="for-the-sampling-distribution-of-hatp-to-be-nearly-normal" class="section level4">
+<h4>For the sampling distribution of <span class="math inline">\(\hat{p}\)</span> to be nearly normal :</h4>
+</div>
+<div id="the-observations-must-be-independent-independent-the-sample-size-must-be-less-than-10-of-the-population.-for-this-survey-these-are-reasonably-true." class="section level4">
+<h4>The observations must be independent independent, the sample size must be less than 10% of the population. For this survey, these are reasonably true.</h4>
+</div>
+<div id="also-the-success-failure-rates-must-be-greater-than-10.-this-is-also-true-for-this-case-48-and-52-of-1259-are-greater-than-10" class="section level4">
+<h4>Also, the Success-failure rates must be greater than 10. This is also true for this case =&gt; 48% and 52% of 1,259 are greater than 10</h4>
+<div id="d-a-news-piece-on-this-surveys-findings-states-majority-of-americans-think-marijuana-should-be-legalized.-based-on-your-confidence-interval-is-this-news-pieces-statement-justified" class="section level5">
+<h5>(d) A news piece on this survey’s findings states, “Majority of Americans think marijuana should be legalized.” Based on your confidence interval, is this news piece’s statement justified?</h5>
+<p>Answer</p>
+</div>
+</div>
+<div id="this-might-be-possible-since-the-upper-limit-of-the-confidence-interval-0.5076233-is-above-50-but-there-is-more-evidence-pointing-that-more-of-the-this-is-also-below-50." class="section level4">
+<h4>This might be possible since the upper limit of the confidence interval (0.5076233) is above 50%, but there is more evidence pointing that more of the this is also below 50%.</h4>
+</div>
+<div id="legalize-marijuana-part-ii." class="section level4">
+<h4>6.20 Legalize Marijuana, Part II.</h4>
+<div id="as-discussed-in-exercise-6.12-the-2010-general-social-survey-reported-a-sample-where-about-48-of-us-residents-thought-marijuana-should-be-made-legal.-if-we-wanted-to-limit-the-margin-of-error-of-a-95-confidence-interval-to-2-about-how-many-americans-would-we-need-to-survey" class="section level5">
+<h5>As discussed in Exercise 6.12, the 2010 General Social Survey reported a sample where about 48% of US residents thought marijuana should be made legal. If we wanted to limit the margin of error of a 95% confidence interval to 2%, about how many Americans would we need to survey ?</h5>
+<p>Answer:</p>
+<pre class="r"><code>ME = 0.02
+p = 0.48
+z = qnorm(0.975)
+se = ME/z
+n = (p*(1-p))/se^2
+
+round(n,0)+1</code></pre>
+<pre><code>## [1] 2398</code></pre>
+</div>
+</div>
+<div id="sleep-deprivation-ca-vs.or-part-i." class="section level4">
+<h4>6.28 Sleep deprivation, CA vs. OR, Part I.</h4>
+</div>
+<div id="according-to-a-report-on-sleep-deprivation-by-the-centers-for-disease-control-and-prevention-the-proportion-of-california-residents-who-reported-insufficient-rest-or-sleep-during-each-of-the-preceding-30-days-is-8.0-while-this-proportion-is-8.8-for-oregon-residents.-these-data-are-based-on-simple-random-samples-of-11545-california-and-4691-oregon-residents.-calculate-a-95-confidence-interval-for-the-difference-between-the-proportions-of-californians-and-oregonians-who-are-sleep-deprived-and-interpret-it-in-context-of" class="section level4">
+<h4>According to a report on sleep deprivation by the Centers for Disease Control and Prevention, the proportion of California residents who reported insufficient rest or sleep during each of the preceding 30 days is 8.0%, while this proportion is 8.8% for Oregon residents. These data are based on simple random samples of 11,545 California and 4,691 Oregon residents. Calculate a 95% confidence interval for the difference between the proportions of Californians and Oregonians who are sleep deprived and interpret it in context of</h4>
+<p>the data.</p>
+<p>Answer:</p>
+</div>
+<div id="lets-apply-the-formula-for-the-difference-of-2-proportions-assuming-that-the-sampling-is-near-normal" class="section level4">
+<h4>Let’s apply the formula for the difference of 2 proportions assuming that the sampling is near normal:</h4>
+<p>HO : No difference in sleep deprivation HA: There is difference in sleep deprivation</p>
+<pre class="r"><code> #standard error for California
+(SE_cal =  sqrt((0.08 * (1 - 0.08))/11545))</code></pre>
+<pre><code>## [1] 0.002524887</code></pre>
+<pre class="r"><code>#standard error for Oregon 
+(SE_org =  sqrt((0.088 * (1 - 0.088))/4691))</code></pre>
+<pre><code>## [1] 0.004136243</code></pre>
+<div id="standard-error-for-the-difference-in-proportion-between-oregon-and-california" class="section level5">
+<h5>standard error for the difference in proportion between Oregon and California</h5>
+<pre class="r"><code>(SE_org_cal = sqrt(SE_cal + SE_org))</code></pre>
+<pre><code>## [1] 0.08161575</code></pre>
+</div>
+<div id="computing-the-confidinterval-for-the-difference-between-the-proportions-of-oregonians-and-californians-who-are-sleep-deprived" class="section level5">
+<h5>computing the confidinterval for the difference between the proportions of Oregonians and Californians who are sleep deprived</h5>
+<pre class="r"><code>(lowerLimit = (0.088 - 0.08) - (qnorm(0.975)*SE_org_cal))</code></pre>
+<pre><code>## [1] -0.1519639</code></pre>
+<pre class="r"><code>(upperLimit = (0.088 - 0.08) + (qnorm(0.975)*SE_org_cal))</code></pre>
+<pre><code>## [1] 0.1679639</code></pre>
+</div>
+</div>
+<div id="the-confidence-interval-contains-0-we-fail-to-reject-nh.-null-hypothesis.sleep-deprivation-is-not-significantly-different." class="section level4">
+<h4>The confidence interval contains 0, we fail to reject nH. (null hypothesis).Sleep deprivation is not significantly different.</h4>
+<pre class="r"><code>results&lt;- c(&quot;SE CALIFORNIA&quot;=SE_cal, &quot;SE OREGON&quot;=SE_org, &quot;SE Dif Proportion&quot;=SE_org_cal, &quot;Lower Limit&quot;=lowerLimit, &quot;Upper Limit&quot;=upperLimit)
+results</code></pre>
+<pre><code>##     SE CALIFORNIA         SE OREGON SE Dif Proportion       Lower Limit 
+##       0.002524887       0.004136243       0.081615745      -0.151963922 
+##       Upper Limit 
+##       0.167963922</code></pre>
+</div>
+<div id="barking-deer." class="section level4">
+<h4>6.44 Barking deer.</h4>
+<p>Microhabitat factors associated with forage and bed sites of barking deer in Hainan Island, China were examined from 2001 to 2002. In this region woods make up 4.8% of the land, cultivated grass plot makes up 14.7% and deciduous forests makes up 39.6%. Of the 426 sites where the deer forage, 4 were categorized as woods, 16 as cultivated grassplot, and 61 as deciduous forests. The table below summarizes these data. Woods Cultivated grassplot Deciduous forests Other Total 4 16 67 345 426 (a) Write the hypotheses for testing if barking deer prefer to forage in certain habitats over others.</p>
+<p>Answer:</p>
+</div>
+<div id="h0-the-barking-deer-does-not-prefer-a-certain-habitat-to-forage.-ha-the-barking-deer-has-certain-habitats-that-it-prefer-to-forage." class="section level4">
+<h4>H0: The barking deer does not prefer a certain habitat to forage. HA: The barking deer has certain habitats that it prefer to forage.</h4>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>What type of test can we use to answer this research question?</li>
+</ol>
+</div>
+<div id="a-chi-square-test-can-be-used" class="section level4">
+<h4>A chi-square test can be used</h4>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Check if the assumptions and conditions required for this test are satisfied.</li>
+</ol>
+<p>Answer:</p>
+<p>Before performing a chi-square test:</p>
+</div>
+<div id="independence-we-can-we-assume-that-all-the-barking-deer-habitat-variables-are-independent-of-each-other" class="section level4">
+<h4>Independence: we can We assume that all the barking deer habitat variables are independent of each other</h4>
+<p>Each particular scenario must have at least 5 expected cases. The woods habitat has only 4.8 cases =&gt;&gt;&gt;&gt;&gt;this is in the lower boundary of what is accepted.Therefore, wee assume though that this is an acceptable count.</p>
+<pre class="r"><code>wP = round(426*.048,1)
+gP = round(426*.147,1)
+fP = round(426*.396,1)
+oP = round(426*.409,1)
+proportions = c(wP,gP,fP,oP)
+proportions</code></pre>
+<pre><code>## [1]  20.4  62.6 168.7 174.2</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Do these data provide convincing evidence that barking deer prefer to forage in certain habitats over others? Conduct an appropriate hypothesis test to answer this research question.</li>
+</ol>
+<pre class="r"><code>x = c(4,16,67,345)
+k = 4
+dF = 3
+chi = 0
+for(biome in 1:4)
+  {
+  chi = chi + ((x[biome]-proportions[biome])^2/proportions[biome])
+}
+
+(p = pchisq(chi,dF,lower.tail = FALSE))</code></pre>
+<pre><code>## [1] 1.124065e-59</code></pre>
+<div id="we-reject-the-null-hypothesis-in-favor-of-the-alternative-hypothesis.-barking-deer-do-not-bark-in-a-proportion-to-land-mass-between-biomes." class="section level5">
+<h5>We reject the null hypothesis in favor of the alternative hypothesis. Barking deer do not bark in a proportion to land mass between biomes.</h5>
+<p>6.48 Coffee and Depression. Researchers conducted a study investigating the relationship between ca???einated co???ee consumption and risk of depression in women. They collected data on 50,739 women free of depression symptoms at the start of the study in the year 1996, and these women were followed through 2006. The researchers used questionnaires to collect data on ca???einated co???ee consumption, asked each individual about physician-diagnosed depression, and also asked about the use of antidepressants. The table below shows the distribution of incidences of depression by amount of caffeinated co???ee consumption</p>
+<ol style="list-style-type: lower-alpha">
+<li>What type of test is appropriate for evaluating if there is an association between coffee intake and depression?</li>
+</ol>
+</div>
+</div>
+<div id="we-would-use-a-chi-square-test-to-evaluate-if-there-is-independence-between-depression-and-coffee-intake." class="section level4">
+<h4>We would use a chi-square test to evaluate if there is independence between depression and coffee intake.</h4>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Write the hypotheses for the test you identified in part (a).</li>
+</ol>
+<p>HO : Coffee intake and depression are independent HA: Coffe intake and depression are dependent.</p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Calculate the overall proportion of women who do and do not suffer from depression.</li>
+</ol>
+<pre class="r"><code>womenWithDep = 2607/50739
+womenWithoutDep = 1 - womenWithDep
+
+paste('womem with depression: ', womenWithDep)</code></pre>
+<pre><code>## [1] &quot;womem with depression:  0.051380594808727&quot;</code></pre>
+<pre class="r"><code>paste('womem without depression: ', womenWithoutDep)</code></pre>
+<pre><code>## [1] &quot;womem without depression:  0.948619405191273&quot;</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Identify the expected count for the highlighted cell, and calculate the contribution of this cell to the test statistic, i.e. (Observed ??? Expected)2/Expected.</li>
+</ol>
+<pre class="r"><code>groups = 5
+dF = 4
+expected = womenWithDep*6617
+cellFactor = (373 - expected)^2/expected
+cellFactor</code></pre>
+<pre><code>## [1] 3.205914</code></pre>
+<ol start="5" style="list-style-type: lower-alpha">
+<li>The test statistic is #2 = 20.93. What is the p-value?</li>
+</ol>
+<pre class="r"><code>(pchisq(20.93,dF,lower.tail = FALSE))</code></pre>
+<pre><code>## [1] 0.0003269507</code></pre>
+<ol start="6" style="list-style-type: lower-alpha">
+<li>What is the conclusion of the hypothesis test?</li>
+</ol>
+</div>
+<div id="we-reject-the-null-hypothesis.-coffee-intake-and-depression-are-dependent." class="section level4">
+<h4>We reject the null hypothesis. Coffee intake and depression are dependent.</h4>
+<ol start="7" style="list-style-type: lower-alpha">
+<li>One of the authors of this study was quoted on the NYTimes as saying it was “too early to recommend that women load up on extra coffee” based on just this study. Do you agree with this statement? Explain your reasoning.</li>
+</ol>
+</div>
+<div id="i-agree-with-this-statement-since-this-was-an-observational-study-and-cannot-be-used-to-demonstrate-causation." class="section level4">
+<h4>I agree with this statement since this was an observational study and cannot be used to demonstrate causation.</h4>
 </div>
 
 

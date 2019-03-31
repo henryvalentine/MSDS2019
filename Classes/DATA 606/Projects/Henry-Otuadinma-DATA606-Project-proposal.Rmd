@@ -22,7 +22,7 @@ library(ggplot2)
 
 ```{r}
 
-allStudents <- read.csv('all-ages.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+allStudents <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/all-ages.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
 
 ```
 
@@ -41,7 +41,7 @@ datatable(allStudents, class = 'cell-border stripe', options = list(
 
 ```{r}
 
-gradStudents <- read.csv('grad-students.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+gradStudents <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/grad-students.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
 
 ```
 
@@ -61,7 +61,7 @@ datatable(gradStudents, class = 'cell-border stripe', options = list(
 ### 3. Recent Graduates
 
 ```{r}
-recentGraduates <- read.csv('recent-grads.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>%  arrange(Major_category)
+recentGraduates <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/recent-grads.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>%  arrange(Major_category)
 
 ```
 

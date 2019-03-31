@@ -8,3 +8,54 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+#### 6.6 2010 Healthcare Law. 
+On June 28, 2012 the U.S. Supreme Court upheld the much debated
+2010 healthcare law, declaring it constitutional. A Gallup poll released the day after this decision
+indicates that 46% of 1,012 Americans agree with this decision. At a 95% confidence level, this
+sample has a 3% margin of error. Based on this information, determine if the following statements
+are true or false, and explain your reasoning.
+
+(a) We are 95% confident that between 43% and 49% of Americans in this sample support the
+decision of the U.S. Supreme Court on the 2010 healthcare law.
+
+Answer:
+
+#### FALSE. A confidence interval is used to estimate the population proportion, not the sample proportion.
+
+(b) We are 95% confident that between 43% and 49% of Americans support the decision of the
+U.S. Supreme Court on the 2010 healthcare law.
+
+Answer:
+
+#### True
+
+(c) If we considered many random samples of 1,012 Americans, and we calculated the sample
+proportions of those who support the decision of the U.S. Supreme Court, 95% of those sample
+proportions will be between 43% and 49%.
+
+Answer:
+
+#### FALSE : we can't say for sure what the true proportion is, and the correct interval depends on correctly estimating the proportion.
+
+(d) The margin of error at a 90% confidence level would be higher than 3%.
+
+Answer:
+
+#### FALSE : 90% confidence interval will have a lower margin of error for the same standard error (SE) as the z-score for 90% confidence interval is only 1.645, which is lower than that for a 95% confidence interval.
+
+
+#### 6.12 Legalization of marijuana, Part I. 
+##### The 2010 General Social Survey asked 1,259 US residents: "Do you think the use of marijuana should be made legal, or not?" 48% of the respondents said it should be made legal.44
+
+##### (a) Is 48% a sample statistic or a population parameter? Explain.
+
+(b) Construct a 95% confidence interval for the proportion of US residents who think marijuana
+should be made legal, and interpret it in the context of the data.
+(c) A critic points out that this 95% confidence interval is only accurate if the statistic follows a
+normal distribution, or if the normal model is a good approximation. Is this true for these
+data? Explain.
+(d) A news piece on this survey's findings states, "Majority of Americans think marijuana should
+be legalized." Based on your confidence interval, is this news piece's statement justified?
+
+6.20, 6.28, 6.44, 6.48

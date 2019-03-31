@@ -15,7 +15,7 @@ Social media Followership
 Andrew Y. Ng: Co-Founder of Coursera; associate professor at Stanford University. Former head of Baidu AI Group, He is the founder of the Google Brain project, which developed large-scale artificial neural networks, one of which taught itself to recognize cats in videos, Passionate about ML/Deep Learning/Speech recognition
 
 Kira Radinsky: eBay Director of Data Science, founder and former CTO of SalesPredict which was acquired by eBay.
- 			    Passionate about predictive analytics, data mining
+ 			   Passionate about predictive analytics, data mining
 
 We could retrieve Andrew Ng’s publications from arXiv, while web-scraping was carried out on the Association for Computing Machinery website for Kira Radinsky’s publications. These yielded useful information for studies. So, we extracted the abstracts from their publications so as to see what topics and areas interest them.
 

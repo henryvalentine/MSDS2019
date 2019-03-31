@@ -1,0 +1,47 @@
+---
+title: "DATA607 Homework 9"
+author: "Henry Otuadinma"
+date: "30 March 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(rvest)
+library(stringr)
+library(jsonlite)
+library(DT)
+```
+
+### The New York Times web site provides a rich set of APIs, as described here: http://developer.nytimes.com/docs
+
+### You'll need to start by signing up for an API key.
+
+### Your task is to choose one of the New York Times APIs, construct an interface in R to read in the JSON data, and transform it to an R dataframe.
+
+#### After setting up an account and creating an app which consequently generated an api key and secrete on the NYT's api web site, I opted to retrieve data from their `books` api. But I want to get only books written by `Stephen King`
+
+```{r echo=FALSE}
+stephenKingBooks <- read_json("https://api.nytimes.com/svc/books/v3/reviews.json?author=Stephen+King&api-key=hXvzTBpqI15LGK5nhsJWmNASxvBHfbqp", simplifyVector = TRUE)
+```
+
+#### The above api call returns a json object containing `copyright`, `number of results` returned, `status` of the call, and `results` which is a dataframe containing the books writen by `Stephen King`
+
+#### I will select certain variables from the dataframe so as to display meaningful information
+
+```{r}
+
+booksSubset <- stephenKingBooks$results %>% select(book_title, publication_dt, book_author, byline, summary)
+
+```
+
+```{r}
+datatable(booksSubset, colnames = c('Title', 'Date Published', 'Author', 'Byline', 'Summary'), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+```

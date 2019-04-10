@@ -1,0 +1,8 @@
+---
+title: "DATA606 Lab7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```

@@ -1,0 +1,63 @@
+---
+title: 'DATA607: Recommender Systems'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Ebay Recommender system
+
+<a href="https://ebay.com>Ebay</>" is an online market place that brings sellers and buys together to buy and sell virtually anything. It has about 1.2 billion items and 179 million buyers. 
+As other similar platforms such as Amazon, ebay has also setup intelligent systems to help buyers to carry out their intended shopping activities without being under the burden of information overload, helping them achieve rich shopping experience. From one of their blog posts, they acknowledge that in addition to the challenge of their large scale user base and products catalog, there is limited structured data attributes, such as ISBN, available for their items, making it difficult to use traditional collaborative filtering approaches for generating recommendations
+
+
+Visitng the website as an anonymous user (using incognito mode in Google Chrome) first shows something like the image shown below. There are yet no clicks on any item or any shopping history.
+
+```{r}
+knitr::include_graphics('ebay-front-page.png')
+```
+
+
+Then I made a search for Asus Zenbook laptop, and selecting one item from the results took me to the item's details page. 
+iIn the section Immediately below the item's details appears a group of items tagged "People who viewed this item also viewed..."
+
+```{r}
+knitr::include_graphics('ebay-rec.png')
+
+```
+
+This enumerates items that are in similar categories as the selected item but there is no where to see stuffs like addons/enhacements/accessories associated with the selected item. It then means I will need to make extra searches and go through the results so as to make a choice from among them.
+
+Also, just as I have experienced before after purchasing an item on Ebay and few minutes later, the item no longer exists on Ebay though it was still shipped, till date, I have not seen it again on the site. It then appears Ebay trully has a volatile inventory and this can impact recommendation of similar items to customers based on their shopping history. This implies that for them to get their system right, they will need more than what collaborative filtering methods can offer. 
+Though Ebay has a filter option to select price range when making searches, I don't think they make recommendations based on prices but rather majorly on related items categories. Moreover
+
+After I accessed the site with my user account, the recommender system poped up with Items related to my previous browsing activities
+
+```{r}
+knitr::include_graphics('rec-user.png')
+```
+
+
+##Senario Design
+
+#### Target Users: These are buyers and sellers who come together on Ebay to exchange items for money
+
+#### Their key goals: 
+
+  1. Sellers: They need an enabling platform where they can sell their merchandise whether new or used to a wider audience
+  2. Buyers: Need a platform where the can get whatever they need to buy from a wide price options
+
+#### How to help them accomplish these goals
+
+Through providing them a platform that is very easy to interact with, and making it as much as possible for users to be able to access the items that interest them the most
+
+Ebay provides the platform as well as enforce policies to ensure transactions are conducted between people with as they should.
+
+#### Recommendations
+
+I think it would be nice if the recommender system shows addons/enhacements/accessories associated with certain items like laptops as this can help the customer have a complete experience with minimal efforts.
+
+Also, I am of the opinion that it can still be relatively easy to make recommendations for similar items taken down by sellers to customers who have purchased those items. This can be done through extracting the items' details and making recommendations for items that are in the same categories even further drilling down to the ons that share similar price tags
+

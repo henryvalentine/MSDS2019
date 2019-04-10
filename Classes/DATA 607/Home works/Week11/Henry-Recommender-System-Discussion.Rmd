@@ -1,22 +1,25 @@
 ---
 title: 'DATA607: Recommender Systems'
-output: html_document
+output:
+  html_document:
+    highlight: pygments
+    theme: cerulean
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Ebay Recommender system
+#### Ebay Recommender system
 
-<a href="https://ebay.com>Ebay</>" is an online market place that brings sellers and buys together to buy and sell virtually anything. It has about 1.2 billion items and 179 million buyers. 
+<a href="https://ebay.com">Ebay</a> is an online market place that brings sellers and buys together to buy and sell virtually anything. It has about 1.2 billion items and 179 million buyers. 
 As other similar platforms such as Amazon, ebay has also setup intelligent systems to help buyers to carry out their intended shopping activities without being under the burden of information overload, helping them achieve rich shopping experience. From one of their blog posts, they acknowledge that in addition to the challenge of their large scale user base and products catalog, there is limited structured data attributes, such as ISBN, available for their items, making it difficult to use traditional collaborative filtering approaches for generating recommendations
 
 
 Visitng the website as an anonymous user (using incognito mode in Google Chrome) first shows something like the image shown below. There are yet no clicks on any item or any shopping history.
 
 ```{r}
-knitr::include_graphics('ebay-front-page.png')
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week11/ebay-front-page.png')
 ```
 
 
@@ -24,7 +27,7 @@ Then I made a search for Asus Zenbook laptop, and selecting one item from the re
 iIn the section Immediately below the item's details appears a group of items tagged "People who viewed this item also viewed..."
 
 ```{r}
-knitr::include_graphics('ebay-rec.png')
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week11/ebay-rec.png')
 
 ```
 
@@ -36,7 +39,7 @@ Though Ebay has a filter option to select price range when making searches, I do
 After I accessed the site with my user account, the recommender system poped up with Items related to my previous browsing activities
 
 ```{r}
-knitr::include_graphics('rec-user.png')
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20607/Home%20works/Week11/rec-user.png')
 ```
 
 

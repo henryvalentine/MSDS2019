@@ -1,5 +1,5 @@
 ---
-title: 'DATA607: Recommender Systems'
+title: 'DATA607: Week11 Discussion/Homework'
 output:
   html_document:
     highlight: pygments
@@ -56,11 +56,28 @@ knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS20
 
 Through providing them a platform that is very easy to interact with, and making it as much as possible for users to be able to access the items that interest them the most
 
-Ebay provides the platform as well as enforce policies to ensure transactions are conducted between people with as they should.
+Ebay provides the platform as well as enforce policies to ensure that as much as possible, transactions are conducted between people as they should.
 
 #### Recommendations
 
 I think it would be nice if the recommender system shows addons/enhacements/accessories associated with certain items like laptops as this can help the customer have a complete experience with minimal efforts.
 
-Also, I am of the opinion that it can still be relatively easy to make recommendations for similar items taken down by sellers to customers who have purchased those items. This can be done through extracting the items' details and making recommendations for items that are in the same categories even further drilling down to the ons that share similar price tags
+Also, I am of the opinion that it can still be relatively easy to make recommendations for similar items taken down by sellers to customers who have purchased those items. This can be done through extracting the items' details and making recommendations for items that are in the same categories even further drilling down to the ones that share similar price tags
+
+Ebay is a multi-seller platform where competion among sellers is likely to abound. I think making recommendations that consider product price (including discount indication) and seller's reputation can help improve the amount of items which buyers are willing to pay for.
+
+
+
+
+
+##### References:
+
+1. <a href="https://www.ebayinc.com/stories/blogs/tech/complementary-item-recommendations-at-ebay-scale/">Complementary Item Recommendations at eBay Scale</a>
+
+2. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0950705118300893">Personal price aware multi-seller recommender system: Evidence from eBay</a>
+
+
+
+
+
 

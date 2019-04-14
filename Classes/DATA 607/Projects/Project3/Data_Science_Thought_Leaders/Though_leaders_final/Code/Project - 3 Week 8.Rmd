@@ -12,9 +12,6 @@ output:
     theme: united
     highlight: tango
    
-   
-    
-
 ---
 
 

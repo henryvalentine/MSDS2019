@@ -38,15 +38,15 @@ Solutions:
 
 Packages used
 
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(tidytext)
-library(tm)
-library(caret)
-library(e1071)
-library(wordcloud)
-library(R.utils)
-library(DT)
+1. library(tidyverse)
+2. library(tidytext)
+3. library(tm)
+4. library(caret)
+5. library(e1071)
+6. library(wordcloud)
+7. library(R.utils)
+8. library(DT)
+
 
 ## Download and Extract files
 The spam and ham files are downloaded from spamassassin's website:
@@ -156,7 +156,7 @@ length(spamFiles)
 ## Read all files into a dataframe
 
 ```{r}
-allEmails <- tibble()
+hamSpamMails <- tibble()
 hamSpamFolders <- c("./spam_2", "./easy_ham_2")
 fileTypes <-c("spam", "ham")
 allFileNames <- c(spamFiles, hamFiles)
@@ -172,20 +172,23 @@ for (i in 1: length(hamSpamFolders))
         ff <- tibble(file = dir(hamSpamFolders[i],  full.names = TRUE)) %>% mutate(text = map(file, read_lines)) %>%
                 transmute(id = basename(file), type = type, text) %>%
                 unnest(text)
-                allEmails <- bind_rows(allEmails, ff)
+                hamSpamMails <- bind_rows(hamSpamMails, ff)
  }
  
 ```
 
+```{r}
+head(hamSpamMails)
+```
+
+```{r}
+allEmails <- hamSpamMails
+```
 
 ```{r}
 
 allEmails <- tibble::rowid_to_column(allEmails, "linenumber")
 
-```
-
-```{r}
-emailsDf2 <- allEmails
 ```
 
 ```{r}
@@ -207,13 +210,16 @@ allEmails %>% group_by(type) %>% summarize(messages  = n_distinct(id)) %>% ungro
 
 ```
 
-##### I will remove characters like colons, hyphens, apostrophe, etc and replace them with spaces so that the words they separate will not be combined into one; remove punctuation, convert the corpus to lower case, remove all numbers, remove white spaces, and remove stop words; and finally form the document-term-matrix from the output
+## Data cleaning
+
+##### Next is to Create a corpus of the files but first striping all non-graphic characters so as to avoid the errors they can cause when `tm_map` is called. Then, I will remove characters like colons, hyphens, apostrophe, etc and replace them with spaces so that the words they separated will not be combined into one. Finally, I will remove punctuations, convert the corpus to lower case, remove all numbers, remove white spaces, and remove stop words.
 
 ```{r}
 
 allEmails$text <- str_replace_all(allEmails$text,"[^[:graph:]]", " ")
 
 ```
+
 
 ```{r}
 (allCorpus <- Corpus(VectorSource(allEmails$text)))
@@ -247,30 +253,6 @@ allEmails$text <- as.character(mailsDf$text)
 
 ```
 
-```{r}
-head(allEmails)
-```
-
-## Corpus and Document Term Matrix
-
-##### Next is to Create a corpus of the files but first striping all non-graphic characters so as to avoid the errors they can cause when `tm_map` is called
-
-```{r}
-
-(allCorpus <- Corpus(VectorSource(allEmails$text )))
-
-```
-
-##### Create document-term matrix to make the data to be in a one-row-per-document format
-
-```{r}
-
-cleanMailsDTM <- DocumentTermMatrix(cleanMailCorpus)
-
-```
-
-## Weighting (tf-idf)
-##### This is simply to count how frequently a word occurs in a document. An alternative approach is term frequency inverse document frequency (tf-idf), which is the frequency of a term adjusted for how rarely it is used.
 
 ```{r}
 allMailsTokens <- allEmails %>%
@@ -284,6 +266,21 @@ allMailsTokens <- allEmails %>%
 
 ```
 
+
+```{r}
+datatable(head(allMailsTokens), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+## Weighting (tf-idf)
+##### Term Frequency (tf) is simply to count how frequently a word occurs in a document. An alternative approach is term frequency inverse document frequency (tf-idf), which is the frequency of a term adjusted for how rarely it is used.
+
 ```{r}
 
 cleanMailsTokensTfIdf <- allMailsTokens %>%
@@ -292,45 +289,86 @@ cleanMailsTokensTfIdf <- allMailsTokens %>%
 
 ```
 
+
 ```{r}
-head(cleanMailsTokensTfIdf)
+datatable(head(cleanMailsTokensTfIdf), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
 ```
 
 ## Exploratory analysis
-##### Visualisations: There are some very low frequent terms in the clean data. in some cases, rarely occuring terms might be have important descriptive values in the documents they occur.
-
-```{r}
-
-tempDf <- allEmails
-
-mailsDf <- data.frame(text = get("content", cleanMailCorpus))
-tempDf$text <- as.character(mailsDf$text)
-
-```
+##### Visualisations: There are some very low frequent terms in the clean data. in some cases, rarely occuring terms might have important descriptive values in the documents they occur.
 
 
 ```{r}
-
-tempDf <-tempDf %>% unnest_tokens(word, text)
+# Before weighting
+hams <- allMailsTokens %>% group_by(type) %>% filter(type == "ham") %>% count(word, sort = TRUE) %>% ungroup()
+spams <- allMailsTokens %>% group_by(type) %>% filter(type == "spam") %>% count(word, sort = TRUE) %>% ungroup()
 
 ```
 
 ```{r}
-head(tempDf)
 
+head(hams)
+
+```
+
+#### Bar plots
+
+##### Before weighting
+
+```{r}
+# For hams
+
+hams %>% 
+        top_n(15) %>% 
+        mutate(word = reorder(word, n)) %>%
+        ggplot(aes(word, n))+
+        geom_col(show.legend = FALSE, fill = "steelblue") +
+        labs(y= "Ham Word Count", x=NULL)+
+        coord_flip()
 ```
 
 
 ```{r}
-# sort the data frame and convert word to a factor column
+# For spams
+spams %>% 
+        top_n(15) %>% 
+        mutate(word = reorder(word, n)) %>%
+        ggplot(aes(word, n))+
+        geom_col(show.legend = FALSE, fill = "steelblue") +
+        labs(y= "Spam Word Count", x=NULL)+
+        coord_flip()
+
+```
+
+#### After weighting
+##### sorting the tf-idf data frame and convert word to a factor column
+
+```{r}
+
 mailsPlot <- cleanMailsTokensTfIdf %>%
   arrange(desc(tf_idf)) %>%
   mutate(word = factor(word, levels = rev(unique(word))))
 ```
 
+
 ```{r}
-head(mailsPlot)
+
+datatable(head(mailsPlot), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
 ```
+
 
 ```{r}
 
@@ -350,18 +388,11 @@ mailsPlot %>%
 
 ```
 
-##### Apparently the visualisation for normal word count and tf-idf are different with words that appear more in the former almost not showing up in the later
-
 
 ##### Word cloud of top 50 ham and spam mails before and after tf-idf weighting. This is to see if the same words/terms that occured very frequently before weighting are still as such after weighting 
 
 
 ```{r}
-
-# Before weighting
-hams <- allMailsTokens %>% group_by(type) %>% filter(type == "ham") %>% count(word, sort = TRUE) %>% ungroup()
-spams <- allMailsTokens %>% group_by(type) %>% filter(type == "spam") %>% count(word, sort = TRUE) %>% ungroup()
-
 
 # After Weighting
 hams50 <- top_n(subset(cleanMailsTokensTfIdf, type == 'ham'), 50)
@@ -369,11 +400,6 @@ spams50 <- top_n(subset(cleanMailsTokensTfIdf, type == 'spam'), 50)
 
 ```
 
-```{r}
-
-head(hams)
-
-```
 
 #### For Hams
 
@@ -424,7 +450,7 @@ wordcloud(words = spams50$word, freq = spams50$n, min.freq = 1,
 ```{r}
 
 set.seed(12)
-randomisedSet <- tempDf[sample(nrow(tempDf)),]
+randomisedSet <- allMailsTokens[sample(nrow(allMailsTokens)),]
 
 ```
 
@@ -469,7 +495,7 @@ testLabels <- testingSet$type
 ```
 
 ## Sparsity
-##### I tried to use `trainingDTM` and `testDTM` in the training and testing but it almost sucked life out of my laptop so I want to reduce the model complexity by removing sparse terms from the model. That is, removing tokens which do not appear across many documents. It is similar to using tf-idf weighting, but directly deletes sparse variables from the document-term matrix. This results in a statistical learning model with a much smaller set of variables. The `tm` package contains the `removeSparseTerms()` function, which does this task. The first argument is a document-term matrix, and the second argument defines the maximal allowed sparsity in the range from 0 to 1. So for instance, sparse = .99 would remove any tokens which are missing from more than 95% of the documents in the corpus (i.e. the token must appear in at least 5% of the documents to be retained).
+##### I tried to use `trainingDTM` and `testDTM` in the training and testing but it almost sucked life out of my laptop so I want to reduce the model complexity by removing sparse terms from the model. That is, removing tokens which do not appear across many documents. It is similar to using tf-idf weighting, but directly deletes sparse variables from the document-term matrix. This results in a statistical learning model with a much smaller set of variables. The `tm` package contains the `removeSparseTerms()` function, which does this task. The first argument is a document-term matrix, and the second argument defines the maximal allowed sparsity in the range from 0 to 1. So for instance, sparse = .95 would remove any tokens which are missing from more than 95% of the documents in the corpus (i.e. the token must appear in at least 5% of the documents to be retained).
 
 ```{r}
 threshold <- 0.5

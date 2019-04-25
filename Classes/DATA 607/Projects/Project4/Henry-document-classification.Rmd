@@ -1,5 +1,6 @@
 ---
 title: 'DATA607 Project 4: Document Classification'
+author: "Henry Otuadinma"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
   html_document:
@@ -542,7 +543,9 @@ testText <- apply(testDTMFreq, MARGIN = 2, categoriseValues)
 ##### This is based on Bayes rule, fequency analysis of occurances of words and an independence assumption (the naive part). The Naive Bayes classifier assigns a probability that a new sample is in one class or another (spam or ham). Then, from the words contained or not contained in the message, it will compute the probability that a message is either a spam or ham. The Naive Bayes can be considered for this processes because the mails can be categorised as ham or spam (the input are categorical)
 ```{r}
 
-classifier <- naiveBayes(trainingText, factor(trainingLabels))
+control <- trainControl(method="repeatedcv", number=10, repeats=3)
+system.time( classifier <- naiveBayes(trainingText, factor(trainingLabels), laplace = 1,
+                                         trControl = control,tuneLength = 7) )
 
 ```
 
@@ -550,6 +553,7 @@ classifier <- naiveBayes(trainingText, factor(trainingLabels))
 testPrediction <- predict(classifier, testText)
 
 ```
+
 
 ## Prediction Statistics
 
@@ -559,6 +563,9 @@ confusionMatrix(data = testPrediction, reference = factor(testLabels),
                 positive = "spam", dnn = c("Prediction", "Actual"))
 
 ```
+
+## Conclusion
+##### The Naive Bayes Classifier also performance on the training set is very poor as it achieved 58% accuracy
 
 ## References
 1. <a href="https://cfss.uchicago.edu/notes/supervised-text-classification/">Supervised Classification with Text Data</a>

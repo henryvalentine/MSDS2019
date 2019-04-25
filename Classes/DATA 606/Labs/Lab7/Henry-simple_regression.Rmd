@@ -12,6 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(magrittr)
+library(DATA606)
 ```
 
 ## Batter up 

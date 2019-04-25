@@ -1,0 +1,132 @@
+---
+title: "DATA607 Week 12 Homework: Graph Databases"
+author: "Henry Otuadinma"
+date: "April 22, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(DBI)
+library(DT)
+library(RMySQL)
+library(knitr)
+library(mongolite)
+```
+
+#### Problem: I am required to migrate data from a relational database like mySql to a document/graph oriented database such as Neo4J or MongoDB
+
+
+##### I created a free account on <a href="https://remotemysql.com">remotemysql.com</a>, created a mySql database, created a `movies` and `ratings` tables, and then populated them with the movies and ratings data from Week 2 homework. I then created an account on <a href="https://cloud.mongodb.com">mongodb cloud</a>. I then created a collection `cunygraph` and a database `movies` and then populated it with the data from the MySQL database.
+
+
+```{r echo=FALSE}
+mongoCredentials <- 'jackv13:N9ufx12345'
+mongoConn <- "@cunymsds2019-fm8cu.mongodb.net/cunygraph?retryWrites=true"
+mongoCollection = "cunygraph"
+mongoDbName = "movies"
+mySqlUser <- "aey4NigbWj"
+mySqlPassword <- "2A3iBxOJza"
+mySqlDbName <- "aey4NigbWj"
+```
+
+
+##### Create the connections
+
+```{r}
+
+#mongodb connection string
+mongoConnStr <- paste("mongodb+srv://", mongoCredentials, mongoConn, sep = "")
+
+#mySql connection
+mySqlConnStr <- dbConnect(RMySQL::MySQL(), dbname = mySqlDbName, host="remotemysql.com", port=3306, user = mySqlUser, password = mySqlPassword)
+
+#Mongocollection
+mongoCollection <- mongo(collection = mongoCollection, db = mongoDbName, url = mongoConnStr, verbose = FALSE, options = ssl_options())
+
+```
+
+
+##### Enumerate the tables in the mySql database
+```{r}
+dbListTables(mySqlConnStr)
+```
+
+##### pull the data in mySql database into a dataframe and create a subset
+```{r}
+
+moviesQuery <-  fetch(dbSendQuery(mySqlConnStr, "SELECT * FROM movie m
+LEFT JOIN (SELECT ratedby, movieid, date, rating, `desc` FROM ratings r) r
+ON m.id = r.movieid
+order by m.id
+  "))
+# necessary because the LEFT JOIN pulls the parents and children and make the parent appear duplicated based on the number of children
+movies <-distinct(moviesQuery, id, poster, title, releasedate, genre, details, summary)
+
+# for index table
+mv <- data.frame(c(movies$title), c(movies$releasedate), c(movies$genre), c(movies$details))
+
+```
+
+#### Print the data from mySql db with Datatable
+
+```{r results='asis'}
+
+datatable(mv, colnames= c("Movie", "Release Date", "Genre", "Details"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+##### Use the `mongoCollection` created earlier to insert the data into the mongodb
+
+```{r results='asis'}
+
+mongoCollection$insert(mv)
+
+```
+
+```{r}
+mongoCollection$count()
+
+```
+
+##### Pull all the data from the mongodb (I pulled all the data at once because they are not many: 6 in numbers)
+
+```{r}
+
+mongoMovies = mongoCollection$find('{}')
+
+```
+
+
+#### Print the data from the `mongoCollection` with Datatable
+
+```{r}
+
+datatable(mongoMovies, colnames= c("Movie", "Release Date", "Genre", "Details"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#26868d', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+
+
+
+
+
+
+
+
+

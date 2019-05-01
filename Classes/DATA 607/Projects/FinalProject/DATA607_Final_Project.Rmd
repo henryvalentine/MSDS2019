@@ -10,14 +10,55 @@ knitr::opts_chunk$set(echo = TRUE)
 library(stringr)
 library(xml2)
 library(rvest)
+library(extrafont)
+library(ggraph)
+library(ggridges)
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+library(forcats)
+library(reshape2)
+library(tidyr)
+library(igraph)
+library(widyr)
+library(viridis)
 
 ```
 
 ```{r}
 
-  gInfo <- html_nodes(read_html(curl('https://www.glassdoor.com/partner/jobListing.htm?pos=302&ao=456183&s=149&guid=000001699452e901a261a8ea19d9d48e&src=GD_JOB_AD&t=SRFJ&extid=4&exst=O&ist=L&ast=OL&vt=w&slr=true&cs=1_4a3e7d50&cb=1552971656096&jobListingId=3133487231', handle = new_handle("useragent" = "Mozilla/5.0"))), 'div.jobDescriptionContent > ul:nth-of-type(2)')
-  
-gInfo
+  # list of reports, comments indicate important events around release of report
+fed.links=c("https://www.federalreserve.gov/monetarypolicy/files/20180713_mprfullreport.pdf",  
+            "https://www.federalreserve.gov/monetarypolicy/files/20170707_mprfullreport.pdf",
+            "https://www.federalreserve.gov/monetarypolicy/files/20160621_mprfullreport.pdf",            # released in jun 2016, but we'll label it July
+            "https://www.federalreserve.gov/monetarypolicy/files/20150715_mprfullreport.pdf",            # July 2015  ( before lift off)
+            "https://www.federalreserve.gov/monetarypolicy/files/20140715_mprfullreport.pdf",
+            "https://www.federalreserve.gov/monetarypolicy/files/20130717_mprfullreport.pdf",            # July 2013  ( after Taper Tantrum)
+            "https://www.federalreserve.gov/monetarypolicy/files/20120717_mprfullreport.pdf",
+            "https://www.federalreserve.gov/monetarypolicy/files/20110713_mprfullreport.pdf",            # July 2011  ( early recovery)
+            "https://www.federalreserve.gov/monetarypolicy/files/20100721_mprfullreport.pdf",
+            "https://www.federalreserve.gov/monetarypolicy/files/20090721_mprfullreport.pdf",            # July 2009  ( end of Great Recession)
+            "https://www.federalreserve.gov/monetarypolicy/files/20080715_mprfullreport.pdf",
+            "https://www.federalreserve.gov/monetarypolicy/files/20070718_mprfullreport.pdf" ,           # July 2007  ( eve of  Great Recession)
+            "https://www.federalreserve.gov/boarddocs/hh/2006/july/fullreport.pdf",
+            "https://www.federalreserve.gov/boarddocs/hh/2005/july/fullreport.pdf",                      # July 2005  ( housing boom)
+            "https://www.federalreserve.gov/boarddocs/hh/2004/july/fullreport.pdf",
+            "https://www.federalreserve.gov/boarddocs/hh/2003/july/FullReport.pdf" ,                     # July 2003  ( deflation fears)
+            "https://www.federalreserve.gov/boarddocs/hh/2002/july/FullReport.pdf",
+            "https://www.federalreserve.gov/boarddocs/hh/2001/july/FullReport.pdf",                      # July 2001  ( dot come Recession)
+            "https://www.federalreserve.gov/boarddocs/hh/2000/July/FullReport.pdf",
+            "https://www.federalreserve.gov/boarddocs/hh/1999/July/FullReport.pdf",                      # July 1999  ( eve of dotcom Recession)
+            "https://www.federalreserve.gov/boarddocs/hh/1998/july/FullReport.pdf",
+            "https://www.federalreserve.gov/boarddocs/hh/1997/july/FullReport.pdf",                       # July 1997 ( irrational exhuberance)
+            "https://www.federalreserve.gov/boarddocs/hh/1996/july/FullReport.pdf"
+            )
+
+
+df_fed <- data.frame(report=c("Jul2018",paste0("Jul",seq(2017,1996,-1))),stringsAsFactors = FALSE) %>%
+  mutate(text= map(fed.links,pdf_text)) %>% unnest(tex`t) %>% 
+  group_by(report) %>% mutate(page=row_number()) %>%
+  ungroup() %>% mutate(text=strsplit(text,"\r")) %>% unnest(text) %>% mutate(text=gsub("\n","",text)) %>%
+  group_by(report) %>% mutate(line=row_number()) %>% ungroup() %>% select(report,line,page,text)
 
 ```
 

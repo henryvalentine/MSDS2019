@@ -76,7 +76,7 @@ datatable(recentGraduates, class = 'cell-border stripe', options = list(
 
 ```
 
-### Research question 
+### Research question
 
 **You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
 

@@ -10,6 +10,55 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+####8.2 Baby weights, Part II: 
+
+Exercise 8.1 introduces a data set on birth weight of babies. Another variable we consider is parity, which is 0 if the child is the first born, and 1 otherwise. The summary table below shows the results of a linear regression model for predicting the average birth weight of babies, measured in ounces, from parity. 
+
+(a) Write the equation of the regression line.
+(b) Interpret the slope in this context, and calculate the predicted birth weight of first borns and
+others.
+(c) Is there a statistically significant relationship between the average birth weight and parity?
+
+##### Answer:
+
+(a) y <- 120.07 - 1.93 * parity
+(b) firstBorns = 120.07; notFirstBorns = 120.07 - 1.93 = 118.14
+(c) There is no statistically significant relationship, since the t-value of -1.62 is diferent from the typical .05 alpha level.
+
+
+#### 8.4 Absenteeism. Researchers interested in the relationship between absenteeism from school
+and certain demographic characteristics of children collected data from 146 randomly sampled students
+in rural New SouthWales, Australia, in a particular school year. Below are three observations
+from this data set.
+
+(a) Write the equation of the regression line.
+(b) Interpret each one of the slopes in this context.
+(c) Calculate the residual for the first observation in the data set: a student who is aboriginal,
+male, a slow learner, and missed 2 days of school.
+(d) The variance of the residuals is 240.57, and the variance of the number of absent days for all
+students in the data set is 264.17. Calculate the R2 and the adjusted R2. Note that there are
+146 observations in the data set.
+
+##### Answer:
+
+(a) $\hat{y} = 18.93 ??? 9.11 ??? eth + 3.10 ??? sex + 2.15 ??? lrn$
+(b) With everything else being equal, the slope coefficients mean that an aboriginal student is likely to be absent 9.11 more days, a male is likely to miss 3.11 more days and a "slow learner" was likely to miss 2.15 more days.
+(c)
+$\hat{y_0} = 18.93 ??? 9.11 ??? 0 + 3.10 ??? 1 + 2.15 ??? 1 = 24.18$
+
+$ e_1 = y_1 ??? \hat{y_1} = 2 ??? 24.18 = ???22.18 $
+
+(d) 
+
+$R^2 = 1 - \frac{240.57}{264.17} = 0.0893364 $
+$R^2_adj = 1 - \frac{240.57}{264.17} * \frac{145}{145 - 3} = 0.070097$
+
+#### 8.8 Absenteeism, Part II: 
+Exercise 8.4 considers a model that predicts the number of days absent using three predictors: ethnic background (eth), gender (sex), and learner status (lrn). The table below shows the adjusted R-squared for the model as well as adjusted R-squared values for all models we evaluate in the first step of the backwards elimination process.
+
+
+
+Graded: 8.2, 8.4, 8.8, 8.16, 8.18
 
 
 

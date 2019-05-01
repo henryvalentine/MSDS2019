@@ -2,9 +2,778 @@
 title: "DATA606 Final Project"
 author: "Henry Otuadinma"
 date: "April 20, 2019"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    Collapsed: false
+    code_folding: show
+    theme: united
+    highlight: tango
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(DT)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(MASS)
+library(car)
 ```
+
+#### The Economic value of college accademic majors in the US.
+
+## Data Preparation {.tabset .tabset-fade .tabset-pills}
+
+### 1. All Students (all ages)
+
+```{r}
+
+allStudents <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/all-ages.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+
+```
+
+```{r}
+datatable(allStudents, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+### 2. Graduate Students attending graduate schools
+
+```{r}
+
+gradStudents <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/grad-students.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>% arrange(Major_category)
+
+```
+
+
+```{r}
+datatable(gradStudents, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+### 3. Recent Graduates
+
+```{r}
+recentGraduates <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/DATA%20606/Projects/recent-grads.csv', sep=",",  header=T, stringsAsFactors = FALSE) %>% tbl_df() %>%  arrange(Major_category)
+
+```
+
+
+```{r}
+datatable(recentGraduates, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+## Research question
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+#### What college majors offer the best employment opportunities and salaries in the US?
+
+##### Here in Nigeria, we are ususally very mindful of courses we choose to study in the universities because a lot of courses end up fetching graduates certificates only which might do litle or nothing at all in helping put the graduate in an advantageous position to land a deserved job. A lot even end up working in fields completely unrelated to what they studied in school. But graduates of mainly Engineering, Medical related courses, selected pure Science courses usually have some kind of leverage/added advantage. So with these data sets, I want to see how this works in the US.
+
+#### Cases 
+
+**What are the cases, and how many are there?**
+
+```{r}
+dim(allStudents)
+
+```
+
+```{r}
+dim(recentGraduates)
+
+```
+
+```{r}
+dim(gradStudents)
+
+```
+
+##### There are 173 cases and 11 variables (columns) in the `all-ages` data set, it contains basic earnings and labor force information for all ages. The `grad-students`  (ages 25+) data set contains 173 cases and 22 variables, while the `recent-grads` (ages <28) data set contains 173 cases and 21 variables. It contains a more detailed breakdown, including by sex and by the type of job they got
+
+
+## Data collection 
+
+**Describe the method of data collection.**
+
+##### This data set is a survey data collected by the  <a href="http://www.census.gov/programs-surveys/acs/data/pums.html">American Community Survey 2010-2012 Public Use Microdata Series (PUMS)</a>.
+
+##### I read a 2014 article: <a href="https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/">The Economic Guide To Picking A College Major</a> by fivethirtyeight about how college majors affect employment and unemployment rates in the US, and decided to have a closer look on this using a readily available data set that has been collected to help explain the situation in an exploratory and analytical way.
+
+#### Type of study 
+
+**What type of study is this (observational/experiment)?**
+
+##### This is an observational study
+
+
+### Data Source 
+
+**If you collected the data, state self-collected. If not, provide a citation/link.**
+
+This was pulled from the ACS website by <a href="https://fivethirtyeight.com">Fivethirtyeigth</a> and stored in their <a href="https://github.com/fivethirtyeight/data/tree/master/college-majors">Github Repo</a> after performing some categorising on the cases
+
+
+### Response
+
+**What is the response variable, and what type is it (numerical/categorical)?**
+
+##### The response variables is College Major. It is a categorical variable
+
+
+### Explanatory
+
+**What is the explanatory variable(s), and what type is it (numerical/categorival)?**
+
+The explanatory variables include:
+
+1. The counts of employed and unemployed degree holders and 
+2. The statistics of their income.
+
+These variables are numerical
+
+### Relevant summary statistics 
+
+**Provide summary statistics for each the variables. Also include appropriate visualizations related to your research question (e.g. scatter plot, boxplots, etc). This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+#### allStudents
+
+```{r}
+str(allStudents)
+```
+```{r}
+summary(allStudents)
+```
+
+#### gradStudents
+
+```{r}
+str(gradStudents)
+```
+
+```{r}
+summary(gradStudents)
+```
+
+
+####Accademic Majors Categories distribution 
+
+#### Let's see how the Accademic Majors Categories are distributed by subsetting the Major_category variable from the `all-ages` data set: 
+
+```{r}
+categories <- as.data.frame(table(allStudents$Major_category))
+names(categories) <- c('category', 'frequency')
+```
+
+```{r}
+
+ggplot(categories, aes(x= reorder(category, frequency), y=frequency)) + 
+  geom_bar(stat = "identity", fill = "steelblue") +
+ xlab("Accademic Major") + ylab("Frequency") +
+  ggtitle("Accademic majors Categories vs Frequency") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x=element_blank(),
+        plot.title = element_text(color="black", size=14,hjust = 0.5)) + coord_flip() + theme(legend.position="none")
+
+```
+
+##### So, it appears engineering students tend to be in a better position to land jobs easily as the number of jobs demanding their skills seem to be high
+
+
+#### Salary distribution for all ages
+
+```{r}
+ggplot(allStudents, aes(x=Median)) + 
+  ggtitle("All ages' Median Salary") +
+  geom_histogram(fill = "steelblue", color='white', binwidth = 10000) +
+  theme(axis.title.x=element_blank(), 
+        plot.title = element_text(color="black", size=14,hjust = 0.5))
+
+```
+
+#####The salary distribution is right skewed which is andicator that highly paying jobs are few and or the chances to land them is very slim.
+
+#### Distribution of all unemployed students
+
+```{r}
+
+all <- allStudents$Unemployment_rate
+recent <- recentGraduates$Unemployment_rate
+graduates <- gradStudents$Grad_unemployment_rate
+
+allUnemployedRate <- cbind(all, recent, graduates)
+
+barplot(allUnemployedRate/nrow(allUnemployedRate), names.arg = c('All Students', 'Recent Graduates', 'Graduate Students'), xlab = "Unemployment Rate", col = heat.colors(nrow(allUnemployedRate)))
+
+```
+
+#### Graduate students have better chances of landing jobs than recent/fresh graduates. It is obvious that organisations tend to go more for experienced workforce than otherwise.
+
+
+## Chi-Tests {.tabset .tabset-fade .tabset-pills}
+
+#### Next, performing Chi-Squared Tests for the three data sets but first, I will have to extract the Accademic major, number employed, and number number unemployed from the data sets
+
+
+### All ages
+
+```{r}
+
+majorsAllStatus <- allStudents %>% dplyr::select(Major, Employed, Unemployed)
+
+```
+
+```{r}
+datatable(majorsAllStatus, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+```{r}
+
+chisq.test(majorsAllStatus[,-1]) 
+
+```
+
+##### From the above, the p-value of `2.2e-16` is less than 0.05 which implies that for all ages:
+
+1) $H_0$: the choice of accademic major does not affect employment status does not stand
+2) $H_A$: the choice of accademic major affects employment status stands
+
+
+### For Graduates
+
+```{r}
+
+gradMajorsStatus <- gradStudents %>% dplyr::select(Major, Grad_employed, Grad_unemployed)
+
+```
+
+  
+```{r}
+datatable(gradMajorsStatus, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+
+chisq.test(gradMajorsStatus[,-1])
+
+```
+
+##### From the above, the p-value of `2.2e-16` is less than 0.05 which implies that at the graduate level:
+
+1) $H_0$: the choice of accademic major does not affect employment status does not stand
+2) $H_A$: the choice of accademic major affects employment status stands
+
+
+### Recent Graduates
+
+##### Here, I will filter out the `Military technology` major as it has 0 for both employed and unemployed variables
+
+```{r}
+
+recentGradMajorsStatus <- recentGraduates %>% dplyr::select(Major, Employed, Unemployed) %>% filter(Major != "MILITARY TECHNOLOGIES" )
+
+```
+
+
+```{r}
+datatable(recentGradMajorsStatus, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+
+chisq.test(recentGradMajorsStatus[,-1])
+
+```
+
+##### From this also:
+
+1) $H_0$: the choice of accademic major does not affect employment status does not stand
+2) $H_A$: the choice of accademic major affects employment status stands
+
+
+## T and Kolmogorov-Smirnov Tests {.tabset .tabset-fade .tabset-pills}
+
+##### I will use these tests on Student's Median Salary. From the exploratory analysis above, graduate students have better chances of landing jobs than recent/fresh graduates. It is obvious that organisations tend to go more for experienced workforce than otherwise. Also, students on STEM majors appear to have better opportunity to earn better than qualitative analysis majors. I will use the t-tests to compare median salaries between two majors since the median salaries is numerical, while the Kolmogorov-Smirnov measures likelihood of similarity by comparing the biggest difference in two data set's continuous probability distribution. I will select at least 4 major categories from the data sets because trying to compare all the majors might be a daunting task as there are about 14 majors in each of the three data sets. I will then compare the categories in pairs.
+
+#### Comparing the majors
+
+### Engineering and Physical Sciences
+
+##### Here, the Null hypothesis is that there is no difference between median salaries of Engineering majors and Physical Science Majors. Initial two-sided tests, that only check that the distributions are different, and not that one is greater or less than the other, showed significance in all cases. We show below the results of single sided tests to definitely say that median salary of one degree category is greater than the other.
+
+1) $H_0$: the median salaries of Engineering majors and Physical Science Majors are the same
+2) $H_A$: the median salaries of Engineering majors and Physical Science Majors are not the same
+
+I will filter out Engineering and Physical sciences majors by using `ENGI` and `PHYS`
+
+```{r}
+
+allAgesEngineering =  filter(allStudents, grepl("ENGI",allStudents$Major))
+allAgesScinces =  filter(allStudents, grepl("PHYS", allStudents$Major))
+
+```
+
+
+```{r}
+
+boxplot(allAgesEngineering$Median, allAgesScinces$Median, names = c("Engineering Majors", "Physical Sciences Majors"), ylab = "Median Salary (USD)")
+
+```
+
+
+```{r}
+
+t.test(allAgesEngineering$Median, allAgesScinces$Median, alternative = "greater")
+
+```
+
+
+```{r}
+
+ks.test(allAgesEngineering$Median, allAgesScinces$Median, alternative = "less")
+
+```
+
+### Liberal Arts vs. Psycology and Social Work.
+
+Here, the hypothesis used above is still applicable
+
+```{r}
+
+allAgesLibArts <- filter(allStudents, grepl("ART",allStudents$Major))
+allAgesPsyc  <- filter(allStudents, grepl("PSYC",allStudents$Major))
+
+```
+
+
+```{r}
+
+boxplot(allAgesLibArts$Median, allAgesPsyc$Median, names = c("Liberal Arts", "Psycology & Social Work"), ylab = "Median Salary (USD)")
+
+```
+
+##### The above box plots show that there are presence of one outlier in both accademic majors, though the one in the Liberal Arts is obviously higher than the one in the Psycology & Social Work. We will see if these outliers will have any effect on the test results later.
+
+
+```{r}
+
+t.test(allAgesLibArts$Median, allAgesPsyc$Median, alternative = "two.sided")
+
+```
+
+##### The KS test has opposite sign convention to the t test
+
+```{r}
+
+ks.test(allAgesLibArts$Median, allAgesPsyc$Median, alternative = "two.sided")
+
+```
+
+##### From these tests, I can't establish if there is any statistical significant difference between the two majors tested above. Let's see if the presence of those outliers observed earleir from the box plots has any effect on the test results.
+
+```{r}
+
+subset(allAgesLibArts, Median == max(Median))
+
+```
+
+```{r}
+
+subset(allAgesPsyc, Median == max(Median))
+
+```
+
+##### So, the `INDUSTRIAL AND ORGANIZATIONAL PSYCHOLOGY` major is the highest outlier in the two majors being compared. I will remove this major and then conduct the `t-test` and `ks-test` again to see if it makes any difference.
+
+
+```{r}
+
+allAgesPsycNoOutlier  <- allAgesPsyc %>% filter(Median != max(Median)) #this removed the high outlier.
+
+```
+
+
+```{r}
+
+boxplot(allAgesPsycNoOutlier$Median, allAgesLibArts$Median, names = c("Psycology & Social Work", "Liberal Arts"), ylab = "Median Salary (USD)")
+
+```
+
+##### Conducting the tests again
+
+```{r}
+
+t.test(allAgesLibArts$Median, allAgesPsycNoOutlier$Median, alternative = "greater")
+
+```
+
+```{r}
+
+ks.test(allAgesLibArts$Median, allAgesPsycNoOutlier$Median, alternative = "less")
+
+```
+
+##### From the second tests after removing the outlier in the Psycology major, the median salary of Liberal Arts majors is greater than Psycology & Social Work majors at the 95% confidence interva. Also, there is now a Signifcant difference between the tests results. To balance this, I will perform a Shapiro-Wilk normality test.
+
+##### The Shapiro-Wilk test tests the null hypothesis that a sample x1, ..., xn came from a normally distributed population.
+
+
+```{r}
+
+shapiro.test(allAgesLibArts$Median)
+
+```
+
+
+```{r}
+
+shapiro.test(allAgesPsycNoOutlier$Median)
+
+```
+
+
+##### With the presence of the outlier, the statistical significance in p-values was 0.2231, while when it was removed, the significance difference became 0.01653. I was of the opinion that the data sets are normaly didstributed and as a matter of fact, the Shapiro-Wilk test for normality did not disaprove this. Since the Student's T-test tends to the Normal distribution for high N, we can trust the result of the student t-test.
+
+
+### Engineering vs Liberal Arts majors
+
+```{r}
+
+boxplot(allAgesEngineering$Median, allAgesLibArts$Median, names = c("Engineering", "Liberal Arts"), ylab = "Median Salary (USD)")
+
+```
+
+```{r}
+
+t.test(allAgesEngineering$Median, allAgesLibArts$Median, alternative = "greater")
+
+```
+
+```{r}
+
+ks.test(allAgesEngineering$Median, allAgesScinces$Median, alternative = "less")
+
+```
+
+##### From the above, at 95% confidence Interval, Engineering majors boast higher median salary than Liberal Arts majors.
+
+
+### Engineering and Psycology & Social Work
+
+
+```{r}
+
+boxplot(allAgesEngineering$Median, allAgesPsyc$Median, names = c("Engineering", "Psycology & Social Work"), ylab = "Median Salary (USD)")
+
+```
+
+
+```{r}
+t.test(allAgesEngineering$Median, allAgesPsyc$Median, alternative = "greater")
+
+```
+
+
+```{r}
+
+ks.test(allAgesEngineering$Median, allAgesPsyc$Median, alternative = "less")
+
+```
+
+
+### Liberal Arts vs Physical Sciences
+
+```{r}
+
+boxplot(allAgesLibArts$Median, allAgesScinces$Median, names = c("Liberal Arts", "Physical Sciences"), ylab = "Median Salary USD")
+
+```
+
+```{r}
+
+t.test(allAgesLibArts$Median, allAgesScinces$Median, alternative = "less")
+
+```
+
+
+```{r}
+
+ks.test(allAgesLibArts$Median, allAgesScinces$Median, alternative = "greater")
+
+```
+
+
+### Tests summary
+
+From the tesets results, Engineering is the major that fetches the highest median salry. This is followed by Physical Science (which has the same median salary as Industrial and Organizational Psycology), Liberal Arts,  Psycology & Social Work.
+
+
+## Linear Regression Model {.tabset .tabset-fade .tabset-pills}
+
+##### For the linear regression model, I will consider the Unemployment rate and the median salary for the data sets to see if there is any correlation between unemployment rate and median salary because I have the belief that the pressure of unemployment rate can have an impact on salary because people will tend to accept what they can be offered due to low demand in their skill-set. But I want to substantiate this with data. If the residuals of the model do not show the necessary behavior of Normal Distribution and Constant Variance, we will perform a Box-Cox transformation on the data to get an exponential factor to improve the model.
+
+### First fit
+
+```{r}
+
+allAgeUnEmp_fit <-lm(allStudents$Median ~ allStudents$Unemployment_rate)
+
+```
+
+
+```{r}
+
+summary(allAgeUnEmp_fit)
+
+```
+
+```{r}
+
+ggplot(allStudents, aes(x = Unemployment_rate, y = Median)) + geom_point(color = "#440154") + geom_smooth(method = "lm", formula = y~x)
+
+```
+
+```{r}
+
+hist(allAgeUnEmp_fit$residuals, xlab = "Residuals", main = "Histogram of Linear model residuals")
+
+```
+
+
+```{r}
+
+plot(fitted(allAgeUnEmp_fit), residuals(allAgeUnEmp_fit))
+
+```
+
+##### It appears the residuals do not show characteristics of Normal Distribution and Constant Variance. Let's try to improve the linear model through an exponential factor that will be gotten by performing a Box-Cox transformation on the linear model.
+
+
+```{r}
+
+boxcox_ExpM <- boxcox(allAgeUnEmp_fit)
+
+```
+
+
+```{r}
+
+optimised_M <- boxcox_ExpM %>% as.data.frame() %>% .[which.max(.$y),1]
+
+```
+
+```{r}
+optimised_M
+```
+
+### Re-fitting the model
+
+```{r}
+
+allAgeUnEmp_refit <- lm(allStudents$Median^optimised_M ~ allStudents$Unemployment_rate)
+
+```
+
+
+```{r}
+
+summary(allAgeUnEmp_refit)
+
+```
+
+
+```{r}
+
+hist(allAgeUnEmp_refit$residuals, xlab = "Residuals of the Refited model", main = "Histogram of Residuals of the Refited model")
+
+```
+
+
+```{r}
+
+plot(fitted(allAgeUnEmp_refit), residuals(allAgeUnEmp_refit))
+
+```
+
+
+```{r}
+
+qqnorm(residuals(allAgeUnEmp_refit))
+qqline(residuals(allAgeUnEmp_refit))
+
+```
+
+```{r}
+
+allStudents_A <- allStudents %>% mutate(newMedian  = Median^optimised_M)
+
+```
+
+```{r}
+
+datatable(allStudents_A, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+ggplot(allStudents_A, aes(x = Unemployment_rate, y = newMedian)) +
+  geom_point(color = '#440154')+
+  geom_smooth(method = "lm", formula = y~x)
+
+```
+
+### Dealing with Outliers
+
+##### Removing the highest unemployment rate outlier in `allStudents_A`
+
+```{r}
+
+allStudents_O <- allStudents_A %>% filter(Unemployment_rate > 0 & Unemployment_rate != max(Unemployment_rate))
+
+```
+
+
+```{r}
+
+allStudents_o_refit <- lm(allStudents_O$newMedian ~ allStudents_O$Unemployment_rate)
+
+```
+
+
+```{r}
+
+summary(allStudents_o_refit)
+
+```
+
+```{r}
+hist(residuals(allStudents_o_refit))
+
+```
+
+
+```{r}
+
+plot(fitted(allStudents_o_refit), residuals(allStudents_o_refit))
+
+```
+
+```{r}
+
+qqnorm(resid(allStudents_o_refit))
+qqline(resid(allStudents_o_refit))
+
+```
+
+
+```{r}
+ggplot(allStudents_O, aes(x = Unemployment_rate, y = newMedian)) +
+  geom_point(color = '#440154')+
+  geom_smooth(method = "lm", formula = y~x)
+
+```
+
+### Meadian salary & Unemployment Rate
+
+```{r}
+
+allStudentsUnEmp <- allStudents %>% dplyr::select(Major, Unemployment_rate) %>% arrange(Unemployment_rate)
+
+```
+
+
+```{r}
+
+datatable(allStudentsUnEmp, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+
+salaries <- allStudents  %>% dplyr::select(Major,Median) %>% arrange(Median)
+
+```
+
+
+
+```{r}
+
+datatable(salaries, class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#440154', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+## Conclusion
+
+##### From these analyses, it is obvious that students who took any course among the STEM majors are more likely to easily get employed and even enjoy higher salaries and there is a high tendency of this to tilt towards the male majority. This is almost how it is in Nigeria.
+
+##### At the first fit, a slope of -231551 was achieved, while the Box Cox approach was used to ensure the residuals are normal and have homogeneity in variance so that it can be used for predictions. A Box Cox exponent factor of -1.071 was achieved and this shows that salary and unemployment are inversely proportional. Further efforts involved removing influencing outliers after which a p-value of 0.0001225 was achieved with an R2 of 0.08432, showing that unemployment rate can explain only about 8.432% of the variability in median salary. This means that. Therefore, it is very important that when seeking admission, prospective students should consider the impact their intended majors will have on their chances of landing deserving jobs as quick as possible after graduation.
+
+

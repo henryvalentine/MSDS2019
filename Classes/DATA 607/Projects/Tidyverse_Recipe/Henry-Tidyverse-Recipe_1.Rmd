@@ -1,0 +1,205 @@
+---
+title: "DATA607 Tidyverse Recipe 1"
+author: "Henry Otuadinma"
+date: "May 3, 2019"
+output:
+  html_document:
+    toc: true
+    theme: spacelab
+    highlight: tango
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### The `stringr` package
+
+## Overview
+
+The `stringr` package is a consistent, simple and easy to use set of wrappers that is built on top of the `stringi` package. The `stringi` package uses the ICU C library to provide fast, correct implementations of common string manipulations and provides a comprehensive set covering almost anything you can imagine, while `stringr` focusses on the most important and commonly used string manipulation functions.
+
+All functions in stringr start with `str_` and take a vector of strings as the first argument. One of the uses of this package that I enjoy a lot is in tidying up the output goten from webscrapping a webpage (using appropriate functions from the `tidyvest` package) to make the result presentable.
+
+Assuming I want to get some top selling books in a particular category like Law from Amazon, I can easily call some of the stringr functions like: 
+
+1). `str_replace_all`: to replace selected string pattern by another string or an empty one. The pattern can be matched with rejex
+
+2). `str_trim`: trims the beginning and end of a string
+
+3). `str_extract`: extracts a given string pattern from the lot. The pattern can be matched with rejext
+
+4). `str_split`: splits a string at a given character
+
+
+to tidy up the result. Each of these listed functions perform functions just as their names indicate.
+
+
+## Load libraries, read web page
+
+```{r}
+library(stringr)
+library(rvest)
+library(DT)
+```
+
+
+```{r}
+
+html_raw <- html_nodes(read_html('https://www.amazon.com/Best-Sellers-Books-Law/zgbs/books/10777/ref=zg_bs_nav_b_1_b', encoding = "en_US.UTF-8"), 'ol#zg-ordered-list')
+
+```
+
+
+### Tidy up the Result
+
+```{r}
+
+processNodes <- function(rawNode, genre)
+{
+    imgs <- vector()
+    genres <- vector()
+    titles <- vector()
+    authors <- vector()
+    ratings <- vector()
+    numRaters <- vector()
+    types <- vector()
+    prices <- vector()
+    
+    itemsRaw <-html_nodes(rawNode, 'span.zg-item')  # using html_nodes from rvest to extract the needed nodes
+  
+    for(i in 1: length(itemsRaw))
+    {
+        x <- itemsRaw[i]
+        xImg <- str_replace_all(str_extract(x, '(?<=src=)"(.+?)"'), '\"', '') # matching the image element's source attribute using a rejex pattern
+        
+        xTitle <- str_trim(str_replace_all(html_text(html_node(x, '.a-link-normal > div')), 
+                                           "[\r\n]" , ""), side='both') # combining str_trim, str_replace_all, html_text and html_node in one call to tidy a book's title
+        
+        if(str_detect(xTitle, ':') == TRUE)
+        {
+          xTitle <- str_split(xTitle, ':')[[1]][1] # Shorten the title by splitting at the colon (:)
+        }
+        
+        xAuthor <- str_trim(html_text(html_node(x, '.a-link-child')), side='both')
+        
+        if(is.na(xAuthor) || is.null(xAuthor))
+        {
+          xAuthor <- str_trim(html_text(html_node(x, 'span.a-color-base')), side='both')
+        }
+        
+        xRating <- str_trim(str_extract(html_node(x, '.a-icon-alt'), '\\d+(\\.\\d+)'), side='both')
+        
+        xNumRaters <- str_replace(str_trim(html_text(html_node(x, 'div.a-icon-row > a.a-size-small')), side='both'), ',', '')
+        
+        if(is.na(xNumRaters) || is.null(xNumRaters))
+        {
+          xNumRaters <- str_replace(str_trim(html_text(html_node(x, 
+                        'div.a-spacing-none > a-link-normal')), side='both'), ',', '')
+        }
+       
+        xType <- str_trim(html_text(html_node(x, 'div.a-size-small > span.a-color-secondary')), side='both')
+        
+        p <- str_extract(html_node(x, 'span.p13n-sc-price'), '\\d+(\\.\\d+)')
+        
+        xPrice <-  round(as.numeric(p), 2)
+        
+        if(is.na(xPrice) || is.null(xPrice))
+        {
+          xPrice <- str_extract(str_trim(html_text(html_node(x, 
+                        'span.a-color-price')), side='both'), '[[:alpha:] ]{2,}')
+        }
+        
+        imgs <- c(imgs, xImg)
+        genres <- c(genres, genre)
+        titles <- c(titles, xTitle)
+        authors <- c(authors, xAuthor)
+        ratings <- c(ratings, xRating)
+        numRaters <- c(numRaters, xNumRaters)
+        types <- c(types, xType)
+        prices <- c(prices, xPrice)
+    }
+    
+    return(data.frame(title = titles, author = authors, genre = genres, rating = ratings, img = imgs,
+                      numRater = numRaters, type = types, price = prices))
+}
+
+```
+
+
+##### This Returns a dataframe with the cleaned observations
+ 
+
+```{r, warning=FALSE, message=FALSE}
+
+law_books <- processNodes(html_raw, 'Law')
+
+```
+
+
+### Show the output
+
+```{r}
+
+law_books_filtered <- subset(law_books, select=c(title, author, genre, rating, numRater, type, price)) #Remove the book image url
+
+datatable(law_books_filtered, colnames= c("Title", "Author", "Genre", "Rating", "Number of reviewers", "Type", "Price($)"), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+##### Exporting the tidied data to a csv file for further analyses
+
+```{r}
+
+write.csv(law_books_filtered, "top_selling_law_books.csv", row.names=FALSE)
+
+```
+
+
+### Conclusion
+
+The `stringr` package is very useful when it comes to cleaning data mined from different sources and manipulating already available data sets. This recipe has demonstrated the use of some of its functions in data cleaning and manipulation. However, this is not exhaustive.
+
+
+### References
+
+<a href="https://www.rdocumentation.org/packages/stringr/versions/1.4.0">stringr</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

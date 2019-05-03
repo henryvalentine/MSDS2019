@@ -35,6 +35,7 @@ allStudents <- read.csv('https://raw.githubusercontent.com/henryvalentine/MSDS20
 
 ```
 
+
 ```{r}
 datatable(allStudents, class = 'cell-border stripe', options = list(
   initComplete = JS(
@@ -775,5 +776,17 @@ datatable(salaries, class = 'cell-border stripe', options = list(
 ##### From these analyses, it is obvious that students who took any course among the STEM majors are more likely to easily get employed and even enjoy higher salaries and there is a high tendency of this to tilt towards the male majority. This is almost how it is in Nigeria.
 
 ##### At the first fit, a slope of -231551 was achieved, while the Box Cox approach was used to ensure the residuals are normal and have homogeneity in variance so that it can be used for predictions. A Box Cox exponent factor of -1.071 was achieved and this shows that salary and unemployment are inversely proportional. Further efforts involved removing influencing outliers after which a p-value of 0.0001225 was achieved with an R2 of 0.08432, showing that unemployment rate can explain only about 8.432% of the variability in median salary. This means that. Therefore, it is very important that when seeking admission, prospective students should consider the impact their intended majors will have on their chances of landing deserving jobs as quick as possible after graduation.
+
+
+
+## References
+
+<a href="https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/">The Economic Guide To Picking A College Major</a>
+
+<a href="https://fivethirtyeight.com/features/as-more-attend-college-majors-become-more-career-focused/">As More Attend College, Majors Become More Career-Focused</a>
+
+<a href="https://github.com/fivethirtyeight/data/tree/master/college-majors">FiveThirtyEight Github Repo: college majors</a>
+
+<a href="https://blog.minitab.com/blog/adventures-in-statistics-2/how-to-interpret-a-regression-model-with-low-r-squared-and-low-p-values">How to Interpret a Regression Model with Low R-squared and Low P values</a>
 
 

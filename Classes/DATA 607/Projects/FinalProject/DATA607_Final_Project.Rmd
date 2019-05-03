@@ -22,15 +22,16 @@ library(tidyr)
 library(igraph)
 library(widyr)
 library(viridis)
-
+library(dplyr)
 ```
+
 
 ```{r}
 
   # list of reports, comments indicate important events around release of report
-fed.links=c("https://www.federalreserve.gov/monetarypolicy/files/20180713_mprfullreport.pdf",  
+reportLinks=c("https://www.federalreserve.gov/monetarypolicy/files/20180713_mprfullreport.pdf",  
             "https://www.federalreserve.gov/monetarypolicy/files/20170707_mprfullreport.pdf",
-            "https://www.federalreserve.gov/monetarypolicy/files/20160621_mprfullreport.pdf",            # released in jun 2016, but we'll label it July
+            "https://www.federalreserve.gov/monetarypolicy/files/20160621_mprfullreport.pdf",            # released in jun, will label it July
             "https://www.federalreserve.gov/monetarypolicy/files/20150715_mprfullreport.pdf",            # July 2015  ( before lift off)
             "https://www.federalreserve.gov/monetarypolicy/files/20140715_mprfullreport.pdf",
             "https://www.federalreserve.gov/monetarypolicy/files/20130717_mprfullreport.pdf",            # July 2013  ( after Taper Tantrum)
@@ -53,12 +54,162 @@ fed.links=c("https://www.federalreserve.gov/monetarypolicy/files/20180713_mprful
             "https://www.federalreserve.gov/boarddocs/hh/1996/july/FullReport.pdf"
             )
 
+```
 
-df_fed <- data.frame(report=c("Jul2018",paste0("Jul",seq(2017,1996,-1))),stringsAsFactors = FALSE) %>%
-  mutate(text= map(fed.links,pdf_text)) %>% unnest(tex`t) %>% 
-  group_by(report) %>% mutate(page=row_number()) %>%
-  ungroup() %>% mutate(text=strsplit(text,"\r")) %>% unnest(text) %>% mutate(text=gsub("\n","",text)) %>%
-  group_by(report) %>% mutate(line=row_number()) %>% ungroup() %>% select(report,line,page,text)
+
+```{r eval=FALSE}
+
+fed_reports <- map(reportLinks,pdf_text)
 
 ```
+
+
+```{r eval=FALSE}
+
+length(fed_reports)
+
+```
+
+
+```{r eval=FALSE}
+fed <- data.frame(report=c("Jul-2018",paste0("Jul-",seq(2017,1996,-1))),stringsAsFactors = FALSE) %>%
+  mutate(text= fed_reports) %>% unnest(text) %>% 
+  group_by(report) %>% mutate(page=row_number()) %>%
+  ungroup() %>% mutate(text=strsplit(text,"\r")) %>% unnest(text) %>% mutate(text=gsub("\n","",text)) %>%
+  group_by(report) %>% mutate(line=row_number())
+
+```
+
+
+```{r eval=FALSE}
+
+write.csv(fed, "fed_reports.csv")
+
+```
+
+
+```{r}
+
+fed_r <- read.csv("fed_reports.csv", stringsAsFactors=FALSE)
+
+```
+
+
+```{r}
+
+head(fed_r)
+
+```
+
+
+```{r}
+
+fed_x <- fed_r %>% dplyr::select(report, page, text, line)
+
+```
+
+```{r}
+head(fed_x)
+
+```
+
+
+```{r}
+words <- fed_x %>%
+  unnest_tokens(word, text) %>%
+  count(report, word, sort = TRUE) %>%
+  ungroup()
+```
+
+
+```{r}
+total_words <- words %>% 
+  group_by(report) %>% 
+  summarize(total = sum(n))
+
+```
+
+##### Comparing words count in each report
+
+```{r}
+
+ggplot(data=total_words, aes(x=seq(1996,2018),y=total))+
+  geom_line(color="#27408b")+
+  geom_point(shape=21,fill="white",color="#27408b",size=3,stroke=1.1)+
+  scale_y_continuous(labels=scales::comma)+
+  theme_ridges()+
+  labs(x="year",y="Words count",
+       title="Words count in Federal Reserve Monetary Policy Reports",
+       subtitle="For July of each year 1996-2018")
+
+```
+
+##### Making a list of the most frequently occuring words in each report, while removing stop-words, numbers, and special characters
+
+```{r}
+
+fed_text <- fed_x %>% unnest_tokens(word,text)
+
+```
+
+
+```{r}
+head(fed_text)
+```
+ 
+```{r}
+
+fedText <- fed_text %>% 
+  mutate(word = gsub("[^A-Za-z ]","",word)) %>% 
+  filter(word != "") %>%
+  anti_join(stop_words) %>%
+  group_by(report) %>%
+  count(word,sort=TRUE) %>% 
+  mutate(rank=row_number()) %>%
+  ungroup() %>% 
+  arrange(rank,report) %>%
+  filter(rank<11)
+  
+
+```
+
+```{r}
+head(fedText)
+```
+
+
+```{r}
+tail(fedText)
+```
+
+##### Stop-words are gone
+
+```{r}
+p <- ggplot(fedText, aes(y=n,x=fct_reorder(word,n))) +
+  geom_col(fill="#27408b")+
+  facet_wrap(~report, scales= "free_y", ncol=5)+
+  coord_flip()+
+  theme_ridges(font_size=8.3)+
+  labs(x="",y="",
+       title="Most Frequent Words Federal Reserve Monetary Policy Report")
+
+p
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

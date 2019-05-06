@@ -1,0 +1,182 @@
+---
+title: "Tibble Vignette"
+author: "Austin Chan"
+date: "April 18, 2019"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+---
+
+##Introduction
+
+Dataframes have been fundamental to R as its preferred way to store data in a straightforward and human-readable form. For the most part, dataframes do their job well; they can store data of different types in the same dataframe, they can be subsetted relatively easily, and they interact cleanly with other objects in R. However, as data science has evolved, some functionality of dataframes has become inconvenient and inefficient. This includes default behavior like `stringsAsFactors = TRUE`, printing every row and column when calling the dataframe, and partial column matching. These "features" often lead to long function calls, unintentionally printing an entire dataframe, and calling the wrong columns, which create errors and frustration. Given that dataframes are used so frequently in R, these inconveniences and inefficiencies can snowball over time leading to poor performance overall. Tibbles are the solution to these problems.
+
+###What is a tibble?
+
+Simply put, a tibble is a lightweight data frame that removes the annoying default behaviors of dataframes, while still preserving core functionality. Tibbles are designed to be more restrictive than dataframes to encourage users into writing less sloppy code. Tibbles can do everything dataframes can do (barring a few niche exceptions) faster and with less overhead. Let's get into some examples.
+
+###Installing `tibble`
+
+Tibble can be installed like any other package in R using the `install.packages()` function. There are multiple sources for the `tibble` package including CRAN, the tidyverse, and Github. The tibble package is frequently maintained and easily accessible, which is nice. The following code installs the `tibble` package from various different sources according to your preference.
+
+```{r,eval = FALSE}
+#Install tibble directly from CRAN
+install.packages("tibble")
+
+#Install tibble through the tidyverse package
+install.packages("tidyverse")
+
+#Install tibble through Github
+devtools::install_github("tidyverse/tibble")
+```
+
+###Data
+
+I will be using the women in STEM dataset from fivethirtyeight's Github to show some examples of `tibble`. The link to the data is here:
+
+https://github.com/fivethirtyeight/data/blob/master/college-majors/women-stem.csv
+
+This data contains information about women in various STEM fields, like the proportion of women in the field and the median income of the field. This data was used for an article about picking a college major from an economic perspective. The link to the article is here:
+
+https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+
+
+The data can be seen below as a tibble:
+
+
+```{r}
+library(tibble)
+library(readr)
+
+women_stem_tibble =  read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/women-stem.csv")
+
+women_stem_tibble
+```
+
+##Tibbles vs. Data Frames
+
+As specified in the introduction, tibbles are lightweight dataframes with different default behaviors. There are a few characteristics that separate tibbles from dataframes:
+
+- Tibbles preview only the first few rows when called.
+- Tibbles do not change input data types.
+- Tibbles do not change variable names.
+- Tibbles do not use row names.
+- Tibbles only recycles single element vectors.
+
+It is important to remember that tibbles are designed to be more restrictive than dataframes to prevent common bugs that can occur when using dataframes. The following sections will provide examples of the differing characteristics and how these differences can be useful.
+
+###Data previewing
+
+When loading data, most people try to look at a preview of their data to see if their data appears correct at a glance. This process usually involves fetching the first few rows of the data and checking it for major issues. The typical call for this type of operation is `head(dataframe)`, where the `head()` function fetches the first few rows from `dataframe`. The reason `head()` needs to be called is because dataframes print the entire dataframe when they are called without the `head()` function. This "feature" can be seen below:
+
+Notice how long and disorienting the data can appear when called this way.
+
+```{r}
+women_stem_df = read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/women-stem.csv")
+
+women_stem_df
+```
+
+Unlike dataframes, tibbles have built-in data preview functionality. When tibbles are called, they only show the first few rows of the data instead of the entire dataset.
+
+```{r}
+women_stem_tibble
+```
+
+###Input data types
+
+One quirk of dataframes is that they change strings to the factor data type automatically. This used to be a convenience feature when data was simpler and string vectors were almost always categorical variables. This would come in handy with columns with predefined categories like gender, where the vector would only contain the values "male", "female", and "other". However, with the increasing popularity of natural language processing and using words as data, it is much more convenient to keep string vectors as strings rather than to change them to factors.
+
+Unlike dataframes, tibbles do not change strings to the factor data type automatically. Instead, tibbles preserve the input data type by default. This quirk can be seen below. Notice that the `Major` column is a 76-level factor in the dataframe, while the same column is a character data type in the tibble.
+
+```{r}
+str(women_stem_df$Major)
+
+str(women_stem_tibble$Major)
+```
+
+###Variable names
+
+Another weird quirk of dataframes is that they don't like spaces in their column names. As a result, dataframes will change spaces in column names to periods. The reason dataframes do this is because referencing columns that had spaces without autocomplete was very annoying due to having to put quotes around the column name to reference it. However, now with the modern version of R, tab completion is a default feature, making column references very simple.
+
+```{r}
+nwsdf = data.frame("name with spaces" = 2)
+nwsdf
+nwsdf$name.with.spaces
+```
+
+```{r}
+nwst = tibble("name with spaces" = 2)
+nwst
+nwst$`name with spaces`
+```
+
+###Row names
+
+In order to maintain simplicity, tibbles cannot use row names. Since row names are special attributes that are stored differently from normal columns, they can complicate dataframes by adding special attributes that were not designedd to store long names. If `row.names` is called on a tibble, it will return the index of the rows. 
+
+```{r}
+row.names(women_stem_tibble)
+```
+
+###Recycling
+
+One unique characteristic of R is its use of element recycling. Recycling is when elements are reused when a vector does not have enough elements to match the length of another vector it is attached to. An example of recycling can be seen below.
+
+In the example below, the 1 in the x column is recycled 10 times to match the 10 elements in the y column.
+
+```{r}
+tibble(x = 1, y = 1:10)
+```
+
+Recycling can be useful if the user is lazy and does not want to call the `rep()` function every time they want to repeat a number to the same length as another vector.
+
+Recycling can also be used for vectors with multiple elements as seen below. However, the catch is that the vectors must be multiples/divisors of each other in order to recycle multiple elements. Notice that x is 1:4 recycled once (total length 8), while y is printed normal (total length 8).
+
+```{r}
+data.frame(x = 1:4, y = 1:8)
+```
+
+If the vector is not a multiple/divisor of the other vector, it will not recycle properly and throw an error. This error happens frequently for people who use recycling and it can cause many problems.
+
+```{r,error = TRUE}
+data.frame(x = 1:3, y = 1:8)
+```
+
+Tibbles circumvent this muiltiple element recycling problem by only allowing vectors of length 1 to be recycled. This minimizes the possible errors that can occur when recycling because length 1 vectors can always be recycled.
+
+```{r,error=TRUE}
+tibble(x = 1:4, y = 1:8)
+```
+
+
+## Extension by Henry Otuadinma
+
+##### Austin already did a great job on this, I am going to add a little more to what he already has by demonstrating the use of `glimpse`, and `as_tibble` functions of the tibble package.
+
+
+##### `glimpse` is simply getting a glimpse of the data. According to the documentation, it is like a transposed version of `print` such that columns run down the page, and data runs across. This makes it possible to see every column in a data frame. It's a little like the `str` function applied to a data frame but it tries to show you as much data as possible. (And it always shows the underlying data, even when applied to a remote data source.)
+
+```{r}
+glimpse(women_stem_tibble)
+
+```
+
+##### `as_tibble` Coerces Lists and Matrices to Data Frames. The `as.data.frame` is effectively a thin wrapper around `data.frame`, and hence is rather slow (because it calls data.frame() on each element before cbinding together). But `as_tibble` is a new S3 generic with more efficient methods for matrices and data frames.
+
+```{r}
+m <- matrix(rnorm(50), ncol = 5)
+colnames(m) <- c("a", "b", "c", "d", "e")
+df <- as_tibble(m)
+df
+```
+
+
+##Conclusion
+
+Tibbles are a very useful form of dataframe that is fast and lightweight. Instead of using the bloated and outdated features of dataframes, tibbles offer a simplified version that preserves core functionality while removing features that are prone to errors and inefficiency like row names, previewing the entire dataframe, and multiple element recycling. Tibbles are especially useful for string data because they do not change column names or column data types for strings. 
+
+Overall, tibbles are can do almost everything dataframes can do while being faster, more efficient, and more convenient.
+

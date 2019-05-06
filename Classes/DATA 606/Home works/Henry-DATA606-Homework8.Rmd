@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
 ```
 
 
@@ -54,17 +55,52 @@ $R^2 = 1 - \frac{240.57}{264.17} = 0.0893364 $
 $R^2_adj = 1 - \frac{240.57}{264.17} * \frac{145}{145 - 3} = 0.070097$
 
 #### 8.8 Absenteeism, Part II: 
-Exercise 8.4 considers a model that predicts the number of days absent using three predictors: ethnic background (eth), gender (sex), and learner status (lrn). The table below shows the adjusted R-squared for the model as well as adjusted R-squared values for all models we evaluate in the first step of the backwards elimination process.
+
+The `no learner status` has the highest $R_{adj}^2 = 0.0723$, and it is higher than the $R_{adj}^2 = 0.0701$ of the full model. The `learner status` variable should be eliminated from the model first.
+
+#### 8.16
+
+##### Challenger disaster, Part I:
+
+a). Out of 23 shuttle missions, it appears that missions launched at higher ambient tempreatures produced the least or no damaged O-rings. Also, the launch with the most damaged O-rings (5) happens to be the mission launched on the coldest ambient temperature (53 F). All missions launched in temperature below 65 F had at least one damaged O-ring. Out of 13 missions launched in temperature 70 F or higher, only 3 showed damaged O-rings. These two variables seem to be inversely related.
+
+b). From the summary table, there is an inverse relationship between temperature and O-ring failures. This implies that Increase in temperature decreases the probability of an O-ring failure by 0.216.
+
+c). $log(\frac{\hat{p}}{1-\hat{p}}) = 11.6630 - 0.2162 * Temperature$
+
+d). The p-value is practically 0 which shows that the failures are likely not due to chance. Moreover, there appears to be an inverse relationship between temperature and failures of the O-RINGS. So, I think it is justified to be concerned.
 
 
+#### 8.18 Challenger disaster, Part II:
 
-Graded: 8.2, 8.4, 8.8, 8.16, 8.18
+```{r}
+
+p51<- exp(11.663-51*.2126)/(1+exp(11.663-51*.2126))
+p51
+
+```
+
+```{r}
+p53<- exp(11.663-53*.2126)/(1+exp(11.663-53*.2126))
+p53
+
+```
+
+```{r}
+p55<- exp(11.663-55*.2126)/(1+exp(11.663-55*.2126))
+p55
+
+```
+
+```{r}
+probs <- data.frame(pbs = c(p51, p53, p55, .341, .251, .179, .124, .084, .056, .037, .024), index = c(1:11))
+
+ggplot(probs) + geom_smooth(aes(y = pbs, x = index))
+
+```
 
 
-
-
-
-
+##### Binary codes (0 and 1) are used to denote either damaged or not for the O-rings without any indication about the degree of damage of the rings, and this could hold significant information. Moreover, there might be a situation whereby the rings were reused for different missions.  The sample size of 23 diffrerent missions doesn't seem large enough. The model could be improved by collecting more data on more missions
 
 
 

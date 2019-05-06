@@ -187,7 +187,7 @@ tail(fedText)
 ```{r}
 p <- ggplot(fedText, aes(y=n,x=fct_reorder(word,n))) +
   geom_col(fill="#27408b")+
-  facet_wrap(~report, scales= "free_y", ncol=5)+
+  facet_wrap(~report, scales= "free_y", ncol=6)+
   coord_flip()+
   theme_ridges(font_size=8.3)+
   labs(x="",y="",

@@ -1,0 +1,185 @@
+---
+title: "DATA605 Homework11"
+author: "Henry Otuadinma"
+date: "08/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+### Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and residual analysis.)
+
+```{r}
+data(cars)
+cars_df <- cars
+
+```
+
+
+```{r}
+head(cars_df, 10)
+
+```
+
+```{r}
+
+str(cars_df)
+
+```
+
+This data was gotten from measuring the speed and stopping distances of cars in 1920s. It contains only two variables (Speed and Stopping distance) and 50 observations.
+The numeric	Stopping distance is measured in foot (ft)
+
+
+```{r}
+ggplot(cars_df, aes(speed, dist)) + 
+  geom_point(size = 2, alpha = .4) +
+  geom_smooth(method = "lm", se = FALSE, alpha = .2) +
+  labs(title = "Speed vs Stopping Distance", 
+       x = "Speed (mph)", 
+       y = "Stopping distance (ft)") 
+
+```
+
+
+```{r}
+
+lm_cars <- lm(speed~dist, data = cars_df)
+
+```
+
+
+```{r}
+summary(lm_cars)
+
+```
+
+#### Interpreting the model
+
+From the model, the stopping distance can be expressed as:
+
+$distance = 8.28391 + 0.16557 * speed$
+
+
+This implies that:
+
+#### 1. Every increase in speed, will cause a 0.16557S increase in stopping distance.
+
+#### 2. The speed is probably relevant in this model because its p-value is very near to zero while the Y-intercept’s p-value is approximately 1 percent.
+
+#### 3. The model produced a Multiple R-squared of 0.6511, implying that about 65% variation in the stopping distance is accounteed for by the least-squares line.
+
+
+```{r}
+
+ggplot(data = cars_df, aes(x=speed, y=lm_cars$residuals)) + 
+  geom_point(size = 2, alpha = .3) + 
+  geom_abline(intercept = 0, slope = 0, color = "blue") +
+  theme(panel.grid.major = element_line(color = "green")) +
+  labs(title = "Car speed vs Model Residuals", 
+       x = "Car Speed (mph)", 
+       y = "Model Residuals") 
+
+```
+
+Using qqnorm to to check if the residuals are nearly normal (exhibit normal distribution).
+
+```{r}
+qqnorm(lm_cars$residuals)
+qqline(lm_cars$residuals)
+
+```
+
+#### We can observe the residuals have near normal distribution though some tails can be observed.
+
+Reviewing further using a histogram:
+
+```{r}
+
+hist(lm_cars$residuals, main="Histogram of Linear model Residuals", xlab="Residuals")
+
+```
+
+There appears to be a modest normal distribution as depicted by the above histogram.
+
+Testing further using inference.
+
+Inference:
+
+#### H0: There is no relationship between speed and stopping distance
+#### HA: There is a positive relationship (correlation) between Speed and stopping distance
+
+Rounding up: A look at the model using the summary() function again.
+
+```{r}
+
+summary(lm_cars)
+
+```
+
+As already noted:
+
+$distance = 8.28391 + 0.16557 * speed$
+
+#### Here, we can reject $H_0$ and accept $H_A$ as the model appears to describe the relationship well since the p-value is close to zero.
+
+#### Every increase in speed, will cause a 0.16557S increase in stopping distance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

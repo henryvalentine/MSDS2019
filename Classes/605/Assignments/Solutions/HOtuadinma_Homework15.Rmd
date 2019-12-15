@@ -1,0 +1,162 @@
+---
+title: "DATA605 Homework 15"
+author: "Henry Otuadinma"
+date: "08/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+#### 1.) Find the equation of the regression line for the given points. Round any final values to the nearest hundredth, if necessary. ( 5.6, 8.8 ), ( 6.3, 12.4 ), ( 7, 14.8 ), ( 7.7, 18.2 ), ( 8.4, 20.8 )
+
+solution
+
+```{r}
+
+x <- c(5.6, 8.8, 6.3, 12.4, 7, 14.8, 7.7, 18.2, 8.4, 20.8)
+
+m <- matrix(x, ncol=2, byrow = T)
+
+
+```
+
+```{r}
+df <- data.frame(m)
+
+(lm_df <- lm(df$X2 ~., df))
+
+
+```
+
+```{r}
+summary(lm_df)
+
+```
+
+```{r}
+ggplot(lm_df, aes(df$X2, df$X1)) + geom_point() + stat_smooth(method="lm")
+
+```
+
+The equation is:
+
+$y = 4.2571x − 14.800$
+
+#### 2.) Find all local maxima, local minima, and saddle points for the function given below. Write your answer(s) in the form ( x, y, z ). Separate multiple points with a comma.
+
+$f(x, y) = 24x - 6xy^2 - 8y^3$
+
+solution:
+
+$\frac{df}{dx} = 24 - 6y^2$
+
+$\frac{df}{dy} = - 12xy - 24y^2$
+
+$\frac{df}{dx} = 24 - 6y^2 = 0 => 4 - y^2 = 0$
+
+$\frac{df}{dx} = -12xy - 24y^2 = 0 => -xy - 2y^2 = 0$
+
+$for(4, -2)f(x, y) = 24 * 4 - 6 * 4 * (-2)^2 - 8(-2)^3 = 64$
+
+$for(4, -2)f(x, y) = 24 * (-4) - (6 * 4 * (-2)^2) - 8(-2)^3 = 64$
+
+=> the saddle points: (-4, 2) 
+
+#### OR
+
+```{r}
+
+xf = function(x,y){
+  f = 24*x - 6*x*y^2 - 8*y^3
+  return(c(x,y,f))
+}
+
+```
+
+```{r}
+
+print(rbind(xf(-4,2),xf(4,-2)))
+
+```
+
+#### 3.) A grocery store sells two brands of a product, the "house" brand and a "name" brand. The manager estimates that if she sells the "house" brand for x dollars and the "name" brand for y dollars, she will be able to sell $81 - 21x + 17y$ units of the "house" brand and $40 + 11x - 23y$ units of the "name" brand.
+
+#### Step 1. Find the revenue function R ( x, y ).
+
+#### Step 2. What is the revenue if she sells the "house" brand for $2.30 and the "name" brand for $4.10?
+
+Solution:
+
+$R(x,y)=x(81−21x+17y)+y(40+11x−23y)$
+ 
+$R(x,y)= −21x^2 + 81x + 28xy + 40y −23y^2$
+
+```{r}
+x <- 2.3
+y <- 4.1
+print(-21 * x^2 + 81 * x + 28 * x * y + 40 * y - 23 * y^2)
+
+```
+
+#### 4. A company has a plant in Los Angeles and a plant in Denver. The firm is committed to produce a total of 96 units of a product each week. The total weekly cost is given by C(x, y) = 1/6 x2 + 1/6 y2 + 7x + 25y + 700, where x is the number of units produced in Los Angeles and y is the number of units produced in Denver. How many units should be produced in each plant to minimize the total weekly cost?
+
+solution:
+
+$x + y = 96$ since $y = 96 − x$ =>
+
+$C(x, y) = x^2 − 50 ∗ x + 4636$
+
+we have $x = 75 => y = 21$
+
+
+#### 5.) Evaluate the double integral on the given region.
+
+$\int{\int{e^{8x + 3y}dA}}; R:2\le x\le 4 \text{ and $2\le y\le 4$}$
+
+Write your answer in exact form without decimals.
+
+solution:
+
+with R =>
+
+```{R}
+
+1/24*((exp(32)+exp(16))*(exp(12) - exp(6)))
+
+```
+
+##### OR
+
+$\int_2^4{\int_2^4{e^{8xe^{3y}}dxdy}}$
+
+$\int{e^{8x}dx}*\int{e^{3y}}dy$
+
+$=\frac{1}{8}e^{8x}|^4_2 * \frac{1}{3}e^{3y}|_2^4$
+
+$=\frac{1}{24}e^{8x}|^4_2 * e^{3y}|^4_2$
+
+$=\frac{1}{24}(e^{32}-e^{16})(e^{12}-e^6)$
+
+=>$A = 534, 156, 100, 000, 000, 000$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

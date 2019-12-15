@@ -1,0 +1,738 @@
+---
+title: "Data605 Final Project"
+author: "Henry Otuadinma"
+date: "12/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(stringr)
+library(kableExtra)
+library(DT)
+library(MASS)
+library(reshape)
+library(ggplot2)
+library(psych)
+library(gridExtra)
+library(scales)
+library(corrplot)
+library(RColorBrewer)
+library(Hmisc)
+library(tidyr)
+```
+
+### Problem 1.
+
+#### Using R, generate a random variable X that has 10,000 random uniform numbers from 1 to N, where N can be any number of your choosing greater than or equal to 6.  Then generate a random variable Y that has 10,000 random normal numbers with a mean of $\mu = \sigma = \frac{(N+1)}{2}$
+
+```{r}
+set.seed(12345)
+
+```
+
+```{r}
+N <- 10
+n <- 10000
+mn <- sigma <- (N + 1)/2
+
+```
+
+
+```{r}
+
+df <- data.frame(X = runif(n, min = 1, max = N), Y = rnorm(n, mean = mn, sd = sigma))
+
+head(df)
+
+```
+
+```{r}
+kable(head(df)) %>% kable_styling(bootstrap_options = "striped", full_width = T, position = "left")
+```
+
+```{r}
+kable(summary(df)) %>% kable_styling(bootstrap_options = "striped", full_width = T, position = "left")
+
+```
+
+```{r}
+
+par(mfrow=c(1, 2)) 
+hist(df$X)
+hist(df$Y)
+
+```
+
+#### Probability.   
+
+##### Calculate as a minimum the below probabilities a through c.  Assume the small letter "x" is estimated as the median of the X variable, and the small letter "y" is estimated as the 1st quartile of the Y variable.  Interpret the meaning of all probabilities.
+
+
+First finding the quartiles:
+```{r}
+(x = quantile(df$X, 0.5))
+
+```
+
+```{r}
+(y = quantile(df$Y, 0.25))
+
+```
+
+##### a. P(X>x | X>y)		
+
+Assuming X = A and B = Y, then the probability of A occurring if B has occurred is denoted by P(A|B). Using the dataframe 'df' from the first step above =>
+
+```{r}
+
+pbx_of_x <- df %>% filter(X > x, X > y) %>% nrow()/n
+
+```
+
+```{r}
+
+pb_of_x <- df %>% filter(X > y) %>% nrow()/n
+
+```
+
+```{r}
+
+(Qnt_x = pbx_of_x/pb_of_x)
+
+```
+Therefore, the probability of A = 5.54 is greater than B = 1.85 is 0.55.
+
+b.  P(X>x, Y>y)		
+
+
+```{r}
+
+(Qnt_b = df %>% filter(X > x, Y > y) %>% nrow()/n)
+
+```
+
+This means that the probablity of A (5.54) being greater than B (1.85) is 0.38.
+
+
+c.  P(X<x | X>y)	
+
+```{r}
+
+pbx_of_x = df %>% filter(X < x, X > y) %>% nrow()/n
+
+pb_of_x = df %>% filter(X > y) %>% nrow()/n
+
+(Qnt_x = pbx_of_x/pb_of_x)
+
+```
+
+#### Investigate whether P(X>x and Y>y) = P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.
+
+
+```{r}
+
+r<-ifelse(df$X>x,"X>x","X<x")
+q <- ifelse(df$Y> y , 'Y>y', 'Y<y')
+
+
+tbl <- table(r,q)
+
+```
+
+```{r}
+
+kable(addmargins(head(tbl)), table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = "striped", full_width = T, position = "left")
+
+```
+
+```{r}
+
+kable(addmargins(prop.table(table(r,q))), table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = c("bordered", 'striped'))
+
+```
+
+
+```{r}
+
+yf <-ifelse(df$X>x & df$Y>y,"X>x &Y>y","not")
+ 
+```
+
+
+```{r}
+
+kable((prop.table(table(yf))), table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = "bordered")
+
+```
+
+##### From the results above, there are no differences between the marginal and joint probabilities.
+
+
+#### Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
+
+```{r}
+chisq.test(t, correct =  T)
+
+```
+
+```{r}
+fisher.test(t, simulate.p.value = T)
+
+```
+
+##### I do not reject the null hypothesis of independence because the p-values for both types of test are high. 
+
+##### The chisq test is for large sample sizes, while fisher’s exact test is for relatively small sample sizes. Therefore, the Chi Square test is most appropriate for this case.
+
+
+### Problem 2
+##### You are to register for Kaggle.com (free) and compete in the House Prices: Advanced Regression Techniques competition. https://www.kaggle.com/c/house-prices-advanced-regression-techniques .  I want you to do the following.
+
+
+### Descriptive and Inferential Statistics: 
+
+#### Provide univariate descriptive statistics and appropriate plots for the training data set. 
+
+
+```{r}
+
+tranData <- read.csv2('train.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
+testData <- read.csv2('test.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
+
+```
+
+ Preview Train data
+
+```{r}
+datatable(head(trainData), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#337ab7', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+ Preview Test data
+
+```{r}
+datatable(head(testData), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#337ab7', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+##### selecting only numeric variables from the training dataframe:
+
+```{r}
+trn_numeric <- trainData[,sapply(trainData, is.numeric)][-1]
+
+```
+
+
+```{r}
+
+kable((describe(trn_numeric)), table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = c("bordered", 'striped', full_width = T))
+
+```
+
+```{r}
+str(trn_numeric)
+```
+
+```{r}
+trn_numeric[, 2:14] %>% tidyr::gather() %>%ggplot(aes(value)) + facet_wrap(~ key, scales = "free") + geom_histogram()
+
+```
+
+
+Further removing variables with large amount of zeros:
+
+```{r}
+df <- trn_numeric[,-c(6,11,16:19)]
+
+```
+
+```{r}
+str(df)
+
+```
+
+
+##### Histograms of 'OverallQual' and 'OverallCond'
+
+```{r}
+qual = ggplot(trn_numeric, aes(trn_numeric$OverallQual)) + geom_bar(col = "#337ab7", 
+    fill = "#337ab7", alpha = 0.6, lwd = 1, na.rm = TRUE, position = "identity") + 
+    labs(title = "Overall quality rating") + labs(x = "Rating")
+
+cond = ggplot(trn_numeric, aes(trn_numeric$OverallCond)) + geom_bar(col = "#337ab7", 
+    fill = "#337ab7", alpha = 0.6, lwd = 1, na.rm = TRUE, position = "identity") + 
+    labs(title = "Overall condition rating") + labs(x = "condition")
+
+grid.arrange(qual, cond, nrow = 1)
+
+```
+
+##### Histograms of 'GrLivArea' and 'LotArea'
+
+```{r}
+grA = ggplot(trn_numeric, aes(trn_numeric$GrLivArea)) + geom_histogram(col = "black", 
+    binwidth = 400, fill = "#337ab7", alpha = 0.7, lwd = 1, na.rm = TRUE, 
+    position = "identity") + labs(title = "Gross Living Area") + labs(x = "Gross Living Area (sqft)") + 
+    theme(plot.title = element_text(size = 12))
+
+lA = ggplot(trn_numeric, aes(trn_numeric$LotArea)) + geom_histogram(col = "#337ab7", 
+    binwidth = 600, fill = "#337ab7", alpha = 0.7, lwd = 1, na.rm = TRUE, 
+    position = "identity") + labs(title = "Lot Area") + 
+    labs(x = "Lot Area(sqft)")
+
+grid.arrange(grA, lA, nrow = 1)
+
+```
+
+
+##### Histogram of Sale Price
+
+```{r}
+
+sP = as.numeric(trn_numeric[,'SalePrice'])
+hist(sP, breaks=35, main = "Histogram of Lot Area", xlab = 'Lot Area (sqf)', ylab = 'Frequency', col= '#337ab7')
+
+
+```
+
+#### Scatterplots
+
+##### GrLivArea vs SalePrice
+
+```{r}
+ggplot(trn_numeric, aes(GrLivArea, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("GrLivArea vs SalePrice") + 
+    xlab("GrLivArea") + ylab("SalePrice") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+##### There are some outliers in the above plot and these are caused by GrLvArea above 5, 000. Removing the outliers and re-ploting below:
+
+```{r}
+
+trn_numeric %>% filter(GrLivArea < 5000) %>% ggplot(aes(GrLivArea, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("GrlivArea vs SalePrice (Excluding outliers > 5, 000)") + 
+    xlab("GrLivArea") + ylab("SalePrice") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+###### LotArea vs SalePrice
+
+```{r}
+
+trn_numeric %>% ggplot(aes(LotArea, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("LotArea vs SalePrice") + 
+    xlab("LotArea") + ylab("SalePrice") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+##### Removing outliers (LotArea > 50, 000) and re-ploting below:
+
+```{r}
+
+trn_numeric %>% filter(LotArea < 50000) %>% ggplot(aes(LotArea, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("LotArea vs Sale price (Excluding outliers > 50, 000)") + 
+    xlab("Gross Living Area") + ylab("Sale Price") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+##### These plots show that we have positive linear relationships between GrLivArea and SalePrice as well as between LotArea and SalePrice if the outliers are removed. In essence, the wider the area in consideration, the higher the price. There are otheer factors that can also determine the price and not necessarily only the size of the area. A smaller area with well organised garage, kitchen, nice swimming pool can have a higher price than one with a larger area but with lesser quality to offer in these factors
+
+###### TotalBsmtSF vs SalePrice
+
+```{r}
+
+trn_numeric %>% ggplot(aes(TotalBsmtSF, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("TotalBsmtSF vs SalePrice") + 
+    xlab("TotalBsmtSF") + ylab("SalePrice") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+##### Removing outliers (TotalBsmtSF >= 4, 000) and re-ploting below:
+
+```{r}
+
+trn_numeric %>% filter(TotalBsmtSF < 4000)%>% ggplot(aes(TotalBsmtSF, SalePrice)) + geom_point(color = "brown4") + geom_smooth(method = "auto", 
+    col = "#337ab7") + ggtitle("TotalBsmtSF vs SalePrice") + 
+    xlab("TotalBsmtSF") + ylab("SalePrice") + scale_x_continuous(labels = comma) + scale_y_continuous(labels = comma)
+
+```
+
+##### This shows there is a also a positive relationship between 'TotalBsmtSF' and 'SalePrice'
+
+
+##### Correlation matrix
+
+##### From the above plots, having considered the relationships betwee GrLivArea and SalePrice, and between TotalBsmtSF and SalePrice, I will also investigate the nature of corelation between these variables with SalePrice and with one another.
+
+```{r}
+
+pd <- trn_numeric[c("SalePrice", "TotalBsmtSF", "GrLivArea")]
+
+```
+
+```{r}
+
+pairs(pd)
+
+```
+
+```{r}
+
+cor_matrix <- cor(pd)
+
+```
+
+```{r}
+
+kable(cor_matrix, table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = c("bordered", 'striped', full_width = T))
+
+```
+
+##### The table of Co-relation matrix above suggests a strong corelation between ‘Saleprice’ and ‘TotalBsmtSF’ with a corelation coefficient of 0.61, as well as between 'SalePrice' and ‘GrLivArea’ with corelation coefficient 0.708. But the corelation between ‘TotalBsmtSF’ and ‘GrLivArea’ is not that strong as the corelation coefficientis 0.45
+
+Visualising
+
+```{r}
+corrplot(cor_matrix, method = "square")
+
+```
+
+##### Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval.  
+
+###### Testing between ‘TotalBsmtSF’ and ‘SalePrice’
+
+```{r}
+
+cor.test(trainData$TotalBsmtSF, trainData$SalePrice, method = "pearson", conf.level = 0.8)
+
+```
+
+###### Testing between ‘GrLivArea’ and ‘SalePrice’
+
+```{r}
+
+cor.test(trainData$GrLivArea, trainData$SalePrice, method = "pearson", conf.level = 0.8)
+
+```
+
+##### Discuss the meaning of your analysis.  
+
+###### For both tests, Correlation between the two variables considered at each point has a small P value of 2.2e-16, implying that the corelation is not 0 (between 0.59 and 0.63, between 0.59 and 0.63, each). Therefore, I am 80% confident that the alternate hypothesis holds
+
+##### Would you be worried about familywise error? Why or why not?
+
+###### The family-wise error is the probability of commiting a type I error that is, rejecting a true null or accepting a false positive. As seen from the analysis above, the P value in each case is extremely small. So I would not be worried about committing type I error.
+
+
+### Linear Algebra and Correlation:  Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix.  
+
+```{r}
+percision_matrix <- solve(cor_matrix)
+percision_matrix
+
+```
+
+```{r}
+cor_matrix %*% percision_matrix
+
+```
+
+```{r}
+percision_matrix%*%cor_matrix
+
+```
+
+```{r}
+library(matrixcalc)
+```
+
+```{r}
+(lu_D <- lu.decomposition(cor_matrix))
+
+```
+
+```{r}
+cor_matrix
+
+```
+
+##### The LU decomposition yielded the correlation matrix after multiplying the percision matrix and correlation matrix as shown above.
+
+### Calculus-Based Probability & Statistics:  
+
+#### Many times, it makes sense to fit a closed form distribution to data.  Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary.  
+
+##### Using the original dataframe
+
+```{r}
+
+msVnA <- na.omit(trainData$MasVnrArea)
+
+```
+
+```{r}
+
+hist(msVnA, breaks=15, main = "Histogram of MasVnrArea", xlab = 'MasVnrArea (sqf)', ylab = 'Frequency', col= '#337ab7')
+
+```
+
+##### MasVnrArea is really right-skewed
+
+##### Calling the min() function on 'MasVnrArea'
+
+```{r}
+
+min(msVnA)
+
+```
+
+
+```{r}
+
+msVnA <- msVnA + 10
+
+summary(msVnA)
+
+```
+
+##### This shows that MasVnrArea need to be shifted since its minimum value is 0.
+
+#### Then load the MASS package and run fitdistr to fit an exponential probability density function.  (See  https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html ). Find the optimal value of $\lambda$ for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, $\lambda$)). 
+
+```{r}
+
+expoFit <- fitdistr(msVnA, densfun = "exponential")
+
+```
+
+```{r}
+
+print(expoFit$estimate)
+
+```
+
+```{r}
+
+ss <- rexp(1000, expoFit$estimate)
+sdf <- data.frame(ss)
+
+```
+
+#### Plot a histogram and compare it with a histogram of your original variable.   
+
+```{r}
+
+par(mfrow=c(1, 2)) 
+hist(msVnA, breaks = 100, col= '#337ab7')
+hist(sdf, breaks = 100, col= '#337ab7')
+
+```
+
+##### The two histograms are similalyr right-skewed with the plot for the simulated samples being more skewed than the original data.
+
+#### Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF).   Also generate a 95% confidence interval from the empirical data, assuming normality.  Finally, provide the empirical 5th percentile and 95th percentile of the data.  Discuss.
+
+```{r}
+
+dx <- dexp(ss, rate = expoFit$estimate)
+
+```
+
+```{r}
+
+dt <- data.frame(ss, dx = dx)
+
+```
+
+```{r}
+
+ggplot(dt, aes(x = ss, y = dx)) + geom_line(lwd = 1, col = "#337ab7") + ggtitle("exponential density of simulated data")
+
+```
+
+```{r}
+dt2 <- data.frame(ss, px = pexp(ss, rate = expoFit$estimate))
+ggplot(dt2, aes(x = ss, y = px)) + geom_line(lwd = 1, col = "#337ab7") + ggtitle("exponential distribution of simulated data")
+
+```
+
+
+##### 5th and 95th percentiles
+
+```{r}
+lmd <- as.numeric(expoFit$estimate)
+(cdf_5 <-  round((-1/lmd)*(log(.95)),2))
+(cdf_95 <-  round(-1/lmd*(log(.05)),2))
+
+```
+
+##### The 5th and 95th percentiles are 5.83 and 340.57 respectively
+
+```{r}
+
+mn_va <- mean(msVnA)
+sd_va <- sd(msVnA)
+n_items <- length(msVnA)
+
+```
+
+```{r}
+(err <- qnorm(0.975)*sd_va/sqrt(n_items))
+(lf <- mn_va - err)
+(rt <- mn_va + err)
+```
+
+##### From the above, the 95% confidence interval falls between 104.372 and 122.998
+
+##### Empirical 5th percentile and 95th percentile of the data:
+
+```{r}
+
+quantile(msVnA, probs=c(.05, .95))
+
+```
+
+
+```{r}
+u <- msVnA[msVnA<100]
+
+v <- msVnA[msVnA>125]
+
+(length(u)+length(v))/length(msVnA)
+
+```
+
+##### Though the Sampled data is more spread out with similar distribution, the Confidence interval for both empirical and simulated data look similar. If an attempt is made to fit a normal distribution in an exponential distributed data, the confidence interval will become narrower. Therefore, we have 95% of the normal data falling outside the confidence interval.
+
+
+### Modeling: 
+
+#### Build some type of multiple regression  model and submit your model to the competition board.  Provide your complete model summary and results with analysis.  Report your Kaggle.com user name and score.
+
+##### I will select some of the variables from the original train data which I think have best relationships with SalePrice:.
+
+```{r}
+
+ft <- lm(trn_numeric$SalePrice ~ trn_numeric$OverallQual + trn_numeric$GrLivArea + trn_numeric$GarageCars + trn_numeric$LotArea + trn_numeric$MasVnrArea + trn_numeric$GarageArea, data=trn_numeric)
+summary(ft)
+
+```
+
+###### This shows that:
+
+$SalePrice = 26407.9835*OverallQual + 42.7900*GrLivArea + 11539*GarageCars + 0.7942*LotArea + 42.3683*MasVnrArea + 30.0438*GarageArea - 92377.6833$
+
+
+```{r}
+
+par(mfrow=c(2,3))
+
+plot(trn_numeric$GarageArea,trn_numeric$SalePrice, col="#1f77b4", main="GarageArea", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$GarageArea), col="#337ab7", lwd=3)
+
+plot(trn_numeric$OverallQual,trn_numeric$SalePrice, col="#26868d", main="OverallQual", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$OverallQual), col="#337ab7", lwd=3)
+
+plot(trn_numeric$GarageCars,trn_numeric$SalePrice, col="#D32F2F", main="GarageCars", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$GarageCars), col="#337ab7", lwd=3)
+
+plot(trn_numeric$GrLivArea,trn_numeric$SalePrice, col="#2e748e", main="GrLivArea", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$GrLivArea), col="#337ab7", lwd=3)
+
+plot(trn_numeric$LotArea,trn_numeric$SalePrice, col="#6acb5c", main="LotArea", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$LotArea), col="#3F51B5", lwd=3)
+
+plot(trn_numeric$MasVnrArea,trn_numeric$SalePrice, col="#1f77b4", main="MasVnrArea", ylab="SalePrice")
+abline(lm(trn_numeric$SalePrice~trn_numeric$MasVnrArea), col="#337ab7", lwd=3)
+
+```
+
+##### Calculating SalePrice using the formular for SalePrice above
+
+```{r}
+#SalePrice <-((26988.854*testData$OverallQual) + (49.573*testData$GrLivArea) +  (11317.522*testData$GarageCars) + (41.478*testData$GarageArea) -98436.050)
+
+```
+
+```{r}
+
+SalePrice <- ((26407.9835*testData$OverallQual) + (42.7900*testData$GrLivArea) + (11539*testData$GarageCars) + (0.7942*testData$LotArea) + (42.3683*testData$MasVnrArea) + (30.0438*testData$GarageArea)  - 92377.6833)
+
+```
+
+```{r}
+
+test_df <-testData[,c("Id","OverallQual","GrLivArea","GarageCars","GarageArea", "LotArea", "MasVnrArea")]
+
+```
+
+```{r}
+datatable(head(test_df), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#337ab7', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+```{r}
+
+ff <- cbind(test_df$Id,SalePrice)
+ff[ff < 0] <- median(SalePrice)
+ff<- data.frame(ff[1:1459,])
+ff[is.na(ff)] <- 0
+colnames(ff)[1] <- "Id"
+```
+
+
+```{r}
+datatable(head(ff), class = 'cell-border stripe', options = list(
+  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#337ab7', 'color': '#fff', 'text-align': 'center !important'});",
+    "$(this.api().table().body()).css({'color': '#000', 'text-align': 'center !important'});",
+    "}")
+))
+
+```
+
+
+```{r}
+
+write.csv(ff, file = 'final_output.csv', quote=FALSE, row.names=FALSE)
+
+```
+
+
+##### First, I chose to go with those variables that has high level of correlation with SalePrice. This decision was informed by the results of the corelation plots above. I have understood from past courses that using a lot of variables in modelling might affect model fitting (either over fitting or under fitting), but using fewer variables does not guaranty excellent result. Therefore proper investigations like using the corelation plots can come in handy when choosing variables. Also, adding or removing the variables while evaluating the statistical significance at each point. I used four of the variables (OverallQual,GrLivArea,GarageCars, GarageArea) and got a 0.78436 score on kaggle. I thought I could improve this so I added , LotArea and MasVnrArea variables to the model. I was told my submission was 1.20957 but that it is not improvement to the original score. I can't really say what that means but I can say that the six scatter plots show linear and normal distribution.
+
+```{r}
+
+knitr::include_graphics('https://raw.githubusercontent.com/raghu74us/DATA-605/master/Final%20Project/score.PNG')
+
+```
+
+
+
+
+
+
+
+

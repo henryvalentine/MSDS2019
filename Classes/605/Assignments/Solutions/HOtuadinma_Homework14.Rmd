@@ -1,0 +1,165 @@
+---
+title: "DATA605 Homework 14"
+author: "Henry Otuadinma"
+date: "01/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### This week, we'll work out some Taylor Series expansions of popular functions.
+1. $f(x) = \frac{1}{(1-x)}$
+2. $f(x) = e^x$
+3. $f(x) = ln(1 + x)$
+
+#### For each function, only consider its valid ranges as indicated in the notes when you are computing the Taylor Series expansion.
+
+Solutions:
+
+From Taylor's series:
+
+$P(x)=f(0)+f′(0)(x)+f′′(0)\frac{x^2}{2!} + f(3)(0)\frac{x^3}{3!}+....+f(n)(0)\frac{x^n}{n!}$
+
+1. $f(x) = \frac{1}{(1-x)}, f(0) = 1$
+  
+  $f^1(x) = \frac{1}{(1-x)^2}, f^1(0) = 1$
+  
+  $f^2(x) = \frac{2}{(1-x)^3}, f^2(0) = 2$
+  
+  $f^3(x) = \frac{6}{(1-x)^4}, f3(0) = 6$
+  
+  $f^4(x) = \frac{24}{(1-x)^5}, f^4(0) = 24$
+  
+  $f^5(x) = \frac{120}{(1-x)^6}, f^5(0) = 120$
+  
+  => $\frac{1}{(1 - x)} = 1 + x + \frac{2x^2}{2!} + \frac{6x^3}{3!} + \frac{24x^4}{4!} + \frac{120x^5}{5!} + ...$
+  $= 1 + x + x^2 + x^3 + x^4 + x^5 + ...$
+
+
+2. $f(x) = e^x$
+  
+   $f(x)=e^x, f(0)=e^0 = 1$
+
+  $f'(x)=ex, f'(0)=e0 = 1$
+
+  $f''(x)=e^x , f''(0)=e^0 = 1$
+
+  $f^{(3)}(x)=e^x , f^{(3)}(0)=e^0 = 1$
+
+  $f^{(4)}(x)=e^x , f(4)(0)=e^0 = 1$
+
+  $f^{(5)}(x)=e^x , f^{(5)}(0)=e^0 = 1$
+
+  $f^{(n)}(x)=e^x , f^{(n)}(0)=e^0 = 1$
+
+  $.$
+  $.$
+  $.$
+
+  $f^{(n)}(x)=e^x , f^{(n)}(0)=e^0 = 1$
+  
+  => $e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \frac{x^5}{5!} ...  + \frac{x^n}{n!}$
+
+
+
+
+3. $f(x) = ln(1 + x)$
+
+setting $u=1+x$ => $\frac{du}{dx}=1 => dx=\frac{1}{u}du$
+
+$f′(x)=\frac{1}{u} *1$
+
+=> $f′(x)=\frac{1}{1+x}$
+
+$f'0(x)=ln(1+x)=0$
+
+$f′0(x)=ln(1+x)=1$
+
+$f′′0(x)=ln(1+x)=−1$
+
+$f^{(3)}0(x)=ln(1+x)=2$
+
+$f^{(4)}0(x)=ln(1+x)=−6$
+
+$f^{(5)}0(x)=ln(1+x)=24$
+
+From Taylor’s Series, this can be represented as: 
+
+$x−\frac{x^2}{2}+\frac{x^3}{3}−\frac{x^4}{4} + \frac{x^5}{5} +...+$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

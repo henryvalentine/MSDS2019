@@ -1,0 +1,70 @@
+---
+title: "DATA605 Homework 10"
+author: "Henry Otuadinma"
+date: "03/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars. A guard agrees to make a series of bets with him. If Smith bets A dollars, he wins A dollars with probability .4 and loses A dollars with probability .6. Find the probability that he wins 8 dollars before losing all of his money if
+
+#### (a) he bets 1 dollar each time (timid strategy).
+
+#### Solution:
+
+probability of loosing A dollars: $q=0.6$; 
+probability of winning A dollars: $p=0.4$; 
+Stake: $s=1$; 
+Absorbing state: $M=8$;
+
+Therefore,
+
+$\frac{q}{p} = \frac {0.6}{0.4}=1.5$
+
+$P=\frac {1−(\frac{q}{p})^s}{1−(\frac{q}{p})^M}$
+=>
+$P=\frac{1−1.5^1}{1−1.5^8}$
+
+
+Simulating this with R while moving from 1 to 8 =>
+
+```{r}
+
+q <- 0.6
+p <- 0.4
+M <- 8
+rt = q/p
+
+for (s in 1:8) 
+  {
+    P = (1 - rt^s)/(1-rt^M)
+    print(paste0("stake: " ,s," Probabilty:  ", P))
+}
+
+```
+
+
+(b) he bets, each time, as much as possible but not more than necessary to bring his fortune up to 8 dollars (bold strategy).
+
+#### Solution: 
+#### Whenever he bets A dollars, he is bound to either lose or make additional A dollars. Moreover, since he is bold enough to stake all his earnings at each round, he has to win or he will be left with nothing. Assuming he wins each round up to the 8th dollar, it then implies his income grows in the following sequence: 1, 2, 4, 8. He must win three consecutive rounds with a probability p = 0.4 starting with $1. 
+
+Therefore, from the Binomial Distribution, we have that:
+
+
+```{r}
+(P <- 0.4^3)
+```
+
+
+(c) Which strategy gives Smith the better chance of getting out of jail?
+
+
+#### The probability of bold strategy provides him with a better chance because he could more than triple his winning chances with this strategy.
+
+
+
+

@@ -1,0 +1,144 @@
+---
+title: "DATA605 Homework 9"
+author: "Henry Otuadinma"
+date: "25/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 1 The price of one share of stock in the Pilsdorff Beer Company (see Exercise 8.2.12) is given by Yn on the nth day of the year. Finn observes that the differences $X_n = Y_n+1 − Y_n$ appear to be independent random variables with a common distribution having mean $\sigma = 0$ and variance $\sigma^2 = \frac{1}{4}$. If $Y_1 = 100$, estimate the probability that $Y_{365}$ is
+
+##### (a) $\ge 100$.
+##### (b) $\ge 110$.
+##### (c) $\ge 120$.
+
+
+#### Solution
+
+##### at $ Y \ge 100$
+
+```{r}
+
+x <- 100
+num_of_days <- 365
+n <- num_of_days - 1
+init_mean <- 0
+y_1 <- 100
+meanY <- init_mean + y_1
+Var_X <- 0.25 * n
+stdev <- sqrt(Var_X)
+
+pnorm(x, meanY, stdev, lower.tail = F)
+
+```
+
+##### (b) $\ge 110$.
+
+```{r}
+
+pnorm(110, meanY, stdev, lower.tail = F)
+
+```
+
+##### (c) $\ge 120$.
+
+```{r}
+
+pnorm(120, meanY, stdev, lower.tail = F)
+
+```
+
+### 2. Calculate the expected value and variance of the binomial distribution using the moment generating function.
+
+#### Solution
+
+The binomial exponential function is given as: $(_n^k)p^k(1-p^{n-k})$
+
+Moment generating function($M_X$): $M_X(t)=\sum ^n_{j=1}(^n_k)p^k(1−p)^{n−k}e{tj}= (1−p+pe^t)n$
+
+=> $M_X′(t)=npe^t(1−p+pe^t)^{n−1}$
+
+$\mu_1=g′(0)=npe^0(1−p+pe^0){n−1}=np$
+
+=> $M_X′′(t)=npe^t(1−p+pe^t)^{n−1}(1−p+npe^t)$ => $\mu_2=M_X′′(0)=npe^0(1−p+pe^0)^{n−1}(1−p+npe^0)=np(1−p+np)$
+
+The expected value: $\mu=\mu_1=np$
+For the variance ($\mu$):  $\mu_2−μ^2_1=np(1−p+np)−np^2$
+
+Therefore, $\mu = np(1−p)$
+
+
+#### 3. Calculate the expected value and variance of the exponential distribution using the moment generating function.
+
+##### Solution
+
+The exponential distribution function is given as:
+$f(x)= \lambda e^{−\lambda x}$
+
+so, $M_X(t)=E(e^{tx})=\int ^∞_0e^{tx}f(x)dx$
+
+=> $M_X(t)=E(e^{tx})=\int ^∞_0e^{tx}λe^{−λx}dx$
+
+=> $M_X(t) = \lambda \int^∞_0e^{tx}e^{−λx}dx$
+
+=> $M_X(t) = \lambda \int^∞_0e^{(t−λ)x}dx$
+
+=> $M_X(t)=\lambda \int ^∞_0e^{(t−λ)x}dx$
+
+Therefore, the moment generating function is: $M_X(t)=\frac {\lambda}{t−λ}$
+
+=> $M_X'(0) = E(x)= \frac {\lambda}{(1-\lambda)^2} = \frac{1}{\lambda}$: The first moment
+
+$M_X''(0) = E(x)^2= \frac {-2\lambda}{(1-\lambda)^3} = \frac{1}{\lambda}$ : The second moment
+
+=> $V(X)=E(X^2)−E(X)^2=\frac{−2\lambda}{(t−λ)}^3−\frac{1}{\lambda^2}=\frac{1}{\lambda^2}$
+
+Therefore, the variance (V(X)) of the exponential distribution: $V(X)=\frac{1}{\lambda^2}$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

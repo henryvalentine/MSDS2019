@@ -1,0 +1,180 @@
+---
+title: "DATA605 Homework 4"
+author: "Henry Otuadinma"
+date: "22/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pracma)
+```
+
+## 1. Problem Set 1
+In this problem, we'll verify using R that SVD and Eigenvalues are related as worked
+out in the weekly module. Given a 3 x 2 matrix A
+```{r}
+(A = matrix(c(1,2,3,-1,0,4), nrow=2, ncol=3, byrow=TRUE))
+```
+
+
+write code in R to compute $X = AA^T and Y = A^TA$. Then, compute the eigenvalues and eigenvectors of X and Y using the built-in commans in R. Then, compute the left-singular, singular values, and right-singular vectors of A using the svd command. Examine the two sets of singular vectors and show that they are indeed eigenvectors of X and Y. In addition, the two non-zero eigenvalues (the 3rd value will be very close to zero, if not zero) of both X and Y are the same and are squares of the non-zero singular values of A.
+
+#### solution
+
+```{r}
+#I will use the built-in SVD function
+(svd <- svd(A, nu=nrow(A), nv=ncol(A))) #SVD for matrix A
+
+```
+
+
+```{r}
+(d <- as.matrix(diag(svd$d, nrow=nrow(A), ncol=ncol(A)))) #singular values
+
+```
+
+```{r}
+(u <- as.matrix(A_svd$u)) #Left singular vectors => the rows
+
+```
+
+```{r}
+(v <- as.matrix(A_svd$v)) #The left singular vectors => the columns
+```
+
+
+```{r}
+(AT <- A %*% t(A)) #multiplying matrix A by its Transpose
+
+```
+
+```{r}
+
+(eigen_A <- eigen(AT)) #Eigen 
+
+```
+
+
+```{r}
+(x <- as.matrix(eigen_A$vectors)) #Eigen vectors
+
+```
+
+```{r}
+(y <- eigen_A$values) #Eigen values
+
+```
+
+#### The square root of the eigenvalues y mirror the singular values from the the SVD (d) of matrix A.
+```{r}
+
+diag(sqrt(y), nrow=nrow(A), ncol=ncol(A))
+
+d #SVD of matrix A
+```
+
+Repeating the above steps For $A^TA$
+
+```{r}
+(TA <- t(A)%*% A)
+
+```
+
+```{r}
+(l <- eigen(TA))
+
+```
+
+```{r}
+
+(r <- as.matrix(l$vectors))
+
+```
+
+```{r}
+(v <- l$values)
+
+```
+
+### Problem set 2
+Using the procedure outlined in section 1 of the weekly handout, write a function to compute the inverse of a well-conditioned full-rank square matrix using co-factors. In order to compute the co-factors, you may use built-in commands to compute the determinant. Your function should have the following signature: B = myinverse(A) where A is a matrix and B is its inverse and AxB = I. The off-diagonal elements of I should be close to zero, if not zero. Likewise, the diagonal elements should be close to 1, if not 1. Small numerical precision errors are acceptable but the function myinverse should be correct and must use co-factors and determinant of A to compute the inverse.
+
+#### Assuming the given matrix can be inverted and is a square matrix, then i try to use the functions below to compute the inverse of the matrix using co-factors
+
+####compute cofactors using nested for-loop
+```{r}
+
+compute_cf <- function(A) 
+  {
+  cf <- A
+  for(i in 1:nrow(A)){
+    for(j in 1:ncol(A)){
+      cf[i,j] <- (det(A[-i,-j])*(-1)^(i+j)) 
+    }
+  }
+  return(cf)
+}
+
+```
+
+#compute the inverse of invertible square matrix
+
+```{r}
+
+invert <- function(A)
+{
+  cf_A <- compute_cf(A) #compute co-factor
+  t_cf_A <- t(cf_A) #Transpose of the computed co-factor
+  detA <- det(A) #get determinant of A
+  return(t_cf_A/detA)
+}
+
+```
+
+####Test the functions
+
+```{r}
+
+
+(A <- matrix(c(0,0,1,2,-1,3,1,1,4),3,3))
+
+```
+
+
+```{r}
+(inv_A <- invert(A))
+
+```
+
+####Check if inverse of A * A gives an identity matrix
+
+```{r}
+
+inv_A %*% A
+
+```
+
+#### Verification
+
+```{r}
+
+round(inv_A, 4) == round(solve(A), 4)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

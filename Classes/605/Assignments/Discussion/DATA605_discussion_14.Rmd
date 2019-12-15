@@ -1,0 +1,69 @@
+---
+title: "DATA605 Discussion 14"
+author: "Henry Otuadinma"
+date: "01/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pracma)
+```
+
+#### Key Idea 8.8.1 gives the nth term of the Taylor series of common functins. In Exercises 3 – 6, verify the formula given in the Key Idea by finding the first few terms of the Taylor series of the given function and identifying a pattern.
+
+5.$f(x) = \frac{1}{1-x)}; c = 0$
+
+
+```{r}
+x = function(x) {1/(1-x)}
+
+c = 0
+n = 8
+
+taylor(x, c, n)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

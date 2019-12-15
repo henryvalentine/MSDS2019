@@ -1,0 +1,233 @@
+---
+title: "DATA605 Homework 7"
+author: "Henry Otuadinma"
+date: "11/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 1. Let X1, X2, . . . , Xn be n mutually independent random variables, each of which is uniformly distributed on the integers from 1 to k. Let Y denote the minimum of the Xi’s. Find the distribution of Y .
+
+#### Answer:
+
+The minimum of the Xi's (X1, X2, . . . , Xn) is denoted by Y, and each is uniformly distributed from 1 to k => each can be assumed to have k possibilities, therefore to find the distribution function P(X=m) of Y, I have to:
+- deduce the number of possible ways to assign the Xi's to the values between m and k with at least one Xi being assigned to m
+- And deduce the total number of combinations to assign the Xi's to values between 1 and k, that is, kn.
+
+$k^n = $ Total combinations. 
+$(k−1)^n  =  $ combinations where none of the Xi's is equal to 1.
+
+=>  $ P(X=1) = \frac{k^n−(k−1)^n}{k^n}$
+
+Similarly:
+
+$P(X=2) = \frac{(k−2+1)^n−(k−2)^n}{k^n}$
+
+$P(X=3) = \frac{(k−3+1)^n−(k−3)^n}{k^n}$
+
+Generalizing this steps for the distribution function (X=m), then:
+
+$P(X=m) = \frac{(k−m+1)^n−(k−m)^n}{k^n}$
+
+#### SIMULATION
+
+##### I am going to make plots to compare simulated and Theoretical Distributions of Y using 100, 000 trials
+
+```{r}
+
+sim <- function(k,n,trials=100000) {
+  Y<-rep(0,trials)
+  for (i in 1:trials) {
+    x<-sample.int(k,size=n,replace=TRUE)
+    Y[i]<-min(x)
+  }
+  return(Y)
+}
+
+```
+
+
+##### first run at k = 100, and n = 20
+```{r}
+
+par(mfrow=c(1,2))
+k<-100
+n<-20
+hist(sim(k,n),breaks=60,main=paste("Simulated: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+pY<-((k-1:k+1)^n-(k-1:k)^n)/k^n
+barplot(pY,main=paste("Theoretical: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+
+```
+
+##### Second run at k = 100, and n = 5
+```{r}
+par(mfrow=c(1,2))
+k<-100
+n<-5
+hist(sim(k,n),breaks=60,main=paste("Simulated: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+pY<-((k-1:k+1)^n-(k-1:k)^n)/k^n
+barplot(pY,main=paste("Theoretical: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+
+```
+
+##### Third run at k = 100, and n = 5
+
+```{r}
+
+par(mfrow=c(1,2))
+k<-20
+n<-5
+hist(sim(k,n),breaks=60,main=paste("Simulated: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+pY<-((k-1:k+1)^n-(k-1:k)^n)/k^n
+barplot(pY,main=paste("Theoretical: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+
+```
+
+##### Fourth run at k = 100, and n = 5
+```{r}
+
+par(mfrow=c(1,2))
+k<-20
+n<-100
+hist(sim(k,n),breaks=60,main=paste("Simulated: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+pY<-((k-1:k+1)^n-(k-1:k)^n)/k^n
+barplot(pY,main=paste("Theoretical: k=",k," and n=",n,sep=""),xlab="Y",xlim=c(1,k))
+
+```
+
+### 2. Your organization owns a copier (future lawyers, etc.) or MRI (future doctors). This machine has a manufacturer’s expected lifetime of 10 years. This means that we expect one failure every ten years. (Include the probability statements and R Code for each part.).
+
+#### a. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a geometric. (Hint: the probability is equivalent to not failing during the first 8 years..)
+
+##### Solution
+
+This is a geometric distribution. 
+
+Since one failure occurs every ten years => $p=0.1 => q =1−p=0.9$ 
+
+##### In probability distributions, a failure is considered a success.
+
+$F_x(k) = P(X≤k)=1−q^{k+1}$: k = number of failures before the first success. In other words, 
+$P(X>k)=1−P(X≤k)=1−(1−q^{k+1})=qk+1$. 
+When k=8 => $P(X>8)=0.9^9 = 0.3874$.
+
+Using R geometric distribution function
+
+```{r}
+pgeom(8, 0.1, lower.tail=FALSE)
+```
+
+Therefore, The expected number of years before the first failure is $E(X)=\frac{q}{p}=\frac{0.9}{0.1}=9years$
+
+Standard deviation $\sigma^2=\sqrt{\frac{q}{p^2}} = \sqrt{\frac{0.9}{0.12}} \approx{9.4868}$
+
+
+#### b. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as an exponential.
+
+##### Solution
+
+For the exponential distribution, CDF:
+
+$FX(k)=P(X≤k)=1−e^{−λk}$, where λ = the rate parameter. 
+We are given that λ=0.1 =>  $P(X>k)=1−P(X≤k)=1−(1−e^{−λk})=e^{−λk}$
+When k=8 => $P(X>8)=e^{−0.8} \approx{0.4493}$
+This can also be verified with R as follows:
+
+```{r}
+pexp(8, 0.1, lower.tail=FALSE)
+
+```
+
+Therefore expected value: $E(X)=\frac{1}{λ}=\frac{1}{0.1}=10$.
+
+Standard deviation: $\sigma^2=\sqrt{\frac{1}{λ^2}} = \frac{1}{λ}=10$.
+
+#### c. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8 years)
+
+##### Solution
+
+##### This is a binomial distribution.
+Therefore, $P(X=k)=\binom{n}{k}p^kq^{n−k}$. 
+As noted before, the Probability of a failure after 8 years = the probability of 0 successes after 8 trials. 
+When k=0 and n=8 =>  $P(X=0)=\binom{8}{0}0.1^0×0.9^{8−0}=1×1×0.9^8 = 0.4305$
+
+The expected value E(X) and \sigma will depend on number of years tracked. 
+
+For the first 8 years:
+
+$E(X)=np=8×0.1=0.8$
+
+Then
+
+$\sigma = \sqrt{npq} = \sqrt{8×0.1×0.9} = 0.8485$.
+
+
+#### d. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a Poisson.
+
+
+##### Solution
+
+##### This is a Poisson distribution
+
+Since average number of failures in every 10 years is 1 so average number of failures in 8 years will be:
+
+$λ=\frac{8}{10}=0.8$
+
+Let X = failures in 8 years. 
+The probability of 0 failures in 8 years will be =>
+
+$P(X=0)=(\frac{λ^k}{k!}).e^{−λ} = (\frac{0.8^0}{0!}).e^{−0.8}=e^{−0.8}$
+
+=> $P(X=0)=0.4493$
+
+```{r}
+ppois(0,0.1,lower.tail=TRUE)^8
+
+```
+
+E(X): $λ=0.8$
+
+$\sigma = \sqrt{0.8} = 0.8944$ failures
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

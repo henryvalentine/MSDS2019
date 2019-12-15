@@ -1,0 +1,155 @@
+---
+title: "DATA605 Homework 5"
+author: "Henry Otuadinma"
+date: "29/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Choose independently two numbers B and C at random from the interval [0, 1] with uniform density. Prove that B and C are proper probability distributions. 
+
+#### Solution
+
+#### B and C are proper probability distributions because they have 100% chance of being continuously distributed in between [0,1] while both of them combined, that is, B+C, have a 100% chance of falling between [0,2]. Probability distribution can be simulated with large number of trials so as to ensure accuracy as much as possible. Therefore, I would try to simulate this using R:
+
+```{r}
+#creating a 100, 000 pair for both B and C
+B <- runif(100000)
+C <- runif(100000)
+
+```
+
+#### Note that the point (B,C) is then chosen at random in the unit square. Find the probability that:
+
+### (a) B + C < 1/2.
+
+```{r}
+t = 0
+for(k in 1:length(B))
+{
+  if((B[k]+C[k]) < 0.5)
+  {
+    t = t + 1;
+  }
+}
+
+lB <- length(B)
+print(paste("The Probabilty B+C < 1/2 =", round(t/lB, 3)))
+
+```
+
+
+#### (b) BC < 1/2.
+
+```{r}
+
+t = 0
+for(k in 1:length(B))
+{
+  if((B[k]*C[k]) < 0.5)
+  {
+    t = t + 1;
+  }
+}
+
+print(paste("The Probabilty that BC < 1/2 =", round(t/lB, 3)))
+
+```
+
+
+
+
+#### (c) |B − C| < 1/2.
+
+
+```{r}
+
+t = 0
+for(k in 1:length(B))
+{
+  if(abs((B[k]-C[k])) < 0.5)
+  {
+    t = t + 1;
+  }
+}
+
+print(paste("The Probabilty that |B-C| < 1/2 =", round(t/lB, 4)))
+
+```
+
+
+
+
+#### (d) max{B,C} < 1/2.
+
+```{r}
+
+t = 0
+for(k in 1:length(B))
+{
+  if(max(c(B[k],C[k])) < 0.5)
+  {
+    t = t + 1;
+  }
+}
+
+print(paste("The Probabilty that max(B,C) < 1/2 =", round(t/lB, 4)))
+
+```
+
+
+
+#### (e) min{B,C} < 1/2.
+
+```{r}
+
+t = 0
+for(k in 1:length(B))
+{
+  if(min(c(B[k],C[k])) < 0.5)
+  {
+    t = t + 1;
+  }
+}
+
+print(paste("The Probabilty that min(B,C) < 1/2 =", round(t/lB, 4)))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

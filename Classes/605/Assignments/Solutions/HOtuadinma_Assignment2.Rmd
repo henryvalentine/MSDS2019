@@ -1,0 +1,164 @@
+---
+title: "DATA605 Homework 2"
+author: "Henry Otuadinma"
+date: "08/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Problem set 1
+(1) Show that AT*A != A*AT in general. (Proof and demonstration.)
+
+```{r}
+
+(A <- matrix(c(3,2,1,4,3,1,-4,2,-5), nrow=3, byrow=TRUE))
+
+```
+
+```{r}
+#A Transpose
+(At <- t(A))
+
+```
+
+
+```{r}
+
+A%*%At
+
+```
+
+
+```{r}
+
+At%*%A
+
+```
+
+
+### To check for the given condition using logical evaluation
+```{r}
+
+A %*% At == At %*% A
+
+```
+#### This shows that A*At != At*A
+
+
+### (2) For a special type of square matrix A, we get AT*A = A*AT . Under what conditions
+could this be true? (Hint: The Identity matrix I is an example of such a matrix).
+
+### Answer
+#### We get AT*A = A*AT for a square matrix A if A is symmetrical along the diagonal. This implies that multiplying a matrix A by its transpose AT is like multiplying the matrix by itself.
+
+for instance:
+
+```{r}
+
+(A <- matrix(c(1,2,0,2,1,0,0,0,1), nrow=3, byrow=TRUE))
+
+```
+
+AT will then be
+
+```{r}
+
+(At <- t(A))
+
+```
+
+Checking the statement above:
+
+```{r}
+
+A == At
+
+```
+
+
+```{r}
+
+A %*% At == At %*% A
+
+```
+
+
+### 2. Problem set 2
+#Matrix factorization is a very important problem. There are supercomputers built just to do matrix factorizations. Every second you are on an airplane, matrices are being factorized. Radars that track fights use a technique called Kalman filtering. At the heart of Kalman Filtering is a Matrix Factorization operation. Kalman Filters are solving linear systems of equations when they track your fight using radars. Write an R function to factorize a square matrix A into LU or LDU, whichever you prefer
+
+#### Solution:
+Choosing the LU version => 
+
+```{r}
+luDecomposer <- function(A) 
+{
+  # if A is not a square matrix, return null
+  if (dim(A)[1]!=dim(A)[2]) 
+  {
+    return(NULL)
+  }
+  
+  M <- A
+  dimOfA <- dim(A)[1]
+  diagA <- diag(dimOfA)
+  
+  if (dimOfA == 1) 
+  {
+    return(list(diagA, M))
+  }
+  
+  #Using a nested for-loop
+  for(a in 2:dimOfA)
+  {
+    for(b in 1:(a-1)) 
+    {
+      mx <- (-M[a,b] / M[b,b]) #devicing a multiplier
+      M[a, ] <- mx * M[b, ] + M[a, ]
+      diagA[a,b] <- -mx
+    }
+  }
+  return(list(diagA,M))
+}
+
+```
+
+
+#### Verifications
+
+```{r}
+
+(A <- matrix(c(4,1,1,1,1,2,5,4,3), nrow=3, byrow=TRUE))
+
+```
+
+
+```{r}
+
+luD <- luDecomposer(A)
+
+```
+
+
+```{r}
+(l<-luD[[1]])
+
+```
+
+```{r}
+
+(u<-luD[[2]])
+
+```
+
+How did it fare?
+
+```{r}
+A == l %*% u
+
+```
+
+
+

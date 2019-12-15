@@ -1,0 +1,125 @@
+---
+title: "DATA605 Discussion 9"
+author: "Henry Otuadinma"
+date: "27/10/2019"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#### 14 A restaurant feeds 400 customers per day. On the average 20 percent of the customers order apple pie. 
+
+####(a) Give a range (called a 95 percent confidence interval) for the number of pieces of apple pie ordered on a given day such that you can be 95 percent sure that the actual number will fall in this range. 
+
+##### Solution
+
+```{r}
+
+customers=400
+order_pie = 0.2 
+others = 0.8
+(mean_con <- customers*order_pie)
+
+```
+
+```{r}
+
+(stdev = sqrt((order_pie*others)/customers))
+
+```
+
+#95% confidence interval
+
+```{r}
+
+(conf_interval = 1.96 * stdev)
+
+```
+
+Compute the Lower Limit
+
+```{r}
+
+(lm = order_pie - conf_interval)
+
+```
+
+Comput Upper Limit
+
+```{r}
+
+(ul= order_pie + conf_interval)
+
+```
+
+Lower limit on number of customers
+
+```{r}
+
+(l = customers * lm)
+
+```
+
+Upper limit on number of customers
+
+```{r}
+
+(u = customers * ul)
+
+```
+
+Therefore, the 95% confidence interval is: (64.32 , 95.68 )
+
+
+#### (b) How many customers must the restaurant have, on the average, to be at least 95 percent sure that the number of customers ordering pie on that day falls in the 19 to 21 percent range?
+
+##### Solution
+
+```{r}
+l1=.19
+order_pie = 0.2
+others = 0.8
+stdev = (order_pie -l1)/2
+
+customers = (order_pie*others)/ stdev^2
+
+paste0('The restaurant must have ', round(customers, 0), ' customers')
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

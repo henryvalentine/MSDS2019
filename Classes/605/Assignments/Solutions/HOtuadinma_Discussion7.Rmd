@@ -1,0 +1,23 @@
+---
+title: "DATA605 Discussion 7"
+author: "Henry Otuadinma"
+date: "13/10/2019"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 22 Assume that we are making raisin cookies. We put a box of 600 raisins into our dough mix, mix up the dough, then make from the dough 500 cookies. We then ask for the probability that a randomly chosen cookie will have 0, 1, 2, . . . raisins. Consider the cookies as trials in an experiment, and let X be the random variable which gives the number of raisins in a given cookie. Then we can regard the number of raisins in a cookie as the result of n = 600 independent trials with probability p = 1/500 for success on each trial. Since n is large and p is small, we can use the Poisson approximation with λ = 600(1/500) = 1.2. Determine the probability that a given cookie will have at least five raisins.
+
+
+#### Solution
+
+Poisson approximation is given as $P(X=k) \approx(\frac{λ^k}{k!}).e^{−λ}$
+
+Also, Poisson distribution tends to infinity so I have to find the complement of the probability that a given cookie will have less than 5 raisins =>
+
+$P(X>=5)=1−P(X<5)=1−(\frac{1.2^4}{4!}.e^{−1.2})+(\frac{1.2^3}{3!}.e^{−1.2})+(\frac{1.2^2}{2!}.e^{−1.2})+(\frac{1.2^1}{1!}.e^{−1.2})+(\frac{1.2^0}{0!}.e^{−1.2}) \approx 1−0.9922542 \approx 0.0077458$

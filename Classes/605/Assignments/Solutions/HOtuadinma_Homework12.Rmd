@@ -1,0 +1,251 @@
+---
+title: "DATA605 Homework 12"
+author: "Henry Otuadinma"
+date: "17/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+### The attached who.csv dataset contains real-world data from 2008. The variables included follow.
+
+#### Country: name of the country
+#### LifeExp: average life expectancy for the country in years
+#### InfantSurvival: proportion of those surviving to one year or more
+#### Under5Survival: proportion of those surviving to five years or more
+#### TBFree: proportion of the population without TB.
+#### PropMD: proportion of the population who are MDs
+#### PropRN: proportion of the population who are RNs
+#### PersExp: mean personal expenditures on healthcare in US dollars at average exchange rate
+#### GovtExp: mean government expenditures per capita on healthcare, US dollars at average exchange rate
+#### TotExp: sum of personal and government expenditures.
+
+#### 1. Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss whether the assumptions of simple linear regression met.
+
+```{r}
+
+data <- read.csv("who.csv", header = TRUE, stringsAsFactors = FALSE)
+
+```
+
+```{r}
+
+str(data)
+
+```
+
+```{r}
+head(data)
+
+```
+
+
+```{r}
+
+(linear_model <- lm(data$LifeExp ~ data$TotExp))
+
+```
+
+```{r}
+
+summary(linear_model)
+
+```
+
+We us the F-test to compare the fits of different linear models.
+
+To check the significance of the above f-statistics =>
+
+```{r}
+
+qf(0.05, 1, 188)
+
+```
+
+##### From the linear model, the F-statistic of 65.26 for 1 regression degree of freedom and 120 residual degree of freedom is greater than the significance value check (0.003942653), it then implies that there is a significance as per the model’s paramaters, thereby i can be confident about the linear relation in the R2 value. Also, the results can be said to be significant as  depicted by the small p-value obtained. The data doesn’t look linear as the R^2 value is small, therefore, the model fitting is not that satisfactory.
+
+##### From the plot below, we can see that the residuals don't appear to be normal.
+
+```{r}
+
+plot(data=data, linear_model$residuals~TotExp)
+
+```
+
+
+#### 2. Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06 power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is "better?"
+
+##### Create two new columns LifeExp^4.6 and TotExp^4.6
+
+```{r}
+
+data$LifeExp4.6 <- (data$LifeExp)^4.6
+
+data$TotExp0.06 <- (data$TotExp)^0.06
+
+```
+
+
+```{r}
+plot(data$TotExp0.06, data$LifeExp4.6, xlab = "Total Expenditures * exp(0.06)", ylab = "Life Expectancy * exp(4.6)")
+
+```
+
+##### Running a simple linear regression
+
+```{r}
+
+(linear_m <- lm(LifeExp4.6 ~ TotExp0.06, data = data))
+
+```
+
+
+```{r}
+summary(linear_m)
+
+```
+
+##### The transformed model haas a better p-value, F-statistic of 507.7 at the same dgree of freedom as the first model. Also, the R^2 is much better. With a considerably smaller standard error which is a reasonably small percentage of the coefficient, I can say that the second model is much better than the first one.
+
+
+#### 3. Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life expectancy when TotExp^.06=2.5.
+
+##### This can be done with a generic function that can handle both forecaste by receiving appropriate paramtet 'TotExp'.
+
+##### From question 3, the model is:
+$LifeExp= −736527910 + 620060216 ∗ TotExp^0.06$
+
+```{r}
+
+tr <- function(totexp) 
+  {
+  (-736527910 + (620060216 * totexp))^(1/4.6)
+}
+
+```
+
+at TotExp^0.6 = 1.5 =>
+
+```{r}
+tr(1.5)
+
+```
+
+at TotExp^0.6 = 2.5 =>
+
+```{r}
+
+tr(2.5)
+
+```
+
+
+#### 4. Build the following multiple regression model and interpret the F Statistics, R^2, standard error, and p-values. How good is the model?
+
+$LifeExp = b0+b1 * PropMd + b2 * TotExp + b3 * PropMD * TotExp$
+
+
+```{r}
+
+(multi_lm <- lm(data$LifeExp4.6 ~ data$PropMD + data$TotExp0.06 + data$PropMD:data$TotExp0.06))
+
+```
+
+
+```{r}
+
+summary(multi_lm)
+
+```
+
+```{r}
+
+multi_lm$coefficients
+
+```
+
+
+##### For 3 regression degrees of freedom and 120 residual degrees of freedom, we obtained an F-statistic values of 180.3 which is higher than what was obtained previously. The models p-value is strong for the model and and other variables except for PropMD x TotExp0.06. The R^2 value is also quite good.
+
+
+#### 5. Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why or why not?
+
+using:
+
+$LifeExp4.6=−724418697+(47273338389∗PropMD)+(604795792∗TotExp0.06)−(21214671638∗PropMD∗TotExp0.06)$
+
+
+```{r}
+
+tr_multi <- function(propmd, totexp) 
+  {
+    (-724418697 + (47273338389 * propmd) + (604795792 * totexp) - (21214671638 * propmd * totexp))^(1/4.6)
+  }
+
+```
+
+
+```{r}
+
+tr_multi(0.03, 14^0.06)
+
+```
+
+
+
+##### Looking overall on the predictions, the proportion of PropMD used agrees with a few of the outlying data points. THe larger chunk of the data points are between 0.000 and 0.005 while two outliers around 0.325 and 0.035 if  PropMD is plotted against Life Expectancy. I am of the opinio that this forecast is not realistic because the values being being predicted are well largely out of range for a very larger percentage of the observations, just as Total Expenditure lies near the bottom part of the value range.
+
+
+```{r}
+
+plot(data$PropMD, data$LifeExp, xlab = "Proportion of MDs", ylab = "Life Expectancy")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

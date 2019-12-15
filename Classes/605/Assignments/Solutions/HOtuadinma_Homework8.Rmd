@@ -1,0 +1,111 @@
+---
+title: "DATA605 Homework 8"
+author: "Henry Otuadinma"
+date: "20/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 11 A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out? (See Exercise 10.)
+
+#### Solution:
+
+Given that:
+
+Exponential lifetime = 1000 hours and n = 100 (number of lightbulbs)
+
+From Exercise 10, for n independent random variables that have an exponential density and mean μ, the minimum value M is exponential density with a mean as $\frac{μ}{n}$.
+
+For any of the bulbs i, let $X_i$ = its independent random variable
+=> $E[X_i]=\frac{1}{\lambda_i}=1000$ = the lifetime expectancy of bulb i. 
+
+$\lambda_i=\frac{1}{1000}$
+
+Also, we have $min{X_1,X_2,...,X_100} \sim exponential(\sum _{i=1} ^ {100} \lambda_i)$ because $X_i$ is given as exponential
+
+=> $\sum_{i=1} ^ {100} \lambda_i=100×\frac{1}{1000}=\frac{1}{10}$
+
+=> $E[minXi]= \frac{1}{\frac{1}{10}}  = \frac{10}{1}=10 hours$
+
+
+### 14 Assume that X1 and X2 are independent random variables, each having an exponential density with parameter λ. 
+Show that $Z = X_1 − X_2$ has density $f_Z(z) = (\frac{1}{2})e^{−\lambda|z|}$
+
+#### Solution
+
+First,  
+
+$f(x_1)=\lambda e^{−\lambda x_1}$
+$f(x_2)=\lambda e^{−\lambda x_2}$
+
+can be used to compute the pdf for the variables $X_1$ and $X_2$
+
+=> $\lambda e^{−\lambda x_1}* \lambda e^{−λ_{x2}} = \lambda ^2e^{−\lambda(x_1+x_2)}$
+
+Since $Z=X_1−X_2$ => $x_1=z+x_2$
+
+Substituting the above, we can get the joint density of Z and $X_2$ as $\lambda ^2 e^{−\lambda((z+x_2)+x_2)} = \lambda ^2 e^{−\lambda(z+2x_2)}$.
+
+From Z as shown above, x2=x1−z
+=> when z is negative, $x_2 \gt -z$;
+if z is positive, $x_2$ will also be positive
+
+Therefore, if z is negative => $\int^∞_−z λ^2 e^{−\lambda (z+2x_2)}dx =\frac {\lambda}{2} e^{\lambda z}$
+
+When z is positive, => $\int ^∞_0 \frac{\lambda}{2}e^{−\lambda(z+2x_2)}dx=\frac{\lambda}{2}e^{−\lambda |z|}$.
+
+=> $f_Z(z)=\frac{1}{2}\lambda e^{λ|z|}$
+
+
+### 1 on page 320-321
+Let X be a continuous random variable with mean μ = 10 and variance $\sigma ^2 = \frac{100}{3}$. Using Chebyshev’s Inequality, find an upper bound for the
+following probabilities.
+
+(a) $P(|X − 10| \geq 2)$
+(b) $P(|X − 10| \geq 5)$
+(c) $P(|X − 10| \geq 9)$
+(d) $P(|X − 10| \geq 20)$
+
+#### Solution
+
+Chebyshev’s Inequality is given by $P(|X−\mu| \geq k\sigma) \leq \frac{1}{k^2}$
+
+Given that $\sigma ^2 = \frac{100}{3}$ => $\sigma = \sqrt{\frac{100}{3}} = \frac{10}{\sqrt{3}}$
+
+$(a) P(|X − 10| \geq 2)$
+
+=> $k\sigma=2$
+
+Therefore $k*\frac{10}{\sqrt{3}}=2 => k=\frac{2\sqrt{3}}{10}$
+$k^{-2}=\frac{1}{(\frac{2\sqrt{3}}{10})^2} = \frac{1}{0.12} = 10.12 = 8.333 = 1$ since highest value of probability is 1.
+
+
+$(b) P(|X − 10| \geq 5)$
+$kσ=5$
+=> $k\frac{10}{\sqrt{3}}=5 => k=\frac{\sqrt{3}}{2}$
+$k^{-2}=\frac{1}{(\frac{\sqrt{3}}{2})^2} = \frac{4}{3}=1.333 = 1$ since highest value of probability is 1
+
+$(c) P(|X − 10| \geq 9)$
+
+=> $k\sigma=9$
+$k\frac{10}{\sqrt{3}}=9 => k=\frac{9\sqrt{3}}{2}$
+$k^{-2}=\frac{1}{(\frac{9\sqrt{3}}{2})^2} = \frac{1}{2.43}=0.412$
+
+
+$(d) P(|X − 10| \geq 20)$
+
+$kσ=20$
+=> $k\frac{10}{\sqrt{3}}=20 => k=2\sqrt{3}$
+$k^{-2}=\frac{1}{(2\sqrt{3})^2} = \frac{1}{12}= 0.083$
+
+
+
+
+
+
+
+
+

@@ -173,12 +173,12 @@ kable((prop.table(table(yf))), table.attr = "style = \"color: #000;\"") %>% kabl
 #### Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
 
 ```{r}
-chisq.test(t, correct =  T)
+chisq.test(tbl, correct =  T)
 
 ```
 
 ```{r}
-fisher.test(t, simulate.p.value = T)
+fisher.test(tbl, simulate.p.value = T)
 
 ```
 
@@ -198,8 +198,8 @@ fisher.test(t, simulate.p.value = T)
 
 ```{r}
 
-tranData <- read.csv2('train.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
-testData <- read.csv2('test.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
+trainData <- read.csv2('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/605/Final%20Project/train.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
+testData <- read.csv2('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/605/Final%20Project/test.csv',stringsAsFactors = TRUE,header = T, sep = ',', na.strings = 'NA')
 
 ```
 
@@ -239,7 +239,7 @@ trn_numeric <- trainData[,sapply(trainData, is.numeric)][-1]
 
 ```{r}
 
-kable((describe(trn_numeric)), table.attr = "style = \"color: #000;\"") %>% kable_styling(bootstrap_options = c("bordered", 'striped', full_width = T))
+describe(trn_numeric)
 
 ```
 
@@ -665,11 +665,6 @@ abline(lm(trn_numeric$SalePrice~trn_numeric$MasVnrArea), col="#337ab7", lwd=3)
 ##### Calculating SalePrice using the formular for SalePrice above
 
 ```{r}
-#SalePrice <-((26988.854*testData$OverallQual) + (49.573*testData$GrLivArea) +  (11317.522*testData$GarageCars) + (41.478*testData$GarageArea) -98436.050)
-
-```
-
-```{r}
 
 SalePrice <- ((26407.9835*testData$OverallQual) + (42.7900*testData$GrLivArea) + (11539*testData$GarageCars) + (0.7942*testData$LotArea) + (42.3683*testData$MasVnrArea) + (30.0438*testData$GarageArea)  - 92377.6833)
 
@@ -725,7 +720,7 @@ write.csv(ff, file = 'final_output.csv', quote=FALSE, row.names=FALSE)
 
 ```{r}
 
-knitr::include_graphics('https://raw.githubusercontent.com/raghu74us/DATA-605/master/Final%20Project/score.PNG')
+knitr::include_graphics('https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/605/Final%20Project/kaggle_2.png')
 
 ```
 

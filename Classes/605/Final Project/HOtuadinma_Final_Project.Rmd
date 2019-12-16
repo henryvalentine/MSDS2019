@@ -711,7 +711,7 @@ datatable(head(ff), class = 'cell-border stripe', options = list(
 
 ```{r}
 
-write.csv(ff, file = 'final_output.csv', quote=FALSE, row.names=FALSE)
+write.csv(ff, file = 'https://raw.githubusercontent.com/henryvalentine/MSDS2019/master/Classes/605/Final%20Project/final_output.csv', quote=FALSE, row.names=FALSE)
 
 ```
 
